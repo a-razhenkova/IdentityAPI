@@ -3,7 +3,7 @@ using Infrastructure;
 
 namespace Business
 {
-    public static class UserExtentions
+    public static class UserExtensions
     {
         extension(User user)
         {

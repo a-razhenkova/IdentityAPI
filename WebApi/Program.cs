@@ -7,9 +7,10 @@ builder.AddLogger();
 builder.AddCache();
 builder.AddDatabase();
 
+await builder.AddRabbitMq();
+
 builder.AddMapper();
 builder.AddServices();
-builder.AddRabbitMQ();
 builder.AddHealthChecks();
 
 builder.AddAuthentication();

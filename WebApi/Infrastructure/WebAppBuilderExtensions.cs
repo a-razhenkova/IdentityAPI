@@ -35,26 +35,24 @@ namespace WebApi
             builder.Services.AddHealthChecks()
                             .AddDbContextCheck<IdentityDbContext>($"{ConnectionStringNames.IdentityDb}", tags: [HealthCheckImpactTag.Critical.ToString(), identityDbAddress])
                             .AddRedis(redisConnectionString, $"{ConnectionStringNames.Redis}", tags: [HealthCheckImpactTag.Medium.ToString(), redisAddress], timeout: TimeSpan.FromSeconds(2))
-                            .AddRabbitMQ(name: $"{ConnectionStringNames.RabbitMq}", tags: [HealthCheckImpactTag.Critical.ToString(), rabbitMqAddress], timeout: TimeSpan.FromSeconds(2));
+                            .AddCheck<RabbitMqHealthCheck>($"{ConnectionStringNames.RabbitMq}", tags: [HealthCheckImpactTag.Critical.ToString(), rabbitMqAddress], timeout: TimeSpan.FromSeconds(2));
 
             return builder;
         }
 
-        public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder)
+        public static async Task<WebApplicationBuilder> AddRabbitMq(this WebApplicationBuilder builder)
         {
             string rabbitMqConnectionString = builder.Configuration.GetRequiredConnectionString(ConnectionStringNames.RabbitMq);
 
-            builder.Services.AddSingleton(sp =>
+            var factory = new ConnectionFactory
             {
-                var factory = new ConnectionFactory
-                {
-                    Uri = new Uri(rabbitMqConnectionString),
-                    AutomaticRecoveryEnabled = true,
-                    NetworkRecoveryInterval = TimeSpan.FromSeconds(2)
-                };
+                Uri = new Uri(rabbitMqConnectionString),
+                AutomaticRecoveryEnabled = true,
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(2)
+            };
 
-                return factory.CreateConnectionAsync().GetAwaiter().GetResult();
-            });
+            IConnection connection = await factory.CreateConnectionAsync();
+            builder.Services.AddSingleton(connection);
 
             return builder;
         }

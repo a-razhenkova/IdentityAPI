@@ -9,6 +9,7 @@ builder.AddDatabase();
 
 builder.AddMapper();
 builder.AddServices();
+builder.AddRabbitMQ();
 builder.AddHealthChecks();
 
 builder.AddAuthentication();

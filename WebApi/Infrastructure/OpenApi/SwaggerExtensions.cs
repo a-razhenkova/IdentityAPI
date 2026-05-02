@@ -147,7 +147,7 @@ namespace WebApi
         {
             opt.SwaggerDoc("v1", new OpenApiInfo()
             {
-                Title = "Authentication API",
+                Title = "Identity API",
                 Description =
 @"<p>The API provides secure identity and access management. It supports <strong>user</strong> and <strong>client</strong> registration, update, deletion and retrieval with paginated report.</p>
 <ul>

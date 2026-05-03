@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Business.RabbitMq;
 using Database.IdentityDb;
 using Database.IdentityDb.DefaultSchema;
 using Infrastructure;
 using Infrastructure.Configuration.AppSettings;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Data;
@@ -12,20 +14,26 @@ namespace Business
 {
     public class UserService : IUserHandler
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppSettingsOptions _appSettingsOptions;
         private readonly IdentityDbContext _identityDbContext;
         private readonly IMapper _mapper;
         private readonly IReportHandler _reportHandler;
+        private readonly IAlert _alert;
 
-        public UserService(IOptionsSnapshot<AppSettingsOptions> appSettingsOptions,
+        public UserService(IHttpContextAccessor httpContextAccessor,
+                          IOptionsSnapshot<AppSettingsOptions> appSettingsOptions,
                           IdentityDbContext identityDbContext,
                           IMapper mapper,
-                          IReportHandler reportHandler)
+                          IReportHandler reportHandler,
+                          IAlert alert)
         {
+            _httpContextAccessor = httpContextAccessor;
             _appSettingsOptions = appSettingsOptions.Value;
             _identityDbContext = identityDbContext;
             _mapper = mapper;
             _reportHandler = reportHandler;
+            _alert = alert;
         }
 
         public async Task<PaginatedReport<UserDto>> SearchAsync(UserSearchParams userSearchParams, CancellationToken cancellationToken)
@@ -115,6 +123,7 @@ namespace Business
                 .Where(u => u.ExternalId == userExternalId)
                 .SingleOrDefaultAsync() ?? throw new NotFoundException("User not found.");
 
+            // TODO: schadule for delete with Hangfire
             _identityDbContext.Remove(user);
             await _identityDbContext.SaveChangesAsync();
         }
@@ -135,7 +144,13 @@ namespace Business
 
             await _identityDbContext.SaveChangesAsync();
 
-            // TODO: send information email async
+            _alert.AddUserPasswordChangedAlertAsync(new UserPasswordChangedAlertDto
+            {
+                UserId = user.Id,
+                UserEmail = user.Email,
+                Timestamp = user.Password.LastChangedTimestamp,
+                UserIpAddress = _httpContextAccessor?.HttpContext?.GetUserIpAddress()
+            });
         }
 
         public async Task ChangeEmailAsync(string userExternalId, string email, string password)

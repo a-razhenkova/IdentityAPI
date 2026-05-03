@@ -40,7 +40,7 @@ namespace WebApi
             return builder;
         }
 
-        public static async Task<WebApplicationBuilder> AddRabbitMq(this WebApplicationBuilder builder)
+        public static async Task<WebApplicationBuilder> AddRabbitMqAsync(this WebApplicationBuilder builder)
         {
             string rabbitMqConnectionString = builder.Configuration.GetRequiredConnectionString(ConnectionStringNames.RabbitMq);
 

@@ -7,7 +7,7 @@ builder.AddLogger();
 builder.AddCache();
 builder.AddDatabase();
 
-await builder.AddRabbitMq();
+await builder.AddRabbitMqAsync();
 
 builder.AddMapper();
 builder.AddServices();

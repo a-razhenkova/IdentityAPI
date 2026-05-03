@@ -1,5 +1,20 @@
 ﻿namespace Infrastructure
 {
+    public static class HttpHeaders
+    {
+        public const string Authorization = "Authorization";
+        public const string RequestId = "X-Request-ID";
+        public const string CorrelationId = "X-Correlation-ID";
+        public const string ForwardedFor = "X-Forwarded-For";
+    }
+
+    public static class ConnectionStringNames
+    {
+        public const string IdentityDb = "IdentityDb";
+        public const string Redis = "Redis";
+        public const string RabbitMq = "RabbitMQ";
+    }
+
     public static class Constants
     {
         public const string DefaultAssemblyVersion = "1.0.0.0";

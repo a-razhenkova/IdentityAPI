@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Business
@@ -6,7 +7,7 @@ namespace Business
     public static class Pbkdf2Key
     {
         public static (string Pbkdf2Key, string Secret) Create(string value, int interactions, int hashLength, int saltLength)
-            => Create(value, interactions, hashLength, saltLength);
+            => Create(value, interactions, hashLength, saltLength, secret: null);
 
         public static (string Pbkdf2Key, string Secret) Recreate(string value, string secret, int interactions, int hashLength)
             => Create(value, interactions, hashLength, secret);

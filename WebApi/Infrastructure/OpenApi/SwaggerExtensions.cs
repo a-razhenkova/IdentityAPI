@@ -161,7 +161,7 @@ namespace WebApi
 </ul>
 <p><strong>Notes:</strong></p>
 <p>To authenticate, external clients are required to activate a subscription via <code>POST /api/v1/clients/{key}/subscriptions</code>.<p>
-<p>To authenticate with MFA, users are required to verify their email via <code>POST /api/v1/email/verification/{token}</code>.</p>",
+<p>To authenticate with OTP, users are required to verify their email via <code>POST /api/v1/email/verification/{token}</code>.</p>",
                 Version = $"{WebApiAssembly.GetVersion()}",
                 Contact = new OpenApiContact()
                 {

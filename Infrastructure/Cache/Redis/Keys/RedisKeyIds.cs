@@ -1,4 +1,4 @@
-﻿namespace Database.Redis
+﻿namespace Infrastructure.Redis
 {
     internal enum TwoFactorAuthIds
     {

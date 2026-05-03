@@ -1,4 +1,4 @@
-﻿namespace Business
+﻿namespace Infrastructure
 {
     public static class RabbitMqQueues
     {

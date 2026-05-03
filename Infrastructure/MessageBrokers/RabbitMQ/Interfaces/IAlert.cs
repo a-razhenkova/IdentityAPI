@@ -1,6 +1,6 @@
-﻿using Business.RabbitMq;
+﻿using Infrastructure.RabbitMq;
 
-namespace Business
+namespace Infrastructure
 {
     public interface IAlert
     {

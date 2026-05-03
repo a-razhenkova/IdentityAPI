@@ -1,9 +1,9 @@
-﻿using Business.RabbitMq;
+﻿using Infrastructure.RabbitMq;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 
-namespace Business
+namespace Infrastructure
 {
     public class AlertService : IAlert
     {

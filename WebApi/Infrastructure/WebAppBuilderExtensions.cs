@@ -106,7 +106,7 @@ namespace WebApi
         public static WebApplicationBuilder AddCache(this WebApplicationBuilder builder)
         {
             builder.Services.AddStackExchangeRedisCache(opt => opt.Configuration = builder.Configuration.GetRequiredConnectionString(ConnectionStringNames.Redis));
-            builder.Services.AddScoped<IRedisProvider, RedisProxy>();
+            builder.Services.AddSingleton<IRedis, RedisService>();
             return builder;
         }
 

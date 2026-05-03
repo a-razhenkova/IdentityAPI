@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Business.RabbitMq;
+using Infrastructure.RabbitMq;
 using Database.IdentityDb;
 using Database.IdentityDb.DefaultSchema;
 using Infrastructure;

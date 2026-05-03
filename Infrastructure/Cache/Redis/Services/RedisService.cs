@@ -2,17 +2,17 @@
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-namespace Database
+namespace Infrastructure
 {
     /// <summary>
     /// Provides Redis cache operations.
     /// </summary>
-    public class RedisProxy : IRedisProvider
+    public class RedisService : IRedis
     {
         private readonly IDistributedCache _distributedCache;
-        private readonly ILogger<RedisProxy> _logger;
+        private readonly ILogger<RedisService> _logger;
 
-        public RedisProxy(IDistributedCache distributedCache, ILogger<RedisProxy> logger)
+        public RedisService(IDistributedCache distributedCache, ILogger<RedisService> logger)
         {
             _distributedCache = distributedCache;
             _logger = logger;

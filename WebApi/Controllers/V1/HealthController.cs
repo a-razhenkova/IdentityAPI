@@ -13,8 +13,7 @@ namespace WebApi.V1
         private readonly IHealthChecker _healthChecker;
         private readonly IHostEnvironment _environment;
 
-        public HealthController(IHealthChecker healthChecker,
-                               IHostEnvironment environment)
+        public HealthController(IHealthChecker healthChecker, IHostEnvironment environment)
         {
             _healthChecker = healthChecker;
             _environment = environment;

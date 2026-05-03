@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 
-namespace Database
+namespace Infrastructure
 {
-    public interface IRedisProvider
+    public interface IRedis
     {
         Task<TValue?> LoadAsync<TValue>(RedisKey keyType, params object[] keyIds)
             where TValue : class;

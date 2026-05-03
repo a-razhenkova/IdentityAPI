@@ -7,11 +7,11 @@ namespace WebApi.V1
     [Route("api/v1/[controller]")]
     public class OtpController : JsonApiControllerBase
     {
-        private readonly IOtpHandler _otpHandler;
+        private readonly IOtp _otp;
 
-        public OtpController(IOtpHandler otpHandler)
+        public OtpController(IOtp otp)
         {
-            _otpHandler = otpHandler;
+            _otp = otp;
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace WebApi.V1
         [ProducesResponseType(typeof(SimpleResponseModel<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateAndSendOtpAsync(UserCredentialsModel userCredentials)
         {
-            string userExternalId = await _otpHandler.CreateAndSendOtpAsync(userCredentials.Username, userCredentials.Password);
+            string userExternalId = await _otp.CreateAndSendAsync(userCredentials.Username, userCredentials.Password);
             return Ok(new SimpleResponseModel<string>(userExternalId));
         }
     }

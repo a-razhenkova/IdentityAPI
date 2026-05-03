@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Database
+namespace Infrastructure
 {
     public enum RedisKey
     {

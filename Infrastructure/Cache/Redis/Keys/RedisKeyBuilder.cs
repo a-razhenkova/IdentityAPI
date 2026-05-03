@@ -1,7 +1,6 @@
-﻿using Database.Redis;
-using Infrastructure;
+﻿using Infrastructure.Redis;
 
-namespace Database
+namespace Infrastructure
 {
     public class RedisKeyBuilder
     {

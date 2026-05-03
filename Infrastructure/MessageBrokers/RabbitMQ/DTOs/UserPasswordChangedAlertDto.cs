@@ -1,4 +1,4 @@
-﻿namespace Business.RabbitMq
+﻿namespace Infrastructure.RabbitMq
 {
     public class UserPasswordChangedAlertDto
     {

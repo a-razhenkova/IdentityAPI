@@ -1,10 +1,9 @@
-﻿using Database;
-using Database.IdentityDb;
+﻿using Database.IdentityDb;
 using Database.IdentityDb.DefaultSchema;
-using Database.Redis;
 using Google.Authenticator;
 using Infrastructure;
 using Infrastructure.Configuration.AppSettings;
+using Infrastructure.Redis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
@@ -15,11 +14,11 @@ namespace Business
     {
         private readonly AppSettingsOptions _appSettingsOptions;
         private readonly IdentityDbContext _identityDbContext;
-        private readonly IRedisProvider _redis;
+        private readonly IRedis _redis;
 
         public OtpAuthenticationService(IOptionsSnapshot<AppSettingsOptions> appSettingsOptions,
                                        IdentityDbContext identityDbContext,
-                                       IRedisProvider redis)
+                                       IRedis redis)
         {
             _appSettingsOptions = appSettingsOptions.Value;
             _identityDbContext = identityDbContext;

@@ -69,7 +69,7 @@
 5. If the `client status` is acceptable, the system checks for an active `subscription`.
 6. If there is an active `subscription`, the stored `secret` is compared with the provided secret.
 7. If the `secret` is valid, the `failed login attempt counter` is reset.
-8. An `access token` of type JWT is generated, scoped to the `client ID` and the applications the client is allowed to access.
+8. An `access token` (JWT) is generated, scoped to the `client ID` and the applications the client is allowed to access.
 
 > [!WARNING]
 > Invalid `key` or `secret` results in HTTP status code `401 Unauthorized`.
@@ -79,3 +79,26 @@
 
 > [!CAUTION]
 > If the `failed login attempt counter` exceeds the allowed limit, the `client status` is updated to `BLOCKED`.
+
+## User Single-Factor Authentication
+1. User `username` and `password` are received in the request body.
+2. A database query is executed to fetch user data using the provided `username`.
+3. If the `username` exists, the `user status` is validated.
+4. If the `user status` is acceptable, the provided `password` is hashed using the same method as the stored one.
+5. The hashed `password` is compared with the stored password.
+6. If the passwords match, the `failed login attempt counter` is reset.
+7. An `access token` (JWT) is generated, scoped to the `user ID`, `username`, `user role` and `user status`.
+8. A `refresh token` (JWT) is generated, scoped to the `user ID`.
+
+> [!NOTE]
+> An alert is sent when a login attempt is made through a new IP address.
+
+> [!WARNING]
+> Invalid `username` or `password` results in HTTP status code `401 Unauthorized`.
+
+> [!WARNING]
+> Invalid `user status` results in HTTP status code `403 Forbidden`.
+
+> [!CAUTION]
+> If the `failed login attempt counter` exceeds the allowed limit, the `user status` is updated to `BLOCKED` and an alert for login attempt is registered.
+

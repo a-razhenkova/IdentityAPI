@@ -102,3 +102,29 @@
 > [!CAUTION]
 > If the `failed login attempt counter` exceeds the allowed limit, the `user status` is updated to `BLOCKED` and an alert for login attempt is registered.
 
+## User Multi-Factor Authentication
+1. User `username` and `password` are received in the request body.
+2. A database query is executed to fetch user data using the provided `username`.
+3. If the `username` exists, the `user status` is validated.
+4. If the `user status` is acceptable, the provided `password` is hashed using the same method as the stored one.
+5. The hashed `password` is compared with the stored password.
+6. If the passwords match, the `failed login attempt counter` is reset.
+7. A `one-time password` is generated and saved to `Redis`.
+8. A message is registered to send the `one-time password` to the user via the preferred notification provider.
+9. The user receives the `one-time password` and enters it.
+10. An attempt is made to fetch the `one-time password` from `Redis`.
+11. If the `one-time password` is valid and not expired, it is deleted from `Redis`.
+12. An `access token` (JWT) is generated, scoped to the `user ID`, `username`, `user role` and `user status`.
+13. A `refresh token` (JWT) is generated, scoped to the `user ID`.
+
+> [!NOTE]
+> Each `one-time password` is stored in `Redis` with an absolute expiration.
+
+> [!WARNING]
+> Invalid `username` or `password` or `one-time password` results in HTTP status code `401 Unauthorized`.
+
+> [!WARNING]
+> Invalid `user status` results in HTTP status code `403 Forbidden`.
+
+> [!CAUTION]
+> A `failed login attempt counter` is maintained in `Redis` per `one-time password`. If the counter exceeds the allowed limit, the `one-time password` is deleted.

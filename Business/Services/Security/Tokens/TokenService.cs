@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Business
 {
-    public class TokenService : ITokenHandler
+    public class TokenService : IToken
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppSettingsOptions _appSettingsOptions;

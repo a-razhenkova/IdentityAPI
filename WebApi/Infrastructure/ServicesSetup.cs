@@ -1,5 +1,4 @@
 ﻿using Business;
-using Infrastructure;
 
 namespace WebApi
 {
@@ -20,7 +19,7 @@ namespace WebApi
             builder.Services.AddScoped<IUserAuthenticator, UserAuthenticationService>();
 
             builder.Services.AddScoped<IPaginatedReport, PaginatedReportService>();
-            builder.Services.AddScoped<ITokenHandler, TokenService>();
+            builder.Services.AddScoped<IToken, TokenService>();
             builder.Services.AddScoped<IAlert, AlertService>();
 
             builder.Services.AddScoped<IClient, ClientService>();

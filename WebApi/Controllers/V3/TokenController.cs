@@ -12,13 +12,13 @@ namespace WebApi.V3
     [ApiController, Route("api/v3/[controller]")]
     public class TokenController : JsonApiControllerBase
     {
-        private readonly ITokenHandler _tokenHandler;
+        private readonly IToken _token;
         private readonly IMapper _mapper;
 
-        public TokenController(ITokenHandler tokenHandler, IMapper mapper)
+        public TokenController(IToken token, IMapper mapper)
         {
             _mapper = mapper;
-            _tokenHandler = tokenHandler;
+            _token = token;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace WebApi.V3
         [ProducesResponseType(typeof(V1.TokenModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateAccessTokenAsync(V2.UserCredentialsModel userCredentials)
         {
-            TokenDto token = await _tokenHandler.CreateAccessTokenByOtpAsync(userCredentials.UserId, userCredentials.OneTimePassword);
+            TokenDto token = await _token.CreateAccessTokenByOtpAsync(userCredentials.UserId, userCredentials.OneTimePassword);
             return Ok(_mapper.Map<V1.TokenModel>(token));
         }
     }

@@ -10,12 +10,12 @@ namespace WebApi.V1
     [Route("api/v1/[controller]")]
     public class TokenController : JsonApiControllerBase
     {
-        private readonly ITokenHandler _tokenHandler;
+        private readonly IToken _token;
         private readonly IMapper _mapper;
 
-        public TokenController(ITokenHandler tokenHandler, IMapper mapper)
+        public TokenController(IToken token, IMapper mapper)
         {
-            _tokenHandler = tokenHandler;
+            _token = token;
             _mapper = mapper;
         }
 
@@ -29,7 +29,7 @@ namespace WebApi.V1
         {
             var authorization = new Authorization(HttpContext.GetAuthorization());
 
-            TokenDto token = await _tokenHandler.CreateAccessTokenAsync(authorization);
+            TokenDto token = await _token.CreateAccessTokenAsync(authorization);
 
             return Ok(_mapper.Map<TokenModel>(token));
         }
@@ -42,7 +42,7 @@ namespace WebApi.V1
         [ProducesResponseType(typeof(TokenValidationResultModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> ValidateAccessTokenAsync()
         {
-            TokenValidationResult tokenValidationResult = await _tokenHandler.ValidateAccessTokenAsync();
+            TokenValidationResult tokenValidationResult = await _token.ValidateAccessTokenAsync();
             return Ok(_mapper.Map<TokenValidationResultModel>(tokenValidationResult));
         }
     }

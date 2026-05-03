@@ -12,12 +12,12 @@ namespace WebApi.V2
     [ApiController, Route("api/v2/[controller]")]
     public class TokenController : JsonApiControllerBase
     {
-        private readonly ITokenHandler _tokenHandler;
+        private readonly IToken _token;
         private readonly IMapper _mapper;
 
-        public TokenController(ITokenHandler tokenHandler, IMapper mapper)
+        public TokenController(IToken token, IMapper mapper)
         {
-            _tokenHandler = tokenHandler;
+            _token = token;
             _mapper = mapper;
         }
 
@@ -30,7 +30,7 @@ namespace WebApi.V2
         [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateAccessTokenAsync(V1.UserCredentialsModel userCredentials)
         {
-            TokenDto token = await _tokenHandler.CreateAccessTokenAsync(userCredentials.Username, userCredentials.Password);
+            TokenDto token = await _token.CreateAccessTokenAsync(userCredentials.Username, userCredentials.Password);
             return Ok(_mapper.Map<TokenModel>(token));
         }
 
@@ -42,7 +42,7 @@ namespace WebApi.V2
         [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> RefreshAccessTokenAsync()
         {
-            TokenDto token = await _tokenHandler.RefreshAccessTokenAsync();
+            TokenDto token = await _token.RefreshAccessTokenAsync();
             return Ok(_mapper.Map<V1.TokenModel>(token));
         }
     }

@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Business
 {
-    public interface ITokenHandler
+    public interface IToken
     {
         Task<TokenDto> CreateAccessTokenAsync(Authorization authorization);
         Task<TokenDto> CreateAccessTokenAsync(Client client);

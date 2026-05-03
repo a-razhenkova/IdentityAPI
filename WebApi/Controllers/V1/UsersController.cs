@@ -9,10 +9,10 @@ namespace WebApi.V1
     [Route("api/v1/[controller]")]
     public class UsersController : JsonApiControllerBase
     {
-        private readonly IUserHandler _user;
+        private readonly IUser _user;
         private readonly IMapper _mapper;
 
-        public UsersController(IUserHandler user, IMapper mapper)
+        public UsersController(IUser user, IMapper mapper)
         {
             _mapper = mapper;
             _user = user;

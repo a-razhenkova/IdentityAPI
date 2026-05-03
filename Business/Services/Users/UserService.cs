@@ -12,27 +12,27 @@ using System.Text.RegularExpressions;
 
 namespace Business
 {
-    public class UserService : IUserHandler
+    public class UserService : IUser
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppSettingsOptions _appSettingsOptions;
         private readonly IdentityDbContext _identityDbContext;
         private readonly IMapper _mapper;
-        private readonly IReportHandler _reportHandler;
+        private readonly IPaginatedReport _paginatedReport;
         private readonly IAlert _alert;
 
         public UserService(IHttpContextAccessor httpContextAccessor,
                           IOptionsSnapshot<AppSettingsOptions> appSettingsOptions,
                           IdentityDbContext identityDbContext,
                           IMapper mapper,
-                          IReportHandler reportHandler,
+                          IPaginatedReport paginatedReport,
                           IAlert alert)
         {
             _httpContextAccessor = httpContextAccessor;
             _appSettingsOptions = appSettingsOptions.Value;
             _identityDbContext = identityDbContext;
             _mapper = mapper;
-            _reportHandler = reportHandler;
+            _paginatedReport = paginatedReport;
             _alert = alert;
         }
 
@@ -59,7 +59,7 @@ namespace Business
                 .Include(u => u.Status)
                 .OrderByDescending(u => u.Id);
 
-            return await _reportHandler.PreparePaginatedReport<User, UserDto>(searchQuery, userSearchParams, cancellationToken);
+            return await _paginatedReport.Prepare<User, UserDto>(searchQuery, userSearchParams, cancellationToken);
         }
 
         public async Task<UserDto> LoadAsync(string userExternalId)

@@ -19,12 +19,12 @@ namespace WebApi
             builder.Services.AddScoped<IClientAuthenticator, ClientAuthenticationService>();
             builder.Services.AddScoped<IUserAuthenticator, UserAuthenticationService>();
 
-            builder.Services.AddScoped<IReportHandler, ReportService>();
+            builder.Services.AddScoped<IPaginatedReport, PaginatedReportService>();
             builder.Services.AddScoped<ITokenHandler, TokenService>();
             builder.Services.AddScoped<IAlert, AlertService>();
 
-            builder.Services.AddScoped<IClientHandler, ClientService>();
-            builder.Services.AddScoped<IUserHandler, UserService>();
+            builder.Services.AddScoped<IClient, ClientService>();
+            builder.Services.AddScoped<IUser, UserService>();
 
             return builder;
         }

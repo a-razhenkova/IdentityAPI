@@ -10,22 +10,22 @@ using System.Data;
 
 namespace Business
 {
-    public class ClientService : IClientHandler
+    public class ClientService : IClient
     {
         private readonly AppSettingsOptions _appSettingsOptions;
         private readonly IdentityDbContext _identityDbContext;
         private readonly IMapper _mapper;
-        private readonly IReportHandler _reportHandler;
+        private readonly IPaginatedReport _paginatedReport;
 
         public ClientService(IOptionsSnapshot<AppSettingsOptions> appSettingsOptions,
                             IdentityDbContext identityDbContext,
                             IMapper mapper,
-                            IReportHandler reportHandler)
+                            IPaginatedReport paginatedReport)
         {
             _appSettingsOptions = appSettingsOptions.Value;
             _identityDbContext = identityDbContext;
             _mapper = mapper;
-            _reportHandler = reportHandler;
+            _paginatedReport = paginatedReport;
         }
 
         public async Task<PaginatedReport<ClientDto>> SearchAsync(ClientSearchParams clientSearchParams, CancellationToken cancellationToken)
@@ -61,7 +61,7 @@ namespace Business
                     .ThenInclude(s => s.Contract)
                 .OrderByDescending(c => c.Id);
 
-            return await _reportHandler.PreparePaginatedReport<Client, ClientDto>(searchQuery, clientSearchParams, cancellationToken);
+            return await _paginatedReport.Prepare<Client, ClientDto>(searchQuery, clientSearchParams, cancellationToken);
         }
 
         public async Task<ClientDto> LoadAsync(string key)

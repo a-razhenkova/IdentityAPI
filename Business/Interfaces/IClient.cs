@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Business
 {
-    public interface IClientHandler
+    public interface IClient
     {
         Task<PaginatedReport<ClientDto>> SearchAsync(ClientSearchParams clientSearchParams, CancellationToken cancellationToken);
 

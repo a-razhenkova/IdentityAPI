@@ -5,19 +5,18 @@ using Microsoft.Extensions.Options;
 
 namespace Business
 {
-    public class ReportService : IReportHandler
+    public class PaginatedReportService : IPaginatedReport
     {
         protected readonly AppSettingsOptions _appSettingsOptions;
         protected readonly IMapper _mapper;
 
-        public ReportService(IOptionsSnapshot<AppSettingsOptions> appSettingsOptions,
-                            IMapper mapper)
+        public PaginatedReportService(IOptionsSnapshot<AppSettingsOptions> appSettingsOptions, IMapper mapper)
         {
             _appSettingsOptions = appSettingsOptions.Value;
             _mapper = mapper;
         }
 
-        public async Task<PaginatedReport<TDataDto>> PreparePaginatedReport<TData, TDataDto>(IQueryable<TData> query, PaginationParams pageParams, CancellationToken cancellationToken)
+        public async Task<PaginatedReport<TDataDto>> Prepare<TData, TDataDto>(IQueryable<TData> query, PaginationParams pageParams, CancellationToken cancellationToken)
         {
             int itemsPerPage = pageParams.ItemsPerPage <= 0 || pageParams.ItemsPerPage > _appSettingsOptions.PaginatedReport.DefaultMaxAllowedItemsPerPage
                 ? _appSettingsOptions.PaginatedReport.DefaultItemsPerPage

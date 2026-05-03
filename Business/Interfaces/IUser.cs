@@ -1,6 +1,6 @@
 ﻿namespace Business
 {
-    public interface IUserHandler
+    public interface IUser
     {
         Task<PaginatedReport<UserDto>> SearchAsync(UserSearchParams userSearchParams, CancellationToken cancellationToken);
 

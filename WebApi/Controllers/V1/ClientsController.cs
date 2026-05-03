@@ -10,10 +10,10 @@ namespace WebApi.V1
     [Route("api/v1/[controller]")]
     public class ClientsController : JsonApiControllerBase
     {
-        private readonly IClientHandler _client;
+        private readonly IClient _client;
         private readonly IMapper _mapper;
 
-        public ClientsController(IClientHandler client, IMapper mapper)
+        public ClientsController(IClient client, IMapper mapper)
         {
             _client = client;
             _mapper = mapper;

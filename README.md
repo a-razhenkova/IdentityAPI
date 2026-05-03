@@ -54,7 +54,7 @@
 
 ![Architecture Diagram](/assets/architecture-diagram.png)
 
-> SDK: .NET Core 9\
+> SDK: .NET Core 10\
 > Database: SQL Server 2022
 
 > [!NOTE]
@@ -66,10 +66,10 @@
 2. The credentials from the header are decoded.
 3. A database query is executed to fetch client data using the provided `key`.
 4. If the `key` exists, the `client status` is validated.
-5. If the `client status` is acceptable, the system checks for an activeactive `subscription`.
+5. If the `client status` is acceptable, the system checks for an active `subscription`.
 6. If there is an active `subscription`, the stored `secret` is compared with the provided secret.
 7. If the `secret` is valid, the `failed login attempt counter` is reset.
-8. A JWT `access token` is generated, scoped to the `client ID` and the applications the client is allowed to access.
+8. An `access token` of type JWT is generated, scoped to the `client ID` and the applications the client is allowed to access.
 
 > [!WARNING]
 > Invalid `key` or `secret` results in HTTP status code `401 Unauthorized`.

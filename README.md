@@ -33,7 +33,7 @@
      `POST /api/v3/token`
   
   > [!IMPORTANT]
-  > To authenticate with MFA, users are required to verify their email via:\
+  > To authenticate with **OTP**, users are required to verify their email via:\
   > `POST /api/v1/email/verification/{token}`
   
   > [!NOTE]

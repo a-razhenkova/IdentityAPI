@@ -55,7 +55,10 @@
 ![Architecture Diagram](/assets/architecture-diagram.png)
 
 > SDK: .NET Core 10\
-> Database: SQL Server 2022
+> Database: SQL Server 2022\
+> ORM: Entity Framework Core\
+> Caching: Redis\
+> Message Broker: RabbitMQ
 
 > [!NOTE]
 > The application follows a layered achitecture.

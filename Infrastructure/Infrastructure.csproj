@@ -7,14 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="14.0.0" />
-    <PackageReference Include="GoogleAuthenticator" Version="3.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.3.9" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.7" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.18.0" />
-    <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
+    <EmbeddedResource Include="Database\Scripts\v1_0_0_0\init01_register_clients.sql" />
+    <EmbeddedResource Include="Database\Scripts\v1_0_0_0\init02_register_demo_user.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
 
 </Project>

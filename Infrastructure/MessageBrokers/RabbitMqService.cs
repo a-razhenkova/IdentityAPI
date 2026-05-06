@@ -1,31 +1,32 @@
-﻿using Infrastructure.RabbitMq;
+﻿using Application;
+using Application.RabbitMq;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 
 namespace Infrastructure
 {
-    public class AlertService : IAlert
+    public class RabbitMqService : IRabbitMq
     {
         private readonly IConnection _connection;
 
-        public AlertService(IConnection connection)
+        public RabbitMqService(IConnection connection)
         {
             _connection = connection;
         }
 
-        public async Task AddUserPasswordChangedAlertAsync(UserPasswordChangedAlertDto alertDto)
+        public async Task PublishUserPasswordChangedEventAsync(UserPasswordChangedEvent message)
         {
-            if (string.IsNullOrWhiteSpace(alertDto.UserEmail))
+            if (string.IsNullOrWhiteSpace(message.UserEmail))
                 return;
 
             const string routingKey = "user-password-changed";
 
             using IChannel channel = await _connection.CreateChannelAsync();
-            await channel.QueueDeclareAsync(RabbitMqQueues.UserPasswordChangedAlert, durable: true, exclusive: false, autoDelete: false);
-            await channel.QueueBindAsync(RabbitMqQueues.UserPasswordChangedAlert, RabbitMqExchanges.DefaultDirect, routingKey);
+            await channel.QueueDeclareAsync(RabbitMqQueues.UserPasswordChangedEvent, durable: true, exclusive: false, autoDelete: false);
+            await channel.QueueBindAsync(RabbitMqQueues.UserPasswordChangedEvent, RabbitMqExchanges.DefaultDirect, routingKey);
 
-            string body = JsonSerializer.Serialize(alertDto);
+            string body = JsonSerializer.Serialize(message);
             var properties = new BasicProperties
             {
                 Persistent = true

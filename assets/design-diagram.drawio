@@ -24,9 +24,9 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="2hW7fFKVQDX4X5Vv7pmV-15" edge="1" parent="1" source="2hW7fFKVQDX4X5Vv7pmV-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fillColor=#fad9d5;strokeColor=#ae4132;" target="2hW7fFKVQDX4X5Vv7pmV-16" value="">
+        <mxCell id="2hW7fFKVQDX4X5Vv7pmV-15" edge="1" parent="1" source="2hW7fFKVQDX4X5Vv7pmV-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.07;entryY=0.4;entryDx=0;entryDy=0;fillColor=#fad9d5;strokeColor=#ae4132;entryPerimeter=0;" target="b5U99AGU9FIOzD9HcehO-1" value="">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="500" y="70" as="targetPoint" />
+            <mxPoint x="720" y="80" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="2hW7fFKVQDX4X5Vv7pmV-17" connectable="0" parent="2hW7fFKVQDX4X5Vv7pmV-15" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="message" vertex="1">
@@ -50,9 +50,6 @@
         <mxCell id="2hW7fFKVQDX4X5Vv7pmV-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;" value="client / user" vertex="1">
           <mxGeometry height="80" width="120" x="40" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="2hW7fFKVQDX4X5Vv7pmV-16" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;" value="RabbitMQ" vertex="1">
-          <mxGeometry height="80" width="120" x="720" y="40" as="geometry" />
-        </mxCell>
         <mxCell id="2hW7fFKVQDX4X5Vv7pmV-19" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#fad9d5;strokeColor=#ae4132;" value="MSSQL" vertex="1">
           <mxGeometry height="110" width="120" x="300" y="180" as="geometry" />
         </mxCell>
@@ -66,6 +63,9 @@
           <mxGeometry relative="1" x="-0.2622" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="b5U99AGU9FIOzD9HcehO-1" parent="1" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;" value="RabbitMQ" vertex="1">
+          <mxGeometry height="100" width="170" x="720" y="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

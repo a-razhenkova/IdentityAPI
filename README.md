@@ -59,7 +59,8 @@
 > ORM: Entity Framework Core\
 > Caching: Redis\
 > Message Broker: RabbitMQ\
-> Additional Libryries: 
+> Additional Libraries: AutoMapper, GoogleAuthenticator\
+> Tests: xUnit, FluentAssertions
 
 > [!NOTE]
 > Database creation and schema management are handled through Entity Framework Core migrations.

@@ -142,4 +142,7 @@
 ![Architecture Diagram](/assets/architecture-diagram.png)
 
 > [!NOTE]
-> The application follows the onion architecture.
+> The application follows **Onion Architecture**, with **Repository** and **Unit of Work** patterns to manage data access.
+
+> [!NOTE]
+> The token handling mechanism follows the **Strategy pattern** ([`SecurityTokenHandler`](/Application/Security/Tokens/SecurityTokenHandler.cs)).

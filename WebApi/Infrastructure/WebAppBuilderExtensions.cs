@@ -1,15 +1,13 @@
-﻿using AutoMapper;
-using Business;
-using Database;
-using Database.IdentityDb;
+﻿using Application;
+using AutoMapper;
 using Infrastructure;
-using Infrastructure.Configuration.AppSettings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
+using Shared;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
@@ -33,7 +31,7 @@ namespace WebApi
             string rabbitMqAddress = Regex.Match(rabbitMqConnectionString, @"(?<=@)[^\/]+").Value;
 
             builder.Services.AddHealthChecks()
-                            .AddDbContextCheck<IdentityDbContext>($"{ConnectionStringNames.IdentityDb}", tags: [HealthCheckImpactTag.Critical.ToString(), identityDbAddress])
+                            .AddDbContextCheck<IdentityContext>($"{ConnectionStringNames.IdentityDb}", tags: [HealthCheckImpactTag.Critical.ToString(), identityDbAddress])
                             .AddRedis(redisConnectionString, $"{ConnectionStringNames.Redis}", tags: [HealthCheckImpactTag.Medium.ToString(), redisAddress], timeout: TimeSpan.FromSeconds(2))
                             .AddCheck<RabbitMqHealthCheck>($"{ConnectionStringNames.RabbitMq}", tags: [HealthCheckImpactTag.Critical.ToString(), rabbitMqAddress], timeout: TimeSpan.FromSeconds(2));
 
@@ -61,7 +59,8 @@ namespace WebApi
         {
             var mapperConfig = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile(new IdentityDbMapperProfile());
+                cfg.AddProfile(new DomainMapperProfile());
+                cfg.AddProfile(new EventsMapperProfile());
 
                 cfg.AddProfile(new V1.CommonMapperProfile());
                 cfg.AddProfile(new V2.CommonMapperProfile());
@@ -84,14 +83,14 @@ namespace WebApi
 
         public static WebApplicationBuilder AddDatabase(this WebApplicationBuilder builder)
         {
-            DatabaseAttribute identityDbConfig = typeof(IdentityDbContext).GetRequiredCustomAttribute<DatabaseAttribute>();
-            builder.Services.AddDbContext<IdentityDbContext>(opt =>
+            DatabaseAttribute identityConfig = typeof(IdentityContext).GetRequiredCustomAttribute<DatabaseAttribute>();
+            builder.Services.AddDbContext<IdentityContext>(opt =>
             {
-                opt.UseSqlServer(builder.Configuration.GetRequiredConnectionString(identityDbConfig.ConnectionStringName), cfg =>
+                opt.UseSqlServer(builder.Configuration.GetRequiredConnectionString(identityConfig.ConnectionStringName), cfg =>
                 {
-                    cfg.CommandTimeout(identityDbConfig.CommandTimeoutInSeconds);
-                    cfg.MigrationsAssembly(DatabaseAssembly.GetExecutingAssembly());
-                    cfg.MigrationsHistoryTable(identityDbConfig.MigrationsHistoryTableName, identityDbConfig.DefaultSchemaName);
+                    cfg.CommandTimeout(identityConfig.CommandTimeoutInSeconds);
+                    cfg.MigrationsAssembly(InfrastructureAssembly.GetExecutingAssembly());
+                    cfg.MigrationsHistoryTable(identityConfig.MigrationsHistoryTableName, identityConfig.DefaultSchemaName);
                 });
 #if DEBUG
                 opt.LogTo(src => Debug.WriteLine(src));
@@ -112,13 +111,13 @@ namespace WebApi
 
         public static WebApplicationBuilder AddAuthentication(this WebApplicationBuilder builder)
         {
-            var securityOptions = builder.Configuration.GetRequiredSection<SecurityOptions>(nameof(AppSettingsOptions.Security));
+            var securitySettings = builder.Configuration.GetRequiredSection<SecuritySettings>(nameof(AppSettings.Security));
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                             .AddJwtBearer(opt =>
                             {
                                 opt.SaveToken = true;
-                                opt.TokenValidationParameters = new AccessToken(securityOptions).ValidationParams;
+                                opt.TokenValidationParameters = new AccessToken(securitySettings).ValidationParams;
                             });
 
             return builder;
@@ -133,7 +132,7 @@ namespace WebApi
 
         public static WebApplicationBuilder AddRateLimiter(this WebApplicationBuilder builder)
         {
-            var securityOptions = builder.Configuration.GetRequiredSection<SecurityOptions>(nameof(AppSettingsOptions.Security));
+            var securitySettings = builder.Configuration.GetRequiredSection<SecuritySettings>(nameof(AppSettings.Security));
 
             builder.Services.AddRateLimiter(opt =>
             {
@@ -145,9 +144,9 @@ namespace WebApi
                     return RateLimitPartition.GetFixedWindowLimiter(!string.IsNullOrWhiteSpace(userIp) ? userIp : httpContext.Request.Headers.Host.ToString(),
                     partition => new FixedWindowRateLimiterOptions()
                     {
-                        Window = TimeSpan.FromSeconds(securityOptions.RateLimiter.WindowInSeconds),
+                        Window = TimeSpan.FromSeconds(securitySettings.RateLimiter.WindowInSeconds),
                         AutoReplenishment = true,
-                        PermitLimit = securityOptions.RateLimiter.RequestsPerWindow,
+                        PermitLimit = securitySettings.RateLimiter.RequestsPerWindow,
                         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                         QueueLimit = 0
                     });

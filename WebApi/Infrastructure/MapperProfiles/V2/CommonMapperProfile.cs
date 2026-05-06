@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using Business;
+﻿using Application;
+using AutoMapper;
 
 namespace WebApi.V2
 {

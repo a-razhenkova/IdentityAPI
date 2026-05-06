@@ -1,6 +1,6 @@
-﻿using Business;
-using Infrastructure;
+﻿using Infrastructure;
 using Microsoft.OpenApi.Models;
+using Shared;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace WebApi
@@ -59,7 +59,7 @@ namespace WebApi
                 string? suffix = null;
 
                 string fullType = modelType.ToString();
-                if (fullType.Contains($"{nameof(Database)}"))
+                if (fullType.Contains($"{nameof(Domain)}"))
                     throw new InvalidOperationException("Database entities should not be exposed as API models.");
 
                 if (fullType.Contains($"{nameof(WebApi)}."))
@@ -140,7 +140,7 @@ namespace WebApi
         private static void AddXmlComments(this SwaggerGenOptions opt)
         {
             opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{WebApiAssembly.GetName()}.xml"));
-            opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{BusinessAssembly.GetName()}.xml"));
+            opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{ApplicationAssembly.GetName()}.xml"));
         }
 
         private static void AddSummaryAndContact(this SwaggerGenOptions opt)

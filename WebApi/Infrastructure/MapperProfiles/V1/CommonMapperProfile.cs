@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using Business;
-using Infrastructure;
+﻿using Application;
+using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
+using Shared;
 
 namespace WebApi.V1
 {
@@ -56,7 +56,7 @@ namespace WebApi.V1
         private void CreateUserMaps()
         {
             CreateMap<UserRegistrationModel, UserDto>()
-                .ForMember(dest => dest.ExternalId, opt => opt.Ignore())
+                .ForMember(dest => dest.PublicId, opt => opt.Ignore())
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => new UserStatusDto()
                 {
                     Value = UserStatuses.Restricted,
@@ -65,7 +65,7 @@ namespace WebApi.V1
                 .ForMember(dest => dest.RegistrationTimestamp, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             CreateMap<UserUpdateModel, UserDto>()
-                .ForMember(dest => dest.ExternalId, opt => opt.Ignore())
+                .ForMember(dest => dest.PublicId, opt => opt.Ignore())
                 .ForMember(dest => dest.Password, opt => opt.Ignore())
                 .ForMember(dest => dest.Email, opt => opt.Ignore())
                 .ForMember(dest => dest.RegistrationTimestamp, opt => opt.Ignore());
@@ -74,7 +74,7 @@ namespace WebApi.V1
                 .ReverseMap();
 
             CreateMap<UserDto, UserModel>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExternalId))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.PublicId))
                 .ReverseMap();
 
             CreateMap<PaginatedReport<UserDto>, PaginatedReport<UserModel>>();

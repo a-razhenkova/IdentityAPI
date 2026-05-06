@@ -1,5 +1,5 @@
-﻿using Infrastructure;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Shared;
 
 namespace WebApi.V1
 {

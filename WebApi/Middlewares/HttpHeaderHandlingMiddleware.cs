@@ -1,4 +1,4 @@
-﻿using Infrastructure;
+﻿using Shared;
 
 namespace WebApi
 {

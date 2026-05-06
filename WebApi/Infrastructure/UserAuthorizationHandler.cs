@@ -1,6 +1,6 @@
-﻿using Infrastructure;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Shared;
 using System.Security.Claims;
 
 namespace WebApi

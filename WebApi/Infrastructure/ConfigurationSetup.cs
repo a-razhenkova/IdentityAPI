@@ -1,5 +1,5 @@
-﻿using Infrastructure;
-using Infrastructure.Configuration.AppSettings;
+﻿using Application;
+using Shared;
 
 namespace WebApi
 {
@@ -12,7 +12,7 @@ namespace WebApi
                                  .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
                                  .AddUserSecrets<Program>(optional: true, reloadOnChange: true);
 
-            builder.Services.AddOptions<AppSettingsOptions>()
+            builder.Services.AddOptions<AppSettings>()
                 .Bind(builder.Configuration)
                 .ValidateDataAnnotations()
                 .Validate(config =>
@@ -29,8 +29,6 @@ namespace WebApi
                     config.Database.Validate();
                     config.PaginatedReport.Validate();
 
-                    config.ExternalServices.Validate();
-                    config.ExternalServices.NotifyApi.Validate();
                     return true;
                 })
                 .ValidateOnStart();

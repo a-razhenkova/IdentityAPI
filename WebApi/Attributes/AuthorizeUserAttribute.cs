@@ -1,5 +1,5 @@
-﻿using Infrastructure;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Shared;
 
 namespace WebApi
 {

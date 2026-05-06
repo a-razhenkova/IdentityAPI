@@ -1,5 +1,6 @@
-﻿using Infrastructure;
+﻿using Application;
 using Serilog.Context;
+using Shared;
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Text.Json;
@@ -99,7 +100,7 @@ namespace WebApi
 
                     if (authorizationObj.Schema == AuthorizationSchema.Basic)
                     {
-                        user = Utils.DecodeBasicAuthCredentials(authorizationObj.Value).Key;
+                        user = new BasicCredentials(authorizationObj).Key;
                     }
                     else if (authorizationObj.Schema == AuthorizationSchema.Bearer)
                     {

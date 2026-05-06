@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using Business;
+﻿using Application;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

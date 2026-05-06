@@ -1,9 +1,9 @@
-﻿using Infrastructure;
-using Infrastructure.Configuration.AppSettings;
+﻿using Application;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using Shared;
 
 namespace WebApi
 {
@@ -21,13 +21,13 @@ namespace WebApi
 
         private static Logger CreateLogger(this WebApplicationBuilder builder)
         {
-            var logOptions = builder.Configuration.GetRequiredSection<LogOptions>(nameof(AppSettingsOptions.Log));
+            var logSettings = builder.Configuration.GetRequiredSection<LogSettings>(nameof(AppSettings.Log));
 
             var loggerConfig = new LoggerConfiguration()
                 .SetMinimumLevel()
                 .WriteToConsole();
 
-            loggerConfig = loggerConfig.WriteToFile(logOptions);
+            loggerConfig = loggerConfig.WriteToFile(logSettings);
 
             loggerConfig = loggerConfig.Enrich.FromLogContext()
                 .Enrich.WithProperty(LoggerContextProperty.Environment.ToString(), builder.Environment.EnvironmentName)
@@ -41,21 +41,21 @@ namespace WebApi
         {
             return loggerConfig.WriteTo.Async(cfg =>
             {
-                cfg.Console(outputTemplate: Infrastructure.Constants.SerilogOutputTemplate,
+                cfg.Console(outputTemplate: Shared.Constants.SerilogOutputTemplate,
                     restrictedToMinimumLevel: LogEventLevel.Verbose);
             });
         }
 
-        private static LoggerConfiguration WriteToFile(this LoggerConfiguration loggerConfig, LogOptions logOptions)
+        private static LoggerConfiguration WriteToFile(this LoggerConfiguration loggerConfig, LogSettings logSettings)
         {
             return loggerConfig.WriteTo.Async(cfg =>
             {
                 cfg.File(new CompactJsonFormatter(),
-                    path: logOptions.File.Path,
+                    path: logSettings.File.Path,
                     restrictedToMinimumLevel: LogEventLevel.Information,
                     rollingInterval: RollingInterval.Hour,
                     retainedFileCountLimit: null,
-                    fileSizeLimitBytes: logOptions.File.MaxMbSize * 1024 * 1024,
+                    fileSizeLimitBytes: logSettings.File.MaxMbSize * 1024 * 1024,
                     rollOnFileSizeLimit: true);
             });
         }

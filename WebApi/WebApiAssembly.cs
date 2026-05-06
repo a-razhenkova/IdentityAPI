@@ -1,4 +1,4 @@
-﻿using Infrastructure;
+﻿using Shared;
 using System.Reflection;
 
 namespace WebApi

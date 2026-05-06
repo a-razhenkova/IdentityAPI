@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using Business;
-using Infrastructure;
+﻿using Application;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 using System.Net.Mime;
 
 namespace WebApi.V1
@@ -132,7 +132,7 @@ namespace WebApi.V1
         [HttpGet("{key}/subscriptions/contracts/{id}"), SensitiveData(IsRequestSensitive = false, IsResponseSensitive = true)]
         [Produces(MediaTypeNames.Application.Pdf)]
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
-        public async Task<IActionResult> DownloadClientSubscriptionContractAsync(string key, int id)
+        public async Task<IActionResult> DownloadClientSubscriptionContractAsync(string key, long id)
         {
             FileDto file = await _client.DownloadContractAsync(key, id, DocumentTypes.SubscriptionContract);
             return File(file.Content, MediaTypeNames.Application.Pdf, file.Name);

@@ -1,4 +1,4 @@
-﻿using Business;
+﻿using Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,8 +24,8 @@ namespace WebApi.V1
         [ProducesResponseType(typeof(SimpleResponseModel<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateAndSendOtpAsync(UserCredentialsModel userCredentials)
         {
-            string userExternalId = await _otp.CreateAndSendAsync(userCredentials.Username, userCredentials.Password);
-            return Ok(new SimpleResponseModel<string>(userExternalId));
+            string userPublicId = await _otp.CreateAndSendAsync(userCredentials.Username, userCredentials.Password);
+            return Ok(new SimpleResponseModel<string>(userPublicId));
         }
     }
 }

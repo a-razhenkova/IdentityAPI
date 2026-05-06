@@ -1,10 +1,9 @@
-﻿using Database;
-using Database.IdentityDb;
+﻿using Application;
 using DbUp;
 using Infrastructure;
-using Infrastructure.Configuration.AppSettings;
 using Microsoft.EntityFrameworkCore;
 using Serilog.Context;
+using Shared;
 
 namespace WebApi
 {
@@ -12,11 +11,11 @@ namespace WebApi
     {
         public static async Task<WebApplication> ApplyDbPendingMigrationsAndScriptsAsync(this WebApplication app)
         {
-            var dbOptions = app.Configuration.GetRequiredSection<DatabaseOptions>(nameof(AppSettingsOptions.Database));
+            var dbOptions = app.Configuration.GetRequiredSection<DatabaseSettings>(nameof(AppSettings.Database));
 
             IServiceScope scope = app.Services.CreateScope();
             ILogger logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            IdentityDbContext identityDbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+            IdentityContext identityDbContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
 
             if (dbOptions.IsDbMigrationAllowed)
             {
@@ -72,7 +71,7 @@ namespace WebApi
                 var upgrader = DeployChanges.To
                     .SqlDatabase(connectionString)
                     .JournalToSqlTable(dbConfig.DefaultSchemaName, dbConfig.ScriptsHistoryTableName)
-                    .WithScriptsEmbeddedInAssembly(DatabaseAssembly.GetExecutingAssembly())
+                    .WithScriptsEmbeddedInAssembly(InfrastructureAssembly.GetExecutingAssembly())
                     .LogTo(logger)
                     .Build();
 

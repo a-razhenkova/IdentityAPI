@@ -1,4 +1,4 @@
-﻿using Infrastructure;
+﻿using Domain;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.V1

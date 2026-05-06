@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using Business;
-using Infrastructure;
+﻿using Application;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 
 namespace WebApi.V1
 {
@@ -38,9 +38,9 @@ namespace WebApi.V1
         /// <returns>The user details if found.</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(UserModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> LoadUserAsync(string id)
+        public async Task<IActionResult> GetUserAsync(string id)
         {
-            UserDto user = await _user.LoadAsync(id);
+            UserDto user = await _user.GetAsync(id);
             return Ok(_mapper.Map<UserModel>(user));
         }
 
@@ -54,8 +54,8 @@ namespace WebApi.V1
         [ProducesResponseType(typeof(SimpleResponseModel<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> RegisterUserAsync(UserRegistrationModel requestModel)
         {
-            string externalId = await _user.RegisterAsync(_mapper.Map<UserDto>(requestModel));
-            return Created(string.Empty, new SimpleResponseModel<string>(externalId));
+            string userPublicId = await _user.RegisterAsync(_mapper.Map<UserDto>(requestModel));
+            return Created(string.Empty, new SimpleResponseModel<string>(userPublicId));
         }
 
         /// <summary>

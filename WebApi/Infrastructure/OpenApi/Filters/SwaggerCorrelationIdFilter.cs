@@ -1,5 +1,5 @@
-﻿using Infrastructure;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
+using Shared;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace WebApi

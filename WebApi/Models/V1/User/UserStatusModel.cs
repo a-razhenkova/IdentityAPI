@@ -1,4 +1,6 @@
-﻿using Infrastructure;
+﻿using Domain;
+using Infrastructure;
+using Shared;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.V1

@@ -1,4 +1,4 @@
-﻿using Infrastructure;
+﻿using Shared;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 

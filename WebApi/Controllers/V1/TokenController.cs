@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using Business;
-using Infrastructure;
+﻿using Application;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Shared;
 
 namespace WebApi.V1
 {

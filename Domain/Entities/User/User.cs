@@ -1,19 +1,19 @@
-﻿using Infrastructure;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Shared;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Database.IdentityDb.DefaultSchema
+namespace Domain
 {
-    [Table("user", Schema = DefaultSchemaSettings.SchemaName)]
-    [Index(nameof(ExternalId), IsUnique = true)]
+    [Table("user")]
+    [Index(nameof(PublicId), IsUnique = true)]
     [Index(nameof(Username), IsUnique = true)]
     public partial class User : EntityBase
     {
         [Required]
-        [Column("external_id", Order = 2)]
-        [MaxLength(Constants.UidLength), Unicode(false)]
-        public string ExternalId { get; set; }
+        [Column("public_id", Order = 2)]
+        [MaxLength(UserConstants.PublicIdMaxLength), Unicode(false)]
+        public string PublicId { get; set; }
 
         [Required]
         [Column("username", Order = 3)]

@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Database.IdentityDb.DefaultSchema
+namespace Domain
 {
-    [Table("login", Schema = DefaultSchemaSettings.SchemaName)]
+    [Table("login")]
     public class Login : EntityBase
     {
         [Required]

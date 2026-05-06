@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Database.IdentityDb.DefaultSchema
+namespace Domain
 {
-    [Table("subscription", Schema = DefaultSchemaSettings.SchemaName)]
+    [Table("subscription")]
     public class Subscription : EntityBase
     {
         [Required]

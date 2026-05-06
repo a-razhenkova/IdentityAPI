@@ -1,27 +1,26 @@
-﻿using Infrastructure;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Database.IdentityDb.DefaultSchema
+namespace Domain
 {
-    [Table("client", Schema = DefaultSchemaSettings.SchemaName)]
+    [Table("client")]
     [Index(nameof(Key), IsUnique = true)]
     public class Client : EntityBase
     {
         [Required]
         [Column("name", Order = 2)]
-        [MaxLength(Constants.UidLength), Unicode(false)]
+        [MaxLength(ClientConstants.Name), Unicode(false)]
         public string Name { get; set; }
 
         [Required]
         [Column("key", Order = 3)]
-        [MaxLength(Constants.UidLength), Unicode(false)]
+        [MaxLength(ClientConstants.Key), Unicode(false)]
         public string Key { get; set; }
 
         [Required]
         [Column("secret", Order = 4)]
-        [MaxLength(Constants.UidLength), Unicode(false)]
+        [MaxLength(ClientConstants.Secret), Unicode(false)]
         public string Secret { get; set; }
 
         [Required]

@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Shared;
 using System.ComponentModel.DataAnnotations;
-using Infrastructure;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Database.IdentityDb.DefaultSchema
+namespace Domain
 {
-    [Table("document", Schema = DefaultSchemaSettings.SchemaName)]
+    [Table("document")]
     public class Document : EntityBase
     {
         [Required]

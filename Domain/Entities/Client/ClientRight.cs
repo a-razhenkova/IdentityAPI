@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Database.IdentityDb.DefaultSchema
+namespace Domain
 {
-    [Table("client_right", Schema = DefaultSchemaSettings.SchemaName)]
+    [Table("client_right")]
     public partial class ClientRight : EntityBase
     {
         [Required]

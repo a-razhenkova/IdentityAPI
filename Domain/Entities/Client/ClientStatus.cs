@@ -1,10 +1,10 @@
-﻿using Infrastructure;
+﻿using Shared;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Database.IdentityDb.DefaultSchema
+namespace Domain
 {
-    [Table("client_status", Schema = DefaultSchemaSettings.SchemaName)]
+    [Table("client_status")]
     public partial class ClientStatus : EntityBase
     {
         [Required]

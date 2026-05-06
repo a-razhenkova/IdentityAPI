@@ -1,11 +1,10 @@
-﻿using Infrastructure;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Database.IdentityDb.DefaultSchema
+namespace Domain
 {
-    [Table("user_password", Schema = DefaultSchemaSettings.SchemaName)]
+    [Table("user_password")]
     public class UserPassword : EntityBase
     {
         [Required]

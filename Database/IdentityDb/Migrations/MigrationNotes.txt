@@ -1,1 +1,0 @@
-Add-Migration v1_0_0_0 -Context IdentityDbContext -OutputDir IdentityDb\Migrations

@@ -107,7 +107,7 @@
 8. A `refresh token` (JWT) is generated, scoped to the `user ID`.
 
 > [!NOTE]
-> An alert is sent to the user when a login attempt is made through a new IP address.
+> An event is sent when a login attempt is made through a new IP address.
 
 > [!WARNING]
 > Invalid `username` or `password` results in HTTP status code `401 Unauthorized`.

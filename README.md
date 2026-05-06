@@ -68,6 +68,8 @@
 > [!NOTE]
 > Initialization scripts are automatically executed using DbUp.
 
+## Architecture
+
 ![Architecture Diagram](/assets/architecture-diagram.png)
 
 > [!NOTE]

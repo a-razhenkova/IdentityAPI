@@ -59,7 +59,7 @@
 > ORM: Entity Framework Core\
 > Caching: Redis\
 > Message Broker: RabbitMQ\
-> Additional Libraries: AutoMapper, GoogleAuthenticator\
+> Additional Libraries: Serilog, AutoMapper, GoogleAuthenticator\
 > Tests: xUnit, FluentAssertions
 
 > [!NOTE]

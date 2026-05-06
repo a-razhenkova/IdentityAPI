@@ -37,9 +37,16 @@ namespace Shared
 
     public enum TokenClaim
     {
+        [Description("iss")]
+        Issuer,
+        [Description("aud")]
+        Audience,
+
         // client
         [Description("clientId")]
         ClientId,
+        [Description("clientStatus")]
+        ClientStatus,
         [Description("isInternalClient")]
         IsInternalClient,
 

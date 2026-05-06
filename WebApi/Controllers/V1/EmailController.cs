@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Shared;
+﻿using Domain;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.V1
 {

@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Shared;
+﻿using Domain;
+using Microsoft.AspNetCore.Http;
 
 namespace Application
 {

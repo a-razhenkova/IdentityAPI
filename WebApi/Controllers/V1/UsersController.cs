@@ -1,7 +1,7 @@
 ﻿using Application;
 using AutoMapper;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
 
 namespace WebApi.V1
 {

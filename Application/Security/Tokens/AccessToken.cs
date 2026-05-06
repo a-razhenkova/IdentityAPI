@@ -20,8 +20,8 @@ namespace Application
         {
             ISecurityToken token = caller switch
             {
-                User user => new UserAccessToken(user, _settings.AccessToken),
                 Client client => new ClientAccessToken(client, _settings.AccessToken),
+                User user => new UserAccessToken(user, _settings.AccessToken),
                 _ => throw new NotImplementedException()
             };
 

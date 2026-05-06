@@ -1,8 +1,8 @@
 ﻿using Application;
+using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Shared;
 
 namespace WebApi.V1
 {

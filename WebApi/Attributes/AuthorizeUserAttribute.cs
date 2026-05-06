@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Shared;
 
 namespace WebApi

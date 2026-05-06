@@ -44,9 +44,9 @@ namespace Application
                 searchQuery = searchQuery.Where(c => c.Status.Value == clientSearchParams.Status);
             }
 
-            if (clientSearchParams.CanNotifyParty is not null)
+            if (clientSearchParams.CanNotify is not null)
             {
-                searchQuery = searchQuery.Where(c => c.Right.CanNotifyParty == clientSearchParams.CanNotifyParty);
+                searchQuery = searchQuery.Where(c => c.Right.CanNotify == clientSearchParams.CanNotify);
             }
 
             searchQuery = searchQuery

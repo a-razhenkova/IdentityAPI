@@ -54,7 +54,7 @@ namespace Shared
         UserStatus,
 
         // rights
-        [Description("canNotifyParty")]
-        CanNotifyParty
+        [Description("canNotify")]
+        CanNotify
     }
 }

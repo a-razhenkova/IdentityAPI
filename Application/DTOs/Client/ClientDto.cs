@@ -28,7 +28,7 @@ namespace Application
 
     public class ClientRightDto
     {
-        public bool CanNotifyParty { get; set; } = false;
+        public bool CanNotify { get; set; } = false;
     }
 
     public class ClientSubscriptionDto

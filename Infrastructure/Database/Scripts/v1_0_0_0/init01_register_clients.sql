@@ -21,7 +21,7 @@ BEGIN TRY
 	INSERT INTO [dbo].[client_right]
 	SELECT NULL AS [version],
 		   @clientId AS [client_id],
-		   1 AS [can_notify_party]
+		   1 AS [can_notify]
 
 	COMMIT TRANSACTION T1
 END TRY

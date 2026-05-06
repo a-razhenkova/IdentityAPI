@@ -5,6 +5,6 @@
         /// <summary>
         /// Flag indicating whether the client has the right to notify a party.
         /// </summary>
-        public required bool CanNotifyParty { get; set; }
+        public required bool CanNotify { get; set; }
     }
 }

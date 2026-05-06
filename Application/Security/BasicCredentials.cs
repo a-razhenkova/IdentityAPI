@@ -23,7 +23,7 @@ namespace Application
             string[] credentials = decodedCredentials.Split(":");
 
             Key = credentials[0];
-            Secret = credentials[0];
+            Secret = credentials[1];
         }
     }
 }

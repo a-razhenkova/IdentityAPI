@@ -12,8 +12,8 @@ namespace Domain
         public long ClientId { get; set; }
 
         [Required]
-        [Column("can_notify_party", Order = 3)]
-        public bool CanNotifyParty { get; set; }
+        [Column("can_notify", Order = 3)]
+        public bool CanNotify { get; set; }
 
         #region Relationships
 

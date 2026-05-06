@@ -10,6 +10,6 @@ namespace Application
 
         public ClientStatuses? Status { get; set; }
 
-        public bool? CanNotifyParty { get; set; }
+        public bool? CanNotify { get; set; }
     }
 }

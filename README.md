@@ -68,6 +68,14 @@
 > [!NOTE]
 > Initialization scripts are automatically executed using DbUp.
 
+![Architecture Diagram](/assets/architecture-diagram.png)
+
+> [!NOTE]
+> The application follows **Onion Architecture**, with **Repository** and **Unit of Work** patterns to manage data access.
+
+> [!NOTE]
+> The token handling mechanism follows the **Strategy pattern** ([`SecurityTokenHandler`](/Application/Security/Tokens/SecurityTokenHandler.cs)).
+
 ## Client Single-Factor Authentication
 1. Client credentials are received in the `Authorization` header using the format:  
    `Basic <base64_encoded_key>:<base64_encoded_secret>`
@@ -136,13 +144,3 @@
 
 > [!CAUTION]
 > A `failed login attempt counter` is maintained in `Redis` per `one-time password`. If the counter exceeds the allowed limit, the `one-time password` is deleted.
-
-## Architecture
-
-![Architecture Diagram](/assets/architecture-diagram.png)
-
-> [!NOTE]
-> The application follows **Onion Architecture**, with **Repository** and **Unit of Work** patterns to manage data access.
-
-> [!NOTE]
-> The token handling mechanism follows the **Strategy pattern** ([`SecurityTokenHandler`](/Application/Security/Tokens/SecurityTokenHandler.cs)).

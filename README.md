@@ -52,16 +52,20 @@
 
 # :triangular_ruler: Architecture & Design
 
-![Architecture Diagram](/assets/architecture-diagram.png)
+![Design Diagram](/assets/design-diagram.png)
 
 > SDK: .NET Core 10\
 > Database: SQL Server 2022\
 > ORM: Entity Framework Core\
 > Caching: Redis\
-> Message Broker: RabbitMQ
+> Message Broker: RabbitMQ\
+> Additional Libryries: 
 
 > [!NOTE]
-> The application follows a layered achitecture.
+> Database creation and schema management are handled through Entity Framework Core migrations.
+
+> [!NOTE]
+> Initialization scripts are automatically executed using DbUp.
 
 ## Client Single-Factor Authentication
 1. Client credentials are received in the `Authorization` header using the format:  
@@ -131,3 +135,10 @@
 
 > [!CAUTION]
 > A `failed login attempt counter` is maintained in `Redis` per `one-time password`. If the counter exceeds the allowed limit, the `one-time password` is deleted.
+
+## Architecture
+
+![Architecture Diagram](/assets/architecture-diagram.png)
+
+> [!NOTE]
+> The application follows the onion architecture.

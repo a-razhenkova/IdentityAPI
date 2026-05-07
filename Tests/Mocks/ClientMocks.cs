@@ -3,7 +3,7 @@ using Domain;
 
 namespace Tests.Mocks
 {
-    public class ClientMocks
+    public class ClientMock
     {
         public static Client CreateBasicClient(
             string? name = default,
@@ -11,8 +11,8 @@ namespace Tests.Mocks
             string? secret = default,
             int wrongLoginAttemptsCounter = 0,
             bool isInternal = true,
-            ClientStatuses clientStatus = ClientStatuses.Active,
-            ClientStatusReasons clientStatusReason = ClientStatusReasons.None,
+            ClientStatuses status = ClientStatuses.Active,
+            ClientStatusReasons statusReason = ClientStatusReasons.None,
             bool canNotify = true)
         {
             return new Client()
@@ -26,8 +26,8 @@ namespace Tests.Mocks
                 Status = new ClientStatus()
                 {
                     Id = new Random().Next(100, 1000),
-                    Value = clientStatus,
-                    Reason = clientStatusReason
+                    Value = status,
+                    Reason = statusReason
                 },
                 Right = new ClientRight()
                 {

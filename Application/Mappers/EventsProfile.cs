@@ -4,9 +4,9 @@ using Domain;
 
 namespace Application
 {
-    public class EventsMapperProfile : Profile
+    public class EventsProfile : Profile
     {
-        public EventsMapperProfile()
+        public EventsProfile()
         {
             UserPasswordChangedEventMaps();
         }

@@ -3,9 +3,9 @@ using Domain;
 
 namespace Application
 {
-    public class DomainMapperProfile : Profile
+    public class DomainProfile : Profile
     {
-        public DomainMapperProfile()
+        public DomainProfile()
         {
             CreateClientMaps();
             CreateUserMaps();

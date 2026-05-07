@@ -5,9 +5,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace WebApi.V1
 {
-    public class CommonMapperProfile : Profile
+    public class CommonProfile : Profile
     {
-        public CommonMapperProfile()
+        public CommonProfile()
         {
             CreateMap<TokenDto, TokenModel>();
 

@@ -59,11 +59,11 @@ namespace WebApi
         {
             var mapperConfig = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile(new DomainMapperProfile());
-                cfg.AddProfile(new EventsMapperProfile());
+                cfg.AddProfile(new DomainProfile());
+                cfg.AddProfile(new EventsProfile());
 
-                cfg.AddProfile(new V1.CommonMapperProfile());
-                cfg.AddProfile(new V2.CommonMapperProfile());
+                cfg.AddProfile(new V1.CommonProfile());
+                cfg.AddProfile(new V2.CommonProfile());
             });
 
             mapperConfig.AssertConfigurationIsValid();

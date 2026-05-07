@@ -3,9 +3,9 @@ using AutoMapper;
 
 namespace WebApi.V2
 {
-    public class CommonMapperProfile : Profile
+    public class CommonProfile : Profile
     {
-        public CommonMapperProfile()
+        public CommonProfile()
         {
             CreateMap<TokenDto, TokenModel>();
         }

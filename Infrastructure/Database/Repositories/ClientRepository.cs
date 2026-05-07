@@ -1,7 +1,6 @@
 ﻿using Application;
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using Shared;
 using System.Linq.Expressions;
 
 namespace Infrastructure

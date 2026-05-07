@@ -10,7 +10,7 @@ namespace Tests.Mocks
             string? username = default,
             UserRoles role = UserRoles.Administrator,
             string? otpSecret = default,
-            string? email = default,
+            string? email = "test@test.bg",
             bool isVerified = true,
             DateTime? RegistrationTimestamp = default,
             UserStatuses status = UserStatuses.Active,
@@ -23,7 +23,7 @@ namespace Tests.Mocks
                 Username = string.IsNullOrWhiteSpace(username) ? Guid.NewGuid().ToString() : username,
                 Role = role,
                 OtpSecret = string.IsNullOrWhiteSpace(otpSecret) ? UserOtpSecret.Create() : otpSecret,
-                Email = string.IsNullOrWhiteSpace(email) ? Guid.NewGuid().ToString() : email,
+                Email = email,
                 IsVerified = isVerified,
                 RegistrationTimestamp = RegistrationTimestamp ?? DateTime.Now,
                 Status = new UserStatus()

@@ -1,41 +1,70 @@
 ﻿using Application;
 using FluentAssertions;
-using Xunit.Priority;
 
 namespace UnitTests
 {
     public class Pbkdf2KeyTests
     {
-        [Priority(1)]
-        [Theory]
-        [InlineData("m4A0?Edis66a", 100_000, 128, 16)]
-        public void CreateHash_RecreateSameHash(string password, int interactions, int hashLength, int saltLength)
+        private const int Interactions = 100_000;
+        private const int HashLength = 128;
+        private const int SaltLength = 16;
+
+        [Fact]
+        public void Create_HashSameWordTwice_ReturnDifferentHashes()
         {
             // Arrange
-            (string hash, string salt) = Pbkdf2Key.Create(password, interactions, hashLength, saltLength);
+            const string word = "test";
 
             // Act
-            (string newHash, string newSalt) = Pbkdf2Key.Recreate(password, salt, interactions, hashLength);
+            (string hash, string salt) = Pbkdf2Key.Create(word, Interactions, HashLength, SaltLength);
+            (string newHash, string newSalt) = Pbkdf2Key.Create(word, Interactions, HashLength, SaltLength);
+
+            // Assert
+            hash.Should().NotBe(newHash);
+            salt.Should().NotBe(newSalt);
+        }
+
+        [Fact]
+        public void Recreate_SameWord_ReturnMatchingHashes()
+        {
+            // Arrange
+            const string word = "word";
+
+            // Act
+            (string hash, string salt) = Pbkdf2Key.Create(word, Interactions, HashLength, SaltLength);
+            (string newHash, string newSalt) = Pbkdf2Key.Recreate(word, salt, Interactions, HashLength);
 
             // Assert
             hash.Should().Be(newHash);
             salt.Should().Be(newSalt);
         }
 
-        [Priority(2)]
-        [Theory]
-        [InlineData("m4A0?Edis66a", 100_000, 128, 16)]
-        public void HashUniquenessTest(string password, int interactions, int hashLength, int saltLength)
+        [Fact]
+        public void IsValid_ValidHash_ReturnTrue()
         {
             // Arrange
-            (string hash, string salt) = Pbkdf2Key.Create(password, interactions, hashLength, saltLength);
+            const string word = "word";
+
+            (string hash, string salt) = Pbkdf2Key.Create(word, Interactions, HashLength, SaltLength);
 
             // Act
-            (string newHash, string newSalt) = Pbkdf2Key.Create(password, interactions, hashLength, saltLength);
+            bool result = Pbkdf2Key.IsValid(hash, word, salt, Interactions, HashLength);
 
             // Assert
-            hash.Should().NotBe(newHash);
-            salt.Should().NotBe(newSalt);
+            result.Should().Be(true);
+        }
+
+        [Fact]
+        public void IsValid_InvalidHash_ReturnFalse()
+        {
+            // Arrange
+            (string hash, string salt) = Pbkdf2Key.Create("word", Interactions, HashLength, SaltLength);
+
+            // Act
+            bool result = Pbkdf2Key.IsValid(hash, "different_word", salt, Interactions, HashLength);
+
+            // Assert
+            result.Should().Be(false);
         }
     }
 }

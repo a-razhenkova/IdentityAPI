@@ -26,6 +26,7 @@ namespace Application
                 SaveSigninToken = true,
                 LogValidationExceptions = false,
                 ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
                 ValidateIssuer = true,
                 ValidIssuer = settings.TokenIssuer,
                 ValidateAudience = true,

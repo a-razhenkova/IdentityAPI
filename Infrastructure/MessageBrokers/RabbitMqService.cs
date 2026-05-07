@@ -1,38 +1,36 @@
 ﻿using Application;
-using Application.RabbitMq;
-using RabbitMQ.Client;
-using System.Text;
-using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using RabbitMQ.AMQP.Client;
+using Shared;
 
 namespace Infrastructure
 {
     public class RabbitMqService : IRabbitMq
     {
+        private readonly ILogger<RabbitMqService> _logger;
         private readonly IConnection _connection;
 
-        public RabbitMqService(IConnection connection)
+        public RabbitMqService(ILogger<RabbitMqService> logger, IConnection connection)
         {
+            _logger = logger;
             _connection = connection;
         }
 
-        public async Task PublishUserPasswordChangedEventAsync(UserPasswordChangedEvent message)
+        public async Task PublishEventAsync(object evt)
         {
-            if (string.IsNullOrWhiteSpace(message.UserEmail))
-                return;
-
-            const string routingKey = "user-password-changed";
-
-            using IChannel channel = await _connection.CreateChannelAsync();
-            await channel.QueueDeclareAsync(RabbitMqQueues.UserPasswordChangedEvent, durable: true, exclusive: false, autoDelete: false);
-            await channel.QueueBindAsync(RabbitMqQueues.UserPasswordChangedEvent, RabbitMqExchanges.DefaultDirect, routingKey);
-
-            string body = JsonSerializer.Serialize(message);
-            var properties = new BasicProperties
+            try
             {
-                Persistent = true
-            };
+                var settings = evt.GetRequiredCustomAttribute<RabbitMqEventAttribute>();
 
-            await channel.BasicPublishAsync(RabbitMqExchanges.DefaultDirect, routingKey, mandatory: true, basicProperties: properties, body: Encoding.UTF8.GetBytes(body));
+                PublishResult result = await _connection.PublishEventAsync(evt, settings);
+
+                if (result.Outcome.State != OutcomeState.Accepted)
+                    throw new InvalidOperationException($"Unexpected publish outcome: {result.Outcome.State}\nError: {result.Outcome.Error?.ToString()}");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, exception.Message);
+            }
         }
     }
 }

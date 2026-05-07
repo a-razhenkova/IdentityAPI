@@ -53,7 +53,7 @@ namespace Infrastructure
                     query = query.Include(include);
             }
 
-            if (autoTrack)
+            if (!autoTrack)
                 query = query.AsNoTracking();
 
             return query;

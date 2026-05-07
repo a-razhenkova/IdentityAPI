@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using RabbitMQ.Client;
+using RabbitMQ.AMQP.Client;
+using RabbitMQ.AMQP.Client.Impl;
 using Shared;
 using System.Diagnostics;
 using System.Text;
@@ -42,14 +43,13 @@ namespace WebApi
         {
             string rabbitMqConnectionString = builder.Configuration.GetRequiredConnectionString(ConnectionStringNames.RabbitMq);
 
-            var factory = new ConnectionFactory
-            {
-                Uri = new Uri(rabbitMqConnectionString),
-                AutomaticRecoveryEnabled = true,
-                NetworkRecoveryInterval = TimeSpan.FromSeconds(2)
-            };
+            ConnectionSettings settings = ConnectionSettingsBuilder.Create()
+                .Uri(new Uri(rabbitMqConnectionString))
+                .Build();
 
-            IConnection connection = await factory.CreateConnectionAsync();
+            IEnvironment environment = AmqpEnvironment.Create(settings);
+            IConnection connection = await environment.CreateConnectionAsync();
+
             builder.Services.AddSingleton(connection);
 
             return builder;
@@ -185,7 +185,7 @@ namespace WebApi
                     message.Append(error.ErrorMessage);
             }
 
-            throw new BadRequestException(new Exception(message.ToString()));
+            throw new Application.BadRequestException(new Exception(message.ToString()));
         }
     }
 }

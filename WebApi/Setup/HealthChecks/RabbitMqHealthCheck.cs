@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using RabbitMQ.Client;
+using RabbitMQ.AMQP.Client;
 
 namespace WebApi
 {
@@ -18,8 +18,9 @@ namespace WebApi
             try
             {
                 var connection = _serviceProvider.GetRequiredService<IConnection>();
-
-                using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+                
+                if (connection.State != State.Open)
+                    throw new ArgumentException($"State: {connection.State}");
 
                 return HealthCheckResult.Healthy();
             }

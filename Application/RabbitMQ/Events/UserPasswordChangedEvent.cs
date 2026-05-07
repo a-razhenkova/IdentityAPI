@@ -1,5 +1,6 @@
 ﻿namespace Application.RabbitMq
 {
+    [RabbitMqEvent("user-password-changed")]
     public class UserPasswordChangedEvent
     {
         public required long UserId { get; set; }

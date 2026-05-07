@@ -1,9 +1,7 @@
-﻿using Application.RabbitMq;
-
-namespace Application
+﻿namespace Application
 {
     public interface IRabbitMq
     {
-        Task PublishUserPasswordChangedEventAsync (UserPasswordChangedEvent message);
+        Task PublishEventAsync(object evt);
     }
 }

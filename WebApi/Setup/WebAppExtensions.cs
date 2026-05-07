@@ -65,7 +65,7 @@ namespace WebApi
         {
             try
             {
-                DatabaseAttribute dbConfig = dbContext.GetType().GetRequiredCustomAttribute<DatabaseAttribute>();
+                DatabaseAttribute dbConfig = dbContext.GetRequiredCustomAttribute<DatabaseAttribute>();
                 string connectionString = config.GetConnectionString(dbConfig.ConnectionStringName) ?? throw new NotImplementedException();
 
                 var upgrader = DeployChanges.To

@@ -126,7 +126,13 @@ namespace Application
 
             await _unitOfWork.SaveChangesAsync();
 
-            PublishUserPasswordChangedEventAsync(user);
+            if (!string.IsNullOrWhiteSpace(user.Email))
+            {
+                var message = _mapper.Map<RabbitMq.UserPasswordChangedEvent>(user);
+                message.UserIpAddress = _httpContextAccessor?.HttpContext?.GetUserIpAddress();
+
+                _rebbitMq.PublishEventAsync(message);
+            }
         }
 
         public async Task ChangeEmailAsync(string userPublicId, string email, string password)
@@ -153,16 +159,8 @@ namespace Application
             if (string.IsNullOrWhiteSpace(password))
                 throw new BadRequestException("Password is required.");
 
-            if (new Regex(_appSettings.Security.PasswordValidationRegex).IsMatch(password))
+            if (!new Regex(_appSettings.Security.PasswordValidationRegex).IsMatch(password))
                 throw new BadRequestException($"Password must match the regular expression '{_appSettings.Security.PasswordValidationRegex}'.");
-        }
-
-        private async Task PublishUserPasswordChangedEventAsync(User user)
-        {
-            var message = _mapper.Map<RabbitMq.UserPasswordChangedEvent>(user);
-            message.UserIpAddress = _httpContextAccessor?.HttpContext?.GetUserIpAddress();
-
-            _rebbitMq.PublishUserPasswordChangedEventAsync(message);
         }
     }
 }

@@ -46,6 +46,12 @@ namespace Shared
                 ?? throw new InvalidOperationException();
         }
 
+        public static TAttribute GetRequiredCustomAttribute<TAttribute>(this object value)
+            where TAttribute : Attribute
+        {
+            return value.GetType().GetRequiredCustomAttribute<TAttribute>();
+        }
+
         public static TAttribute GetRequiredCustomAttribute<TAttribute>(this MemberInfo value)
             where TAttribute : Attribute
         {

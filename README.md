@@ -68,12 +68,18 @@
 > [!NOTE]
 > Initialization scripts are automatically executed using DbUp.
 
+> [!IMPORTANT]
+> The API requires running RabbitMQ broker.
+
 ## Architecture
 
 ![Architecture Diagram](/assets/architecture-diagram.png)
 
 > [!NOTE]
-> The application follows **Onion Architecture**, with **Repository** and **Unit of Work** patterns to manage data access.
+> The application follows **Clean Architecture**.
+
+> [!NOTE]
+> The data access is managed with **Repository** and **Unit of Work** patterns.
 
 > [!NOTE]
 > The token handling mechanism follows the **Strategy pattern** ([`SecurityTokenHandler`](/Application/Security/Tokens/SecurityTokenHandler.cs)).

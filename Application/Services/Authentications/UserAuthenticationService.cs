@@ -60,7 +60,7 @@ namespace Application
             if (!isPasswordValid)
                 throw new UnauthorizedException("Invalid credentials.");
 
-            if (lastLoginIpAddress is not null && lastLoginIpAddress.Equals(user.Login.LastLoginIpAddress))
+            if (lastLoginIpAddress is not null && !lastLoginIpAddress.Equals(user.Login.LastLoginIpAddress))
             {
                 var evt = _mapper.Map<RabbitMq.LoginFromNewIpAddressEvent>(user);
                 await _rebbitMq.PublishEventAsync(evt);

@@ -33,16 +33,9 @@ namespace Application
             {
                 case AuthorizationSchema.Basic:
                     {
-                        var credentials = new BasicCredentials(authorization);
-                        Client client = await _basicAuthenticator.AuthenticateAsync(credentials);
+                        Client client = await _basicAuthenticator.AuthenticateAsync(authorization);
                         return await CreateAccessTokenAsync(client);
                     }
-                // TODO: ID token
-                //case AuthorizationSchema.Bearer:
-                //    {
-                //        User user = await _bearerAuthenticator.AuthenticateAsync(authorization);
-                //        return await CreateAccessTokenAsync(user);
-                //    }
                 default:
                     throw new NotImplementedException();
             }
@@ -86,7 +79,7 @@ namespace Application
         {
             var authorization = new Authorization(_httpContextAccessor.HttpContext.GetAuthorization());
             User user = await _bearerAuthenticator.AuthenticateByRefreshTokenAsync(authorization);
-
+            
             string accessToken = new AccessToken(_appSettings.Security).Create(user);
 
             return new TokenDto()

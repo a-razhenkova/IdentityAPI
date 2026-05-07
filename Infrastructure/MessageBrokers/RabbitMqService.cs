@@ -24,8 +24,14 @@ namespace Infrastructure
 
                 PublishResult result = await _connection.PublishEventAsync(evt, settings);
 
-                if (result.Outcome.State != OutcomeState.Accepted)
+                if (result.Outcome.State == OutcomeState.Accepted)
+                {
+                    _logger.LogInformation($"An event was sent to queue '{settings.QueueName}' with key '{settings.RoutingKey}'.");
+                }
+                else
+                {
                     throw new InvalidOperationException($"Unexpected publish outcome: {result.Outcome.State}\nError: {result.Outcome.Error?.ToString()}");
+                }
             }
             catch (Exception exception)
             {

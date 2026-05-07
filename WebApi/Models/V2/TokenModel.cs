@@ -2,13 +2,6 @@
 {
     public class TokenModel
     {
-        // TODO
-        /// <summary>
-        /// ID token.
-        /// </summary>
-        /// <example></example>
-        //public required string IdToken { get; set; }
-
         /// <summary>
         /// Access token.
         /// </summary>

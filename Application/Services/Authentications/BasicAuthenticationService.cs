@@ -11,6 +11,12 @@ namespace Application
             _clientAuthenticator = clientAuthenticator;
         }
 
+        public async Task<Client> AuthenticateAsync(Authorization authorization)
+        {
+            var credentials = new BasicCredentials(authorization);
+            return await AuthenticateAsync(credentials);
+        }
+
         public async Task<Client> AuthenticateAsync(BasicCredentials credentials)
         {
             if (!ClientKey.IsValid(credentials.Key) || !ClientSecret.IsValid(credentials.Secret))

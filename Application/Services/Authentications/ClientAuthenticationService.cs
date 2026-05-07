@@ -1,7 +1,6 @@
 ﻿using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Shared;
 
 namespace Application
 {

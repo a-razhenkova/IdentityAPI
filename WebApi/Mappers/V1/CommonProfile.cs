@@ -9,6 +9,13 @@ namespace WebApi.V1
     {
         public CommonProfile()
         {
+            CreatTokenMaps();
+            CreatClientMaps();
+            CreateUserMaps();
+        }
+
+        private void CreatTokenMaps()
+        {
             CreateMap<TokenDto, TokenModel>();
 
             CreateMap<TokenValidationResult, TokenValidationResultModel>()
@@ -18,9 +25,6 @@ namespace WebApi.V1
                     opt.PreCondition(src => src.Exception is not null);
                     opt.MapFrom(src => src.Exception.Message);
                 });
-
-            CreatClientMaps();
-            CreateUserMaps();
         }
 
         private void CreatClientMaps()

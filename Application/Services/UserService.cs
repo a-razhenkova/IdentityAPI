@@ -142,7 +142,6 @@ namespace Application
             User user = await _unitOfWork.Users.GetByPublicIdAsync(userPublicId, autoTrack: true, loadStatus: true, loadPassword: true)
                 ?? throw new NotFoundException("User not found.");
 
-            // TODO: try improving
             if (!UserSecurePassword.IsValid(user.Password.Value, password, user.Password.Secret))
                 throw new BadRequestException("Invalid old password.");
 

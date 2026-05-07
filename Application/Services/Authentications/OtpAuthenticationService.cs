@@ -3,7 +3,6 @@ using Domain;
 using Google.Authenticator;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
-using Shared;
 
 namespace Application
 {
@@ -12,14 +11,17 @@ namespace Application
         private readonly AppSettings _appSettings;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRedis _redis;
+        private readonly IRabbitMq _rebbitMq;
 
         public OtpAuthenticationService(IOptionsSnapshot<AppSettings> appSettings,
                                        IUnitOfWork unitOfWork,
-                                       IRedis redis)
+                                       IRedis redis,
+                                       IRabbitMq rebbitMq)
         {
             _appSettings = appSettings.Value;
             _unitOfWork = unitOfWork;
             _redis = redis;
+            _rebbitMq = rebbitMq;
         }
 
         public async Task<string> CreateAndSendOtpAsync(User user)
@@ -39,7 +41,13 @@ namespace Application
             var cacheEntryOptions = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_appSettings.Security.MultiFactorAuth.LifetimeInSeconds));
             await _redis.AddOrUpdateAsync(RedisKey.OneTimePassword, otpModel, cacheEntryOptions, keyIds: user.PublicId);
 
-            // TODO: send OTP to user via email
+            var evt = new RabbitMq.NewUserOtpEvent()
+            {
+                UserId = user.Id,
+                Otp = otp
+            };
+
+            await _rebbitMq.PublishEventAsync(evt);
 
             return user.PublicId;
         }

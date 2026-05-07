@@ -128,10 +128,10 @@ namespace Application
 
             if (!string.IsNullOrWhiteSpace(user.Email))
             {
-                var message = _mapper.Map<RabbitMq.UserPasswordChangedEvent>(user);
-                message.UserIpAddress = _httpContextAccessor?.HttpContext?.GetUserIpAddress();
+                var evt = _mapper.Map<RabbitMq.UserPasswordChangedEvent>(user);
+                evt.UserIpAddress = _httpContextAccessor?.HttpContext?.GetUserIpAddress();
 
-                _rebbitMq.PublishEventAsync(message);
+                _rebbitMq.PublishEventAsync(evt);
             }
         }
 

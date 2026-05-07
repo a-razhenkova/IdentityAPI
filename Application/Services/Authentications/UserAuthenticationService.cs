@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using AutoMapper;
+using Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Shared;
@@ -10,14 +11,20 @@ namespace Application
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppSettings _appSettings;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+        private readonly IRabbitMq _rebbitMq;
 
         public UserAuthenticationService(IHttpContextAccessor httpContextAccessor,
                                         IOptionsSnapshot<AppSettings> appSettings,
-                                        IUnitOfWork unitOfWork)
+                                        IUnitOfWork unitOfWork,
+                                        IMapper mapper,
+                                        IRabbitMq rebbitMq)
         {
             _httpContextAccessor = httpContextAccessor;
             _appSettings = appSettings.Value;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _rebbitMq = rebbitMq;
         }
 
         public async Task<User> AuthenticateAsync(string userPublicId)
@@ -46,7 +53,8 @@ namespace Application
 
             if (user.Status.Value == UserStatuses.Blocked)
             {
-                // TODO: send notification: login attempt made
+                var evt = _mapper.Map<RabbitMq.LoginAttemptMadeEvent>(user);
+                await _rebbitMq.PublishEventAsync(evt);
             }
 
             if (!isPasswordValid)
@@ -54,7 +62,8 @@ namespace Application
 
             if (lastLoginIpAddress is not null && lastLoginIpAddress.Equals(user.Login.LastLoginIpAddress))
             {
-                // TODO: send notification: login attempt made from new IP address
+                var evt = _mapper.Map<RabbitMq.LoginFromNewIpAddressEvent>(user);
+                await _rebbitMq.PublishEventAsync(evt);
             }
 
             return user;

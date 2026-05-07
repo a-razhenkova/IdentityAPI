@@ -1,7 +1,7 @@
 ﻿namespace Application.RabbitMq
 {
-    [RabbitMqEvent("user-password-changed")]
-    public class UserPasswordChangedEvent
+    [RabbitMqEvent("login-from-new-ip-address")]
+    public class LoginFromNewIpAddressEvent
     {
         public required long UserId { get; set; }
 
@@ -11,6 +11,6 @@
 
         public required DateTime Timestamp { get; set; }
 
-        public string? UserIpAddress { get; set; }
+        public string? IpAddress { get; set; }
     }
 }

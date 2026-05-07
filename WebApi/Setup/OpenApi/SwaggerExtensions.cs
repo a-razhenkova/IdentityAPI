@@ -1,5 +1,5 @@
 ﻿using Infrastructure;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Shared;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -88,28 +88,10 @@ namespace WebApi
 
         private static void AddAuthorization(this SwaggerGenOptions opt)
         {
-            var basicAuth = new OpenApiSecurityScheme
+            opt.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = AuthorizationSchema.Basic.ToString()
-                }
-            };
-
-            var bearerAuth = new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = AuthorizationSchema.Bearer.ToString()
-                }
-            };
-
-            opt.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                { bearerAuth, new string[] { } },
-                { basicAuth, new string[] { } }
+                [new OpenApiSecuritySchemeReference(AuthorizationSchema.Basic.ToString(), document)] = [],
+                [new OpenApiSecuritySchemeReference(AuthorizationSchema.Bearer.ToString(), document)] = []
             });
 
             opt.AddSecurityDefinition(AuthorizationSchema.Basic.ToString(), new OpenApiSecurityScheme()

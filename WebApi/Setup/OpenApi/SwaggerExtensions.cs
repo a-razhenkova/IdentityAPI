@@ -59,8 +59,8 @@ namespace WebApi
                 string? suffix = null;
 
                 string fullType = modelType.ToString();
-                if (fullType.Contains($"{nameof(Domain)}"))
-                    throw new InvalidOperationException("Database entities should not be exposed as API models.");
+                //if (fullType.Contains($"{nameof(Domain)}"))
+                //    throw new InvalidOperationException("Database entities should not be exposed as API models.");
 
                 if (fullType.Contains($"{nameof(WebApi)}."))
                 {

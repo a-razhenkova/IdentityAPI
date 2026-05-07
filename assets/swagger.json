@@ -41,7 +41,7 @@
             }
           },
           {
-            "name": "CanNotifyParty",
+            "name": "CanNotify",
             "in": "query",
             "schema": {
               "type": "boolean"
@@ -493,7 +493,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           },
           {
@@ -740,7 +740,7 @@
         "tags": [
           "Token"
         ],
-        "summary": "Creates access and refresh tokens for user by the provided OTP.",
+        "summary": "Creates access and refresh tokens for a user by the provided OTP.",
         "operationId": "CreateAccessTokenAsync_V3",
         "parameters": [
           {
@@ -790,7 +790,7 @@
         "tags": [
           "Token"
         ],
-        "summary": "Creates access and refresh tokens for users.",
+        "summary": "Creates access and refresh tokens for a users.",
         "operationId": "CreateAccessTokenAsync_V2",
         "parameters": [
           {
@@ -1091,7 +1091,7 @@
           "Users"
         ],
         "summary": "Retrieves a user.",
-        "operationId": "LoadUserAsync_V1",
+        "operationId": "GetUserAsync_V1",
         "parameters": [
           {
             "name": "id",
@@ -1480,11 +1480,11 @@
       },
       "ClientRightModel_V1": {
         "required": [
-          "canNotifyParty"
+          "canNotify"
         ],
         "type": "object",
         "properties": {
-          "canNotifyParty": {
+          "canNotify": {
             "type": "boolean",
             "description": "Flag indicating whether the client has the right to notify a party."
           }
@@ -1667,7 +1667,7 @@
             "type": "string",
             "description": "Access token.",
             "nullable": true,
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTQ3YTRmYy0zZDkwLTRkZGItYTFlYy1hNjY0YzBhOGEyZjMiLCJ1c2VybmFtZSI6Iml2YW4uaXZhbm92IiwidXNlclJvbGUiOiJBZG1pbmlzdHJhdG9yIiwidXNlclN0YXR1cyI6IkFjdGl2ZSIsIm5iZiI6MTc0OTUwMTEzNCwiZXhwIjoxNzQ5NTczMTM0LCJpYXQiOjE3NDk1MDExMzQsImlzcyI6IkQxQ0NFNUE5RkQ5ODBCOTlCMkZDM0FGQjg4MThDQTZBRUNBNEU5RDFCRUI0N0FGMUM1OTc4REMyMEVCNTJCMEMiLCJhdWQiOiI4MTA0NTJhODA4YTIyMGM1MjQxNDUyYWJjMDQzNzZlNjZhMWJiNDE1NGU5NTRlYjQ3MjRjNGI4ZmY5Mzk5YmI2In0.f9jOUW8SjO9lFqEpFNzAAZnBgS4k6pqv8QUNx8y9aJg"
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6ImRiYTFkMjVhLTAwNjItNDllNy1iNGYwLTMxMjI0YTY5ZjllNCIsImNsaWVudFN0YXR1cyI6IkFDVElWRSIsImlzSW50ZXJuYWxDbGllbnQiOnRydWUsImNhbk5vdGlmeSI6dHJ1ZSwibmJmIjoxNzc4MTYwNjg4LCJleHAiOjE3NzgxNjE4ODgsImlhdCI6MTc3ODE2MDY4OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzMDEiLCJhdWQiOiJBbGVrc2FuZHJpbmEgUmF6aGVua292YSJ9._N_-fZJke50_z137XRpZRXw3qhbKjEvbu22aapMIPB0"
           }
         },
         "additionalProperties": false
@@ -1683,13 +1683,13 @@
             "type": "string",
             "description": "Access token.",
             "nullable": true,
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTQ3YTRmYy0zZDkwLTRkZGItYTFlYy1hNjY0YzBhOGEyZjMiLCJ1c2VybmFtZSI6Iml2YW4uaXZhbm92IiwidXNlclJvbGUiOiJBZG1pbmlzdHJhdG9yIiwidXNlclN0YXR1cyI6IkFjdGl2ZSIsIm5iZiI6MTc0OTUwMTEzNCwiZXhwIjoxNzQ5NTczMTM0LCJpYXQiOjE3NDk1MDExMzQsImlzcyI6IkQxQ0NFNUE5RkQ5ODBCOTlCMkZDM0FGQjg4MThDQTZBRUNBNEU5RDFCRUI0N0FGMUM1OTc4REMyMEVCNTJCMEMiLCJhdWQiOiI4MTA0NTJhODA4YTIyMGM1MjQxNDUyYWJjMDQzNzZlNjZhMWJiNDE1NGU5NTRlYjQ3MjRjNGI4ZmY5Mzk5YmI2In0.f9jOUW8SjO9lFqEpFNzAAZnBgS4k6pqv8QUNx8y9aJg"
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTQ3YTRmYy0zZDkwLTRkZGItYTFlYy1hNjY0YzBhOGEyZjMiLCJ1c2VybmFtZSI6Iml2YW4uaXZhbm92IiwidXNlclJvbGUiOiJBZG1pbmlzdHJhdG9yIiwidXNlclN0YXR1cyI6IkFjdGl2ZSIsIm5iZiI6MTc3ODA5MDk1MywiZXhwIjoxNzc4MDkyMTUzLCJpYXQiOjE3NzgwOTA5NTMsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0MzAxIiwiYXVkIjoiQWxla3NhbmRyaW5hIFJhemhlbmtvdmEifQ.EKDIqIkGZkj5MKyr-6wsykPxs-s-Pl8zSAw7rDFrvG0"
           },
           "refreshToken": {
             "type": "string",
             "description": "Refresh token.",
             "nullable": true,
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTQ3YTRmYy0zZDkwLTRkZGItYTFlYy1hNjY0YzBhOGEyZjMiLCJuYmYiOjE3NTU4Njk0MzAsImV4cCI6MTc1NTg3MDYzMCwiaWF0IjoxNzU1ODY5NDMwLCJpc3MiOiJEMUNDRTVBOUZEOTgwQjk5QjJGQzNBRkI4ODE4Q0E2QUVDQTRFOUQxQkVCNDdBRjFDNTk3OERDMjBFQjUyQjBDIiwiYXVkIjoiODEwNDUyYTgwOGEyMjBjNTI0MTQ1MmFiYzA0Mzc2ZTY2YTFiYjQxNTRlOTU0ZWI0NzI0YzRiOGZmOTM5OWJiNiJ9.jXHGFT0k0MYsqZNPGQcb9SVljMCuu1qE7BdfZuTwqO0"
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTQ3YTRmYy0zZDkwLTRkZGItYTFlYy1hNjY0YzBhOGEyZjMiLCJuYmYiOjE3NzgwOTA5NTMsImV4cCI6MTc3ODI2Mzc1MywiaWF0IjoxNzc4MDkwOTUzLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo0NDMwMSIsImF1ZCI6IkFsZWtzYW5kcmluYSBSYXpoZW5rb3ZhIn0.IUQm6Ptb2QOuNeRVG55WmisNKdojFIRDEB0clEIy-58"
           }
         },
         "additionalProperties": false
@@ -2030,8 +2030,28 @@
   },
   "security": [
     {
-      "Bearer": [ ],
-      "Basic": [ ]
+      "Basic": [ ],
+      "Bearer": [ ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Clients"
+    },
+    {
+      "name": "Email"
+    },
+    {
+      "name": "Health"
+    },
+    {
+      "name": "Otp"
+    },
+    {
+      "name": "Token"
+    },
+    {
+      "name": "Users"
     }
   ]
 }

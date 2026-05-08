@@ -11,11 +11,11 @@ namespace Infrastructure
     {
         private readonly ILogger<RabbitMqService> _logger;
         private readonly IConnection _connection;
-        private readonly ResiliencePipelineProvider<string> _pipelineProvider;
+        private readonly ResiliencePipelineProvider<ResiliencePipelineType> _pipelineProvider;
 
         public RabbitMqService(ILogger<RabbitMqService> logger,
                               IConnection connection,
-                              ResiliencePipelineProvider<string> pipelineProvider)
+                              ResiliencePipelineProvider<ResiliencePipelineType> pipelineProvider)
         {
             _logger = logger;
             _connection = connection;
@@ -26,29 +26,29 @@ namespace Infrastructure
         {
             var settings = evt.GetRequiredCustomAttribute<RabbitMqEventAttribute>();
 
-            ResiliencePipeline pipeline = _pipelineProvider.GetPipeline(ResiliencePipelines.RabbitMQ_Publish);
+            ResiliencePipeline pipeline = _pipelineProvider.GetPipeline(ResiliencePipelineType.RabbitMQ_PublishFastEvent);
             await pipeline.ExecuteAsync(async (cancellationToken) => await PublishEventAsync(evt, settings, cancellationToken), cancellationToken);
+        }
+
+        public async Task PublishEventInBackground(object evt, CancellationToken cancellationToken = default)
+        {
+            var settings = evt.GetRequiredCustomAttribute<RabbitMqEventAttribute>();
+
+            ResiliencePipeline pipeline = _pipelineProvider.GetPipeline(ResiliencePipelineType.RabbitMQ_PublishEventInBackground);
+            pipeline.ExecuteAsync(async (cancellationToken) => await PublishEventAsync(evt, settings, cancellationToken), cancellationToken);
         }
 
         private async Task PublishEventAsync(object evt, RabbitMqEventAttribute settings, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                PublishResult result = await _connection.PublishEventAsync(evt, settings, cancellationToken);
+            PublishResult result = await _connection.PublishEventAsync(evt, settings, cancellationToken);
 
-                if (result.Outcome.State == OutcomeState.Accepted)
-                {
-                    _logger.LogInformation($"An event was sent to queue '{settings.QueueName}' with key '{settings.RoutingKey}'.");
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Unexpected publish outcome: {result.Outcome.State}\nError: {result.Outcome.Error?.ToString()}");
-                }
-            }
-            catch (Exception exception)
+            if (result.Outcome.State == OutcomeState.Accepted)
             {
-                _logger.LogError(exception, exception.Message);
-                throw;
+                _logger.LogInformation($"An event was sent to queue '{settings.QueueName}' with key '{settings.RoutingKey}'.");
+            }
+            else
+            {
+                throw new InvalidOperationException($"Unexpected publish outcome: {result.Outcome.State}\nError: {result.Outcome.Error?.ToString()}");
             }
         }
     }

@@ -3,6 +3,7 @@ using AutoMapper;
 using Infrastructure;
 using Polly;
 using Polly.Retry;
+using Shared;
 namespace WebApi
 {
     public static class ServicesSetup
@@ -52,13 +53,24 @@ namespace WebApi
 
         public static WebApplicationBuilder AddResiliencePipelines(this WebApplicationBuilder builder)
         {
-            builder.Services.AddResiliencePipeline(ResiliencePipelines.RabbitMQ_Publish, cfg =>
+            builder.Services.AddResiliencePipeline(ResiliencePipelineType.RabbitMQ_PublishFastEvent, cfg =>
+            {
+                cfg.AddRetry(new RetryStrategyOptions
+                {
+                    BackoffType = DelayBackoffType.Constant,
+                    UseJitter = false,
+                    MaxRetryAttempts = 3,
+                    Delay = TimeSpan.FromSeconds(2),
+                });
+            });
+
+            builder.Services.AddResiliencePipeline(ResiliencePipelineType.RabbitMQ_PublishEventInBackground, cfg =>
             {
                 cfg.AddRetry(new RetryStrategyOptions
                 {
                     BackoffType = DelayBackoffType.Exponential,
-                    UseJitter = false,
-                    MaxRetryAttempts = 4,
+                    UseJitter = true,
+                    MaxRetryAttempts = 10,
                     Delay = TimeSpan.FromSeconds(30),
                 });
             });

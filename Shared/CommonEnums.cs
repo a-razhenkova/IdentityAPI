@@ -64,4 +64,10 @@ namespace Shared
         [Description("canNotify")]
         CanNotify
     }
+
+    public enum ResiliencePipelineType
+    {
+        RabbitMQ_PublishFastEvent,
+        RabbitMQ_PublishEventInBackground
+    }
 }

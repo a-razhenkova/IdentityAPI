@@ -1,6 +1,4 @@
-﻿using Shared;
-
-namespace Domain
+﻿namespace Domain
 {
     public static class UserExtensions
     {

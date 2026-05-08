@@ -22,7 +22,7 @@ namespace Tests.Mocks
                 PublicId = string.IsNullOrWhiteSpace(publicId) ? Guid.NewGuid().ToString() : publicId,
                 Username = string.IsNullOrWhiteSpace(username) ? Guid.NewGuid().ToString() : username,
                 Role = role,
-                OtpSecret = string.IsNullOrWhiteSpace(otpSecret) ? UserOtpSecret.Create() : otpSecret,
+                OtpSecret = string.IsNullOrWhiteSpace(otpSecret) ? UserOtpHandler.Create() : otpSecret,
                 Email = email,
                 IsVerified = isVerified,
                 RegistrationTimestamp = RegistrationTimestamp ?? DateTime.Now,

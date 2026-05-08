@@ -20,8 +20,27 @@ namespace Domain
                 client.Status.Note = null;
             }
 
-            public bool IsSecretValid(string secret)
-                => client.Secret.Equals(secret);
+            public void CreateNewSubscription(DateTime expirationDate, FileStream content, string fileExtension)
+            {
+                DateTime signTimestamp = DateTime.UtcNow;
+                string fileName = $"{client.Key}_{signTimestamp:yyyyMMddHHmmssfff}{fileExtension}";
+
+                client.Subscriptions.Add(new ClientSubscription()
+                {
+                    Subscription = new Subscription()
+                    {
+                        CreateTimestamp = expirationDate.Date,
+                        ExpirationDate = expirationDate.Date,
+                        Contract = new Document()
+                        {
+                            SignTimestamp = signTimestamp,
+                            Name = fileName,
+                            Checksum = content.ComputeMd5Checksum(),
+                            Type = DocumentTypes.SubscriptionContract
+                        }
+                    }
+                });
+            }
         }
     }
 }

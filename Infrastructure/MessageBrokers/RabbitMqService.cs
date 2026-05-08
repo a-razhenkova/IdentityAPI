@@ -35,7 +35,10 @@ namespace Infrastructure
             var settings = evt.GetRequiredCustomAttribute<RabbitMqEventAttribute>();
 
             ResiliencePipeline pipeline = _pipelineProvider.GetPipeline(ResiliencePipelineType.RabbitMQ_PublishEventInBackground);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             pipeline.ExecuteAsync(async (cancellationToken) => await PublishEventAsync(evt, settings, cancellationToken), cancellationToken);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private async Task PublishEventAsync(object evt, RabbitMqEventAttribute settings, CancellationToken cancellationToken = default)

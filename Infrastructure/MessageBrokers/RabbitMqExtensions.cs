@@ -8,22 +8,22 @@ namespace Infrastructure
 {
     public static class RabbitMqExtensions
     {
-        public static async Task<PublishResult> PublishEventAsync(this IConnection connection, object evt, RabbitMqEventAttribute settings)
+        public static async Task<PublishResult> PublishEventAsync(this IConnection connection, object evt, RabbitMqEventAttribute settings, CancellationToken cancellationToken = default)
         {
             await connection.EnsureBinding(settings);
 
             using IPublisher publisher = await connection.PublisherBuilder()
                 .Exchange(settings.ExchangeName)
                 .Key(settings.RoutingKey)
-                .BuildAsync();
+                .BuildAsync(cancellationToken);
 
             string message = JsonSerializer.Serialize(evt);
             var amqpMessage = new AmqpMessage(Encoding.UTF8.GetBytes(message));
 
-            return await publisher.PublishAsync(amqpMessage);
+            return await publisher.PublishAsync(amqpMessage, cancellationToken);
         }
 
-        public static async Task EnsureBinding(this IConnection connection, RabbitMqEventAttribute settings)
+        private static async Task EnsureBinding(this IConnection connection, RabbitMqEventAttribute settings)
         {
             using IManagement management = connection.Management();
             IBindingSpecification binding = management.Binding();

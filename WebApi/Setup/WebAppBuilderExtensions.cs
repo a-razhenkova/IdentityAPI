@@ -39,6 +39,16 @@ namespace WebApi
             return builder;
         }
 
+        public static WebApplicationBuilder AddMapper(this WebApplicationBuilder builder)
+        {
+            MapperConfiguration mapperConfig = ServicesSetup.CreateMapperConfig();
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
+
+            return builder;
+        }
+
         public static async Task<WebApplicationBuilder> AddRabbitMqAsync(this WebApplicationBuilder builder)
         {
             string rabbitMqConnectionString = builder.Configuration.GetRequiredConnectionString(ConnectionStringNames.RabbitMq);
@@ -51,32 +61,6 @@ namespace WebApi
             IConnection connection = await environment.CreateConnectionAsync();
 
             builder.Services.AddSingleton(connection);
-
-            return builder;
-        }
-
-        public static MapperConfiguration CreateMapperConfig()
-        {
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new DomainProfile());
-                cfg.AddProfile(new EventsProfile());
-
-                cfg.AddProfile(new V1.CommonProfile());
-                cfg.AddProfile(new V2.CommonProfile());
-            });
-
-            mapperConfig.AssertConfigurationIsValid();
-
-            return mapperConfig;
-        }
-
-        public static WebApplicationBuilder AddMapper(this WebApplicationBuilder builder)
-        {
-            MapperConfiguration mapperConfig = CreateMapperConfig();
-
-            IMapper mapper = mapperConfig.CreateMapper();
-            builder.Services.AddSingleton(mapper);
 
             return builder;
         }

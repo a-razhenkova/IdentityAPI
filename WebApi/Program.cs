@@ -4,9 +4,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.BindConfigurationSources();
 
 builder.AddLogger();
+builder.AddResiliencePipelines();
+
 builder.AddCache();
 builder.AddDatabase();
-
 await builder.AddRabbitMqAsync();
 
 builder.AddMapper();

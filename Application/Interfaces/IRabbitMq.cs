@@ -2,6 +2,6 @@
 {
     public interface IRabbitMq
     {
-        Task PublishEventAsync(object evt);
+        Task PublishEventAsync(object evt, CancellationToken cancellationToken = default);
     }
 }

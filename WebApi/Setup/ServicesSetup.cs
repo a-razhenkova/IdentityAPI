@@ -1,6 +1,8 @@
 ﻿using Application;
+using AutoMapper;
 using Infrastructure;
-
+using Polly;
+using Polly.Retry;
 namespace WebApi
 {
     public static class ServicesSetup
@@ -28,6 +30,38 @@ namespace WebApi
             builder.Services.AddScoped<IOtp, OtpService>();
             builder.Services.AddScoped<IClient, ClientService>();
             builder.Services.AddScoped<IUser, UserService>();
+
+            return builder;
+        }
+
+        public static MapperConfiguration CreateMapperConfig()
+        {
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new DomainProfile());
+                cfg.AddProfile(new EventsProfile());
+
+                cfg.AddProfile(new V1.CommonProfile());
+                cfg.AddProfile(new V2.CommonProfile());
+            });
+
+            mapperConfig.AssertConfigurationIsValid();
+
+            return mapperConfig;
+        }
+
+        public static WebApplicationBuilder AddResiliencePipelines(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddResiliencePipeline(ResiliencePipelines.RabbitMQ_Publish, cfg =>
+            {
+                cfg.AddRetry(new RetryStrategyOptions
+                {
+                    BackoffType = DelayBackoffType.Exponential,
+                    UseJitter = false,
+                    MaxRetryAttempts = 4,
+                    Delay = TimeSpan.FromSeconds(30),
+                });
+            });
 
             return builder;
         }

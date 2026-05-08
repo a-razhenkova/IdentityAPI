@@ -5,7 +5,7 @@ namespace UnitTests
 {
     public class Pbkdf2KeyTests
     {
-        private const int Interactions = 100_000;
+        private const int Iterations = 100_000;
         private const int HashLength = 128;
         private const int SaltLength = 16;
 
@@ -16,8 +16,8 @@ namespace UnitTests
             const string word = "test";
 
             // Act
-            (string hash, string salt) = Pbkdf2Key.Create(word, Interactions, HashLength, SaltLength);
-            (string newHash, string newSalt) = Pbkdf2Key.Create(word, Interactions, HashLength, SaltLength);
+            (string hash, string salt) = Pbkdf2Key.Create(word, Iterations, HashLength, SaltLength);
+            (string newHash, string newSalt) = Pbkdf2Key.Create(word, Iterations, HashLength, SaltLength);
 
             // Assert
             hash.Should().NotBe(newHash);
@@ -31,8 +31,8 @@ namespace UnitTests
             const string word = "word";
 
             // Act
-            (string hash, string salt) = Pbkdf2Key.Create(word, Interactions, HashLength, SaltLength);
-            (string newHash, string newSalt) = Pbkdf2Key.Recreate(word, salt, Interactions, HashLength);
+            (string hash, string salt) = Pbkdf2Key.Create(word, Iterations, HashLength, SaltLength);
+            (string newHash, string newSalt) = Pbkdf2Key.Recreate(word, salt, Iterations, HashLength);
 
             // Assert
             hash.Should().Be(newHash);
@@ -45,10 +45,10 @@ namespace UnitTests
             // Arrange
             const string word = "word";
 
-            (string hash, string salt) = Pbkdf2Key.Create(word, Interactions, HashLength, SaltLength);
+            (string hash, string salt) = Pbkdf2Key.Create(word, Iterations, HashLength, SaltLength);
 
             // Act
-            bool result = Pbkdf2Key.IsValid(hash, word, salt, Interactions, HashLength);
+            bool result = Pbkdf2Key.IsValid(hash, word, salt, Iterations, HashLength);
 
             // Assert
             result.Should().Be(true);
@@ -58,10 +58,10 @@ namespace UnitTests
         public void IsValid_InvalidHash_ReturnFalse()
         {
             // Arrange
-            (string hash, string salt) = Pbkdf2Key.Create("word", Interactions, HashLength, SaltLength);
+            (string hash, string salt) = Pbkdf2Key.Create("word", Iterations, HashLength, SaltLength);
 
             // Act
-            bool result = Pbkdf2Key.IsValid(hash, "different_word", salt, Interactions, HashLength);
+            bool result = Pbkdf2Key.IsValid(hash, "different_word", salt, Iterations, HashLength);
 
             // Assert
             result.Should().Be(false);

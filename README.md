@@ -60,7 +60,7 @@
 > Caching: Redis\
 > Message Broker: RabbitMQ\
 > Additional Libraries: Serilog, Polly, AutoMapper, GoogleAuthenticator\
-> Tests: xUnit, FluentAssertions
+> Tests: xUnit, FluentAssertions, Bogus
 
 > [!NOTE]
 > Database creation and schema management are handled through Entity Framework Core migrations.

@@ -19,6 +19,22 @@ namespace Pbkdf2Tests
             secret.Should().HaveCount(size);
         }
 
+        [Theory]
+        [InlineData(10)]
+        public void Create_MultipleTimesWithSameSize_ReturnUniqueSecrets(int createCount)
+        {
+            // Arrange
+            var secrets = new List<byte[]>();
+            int size = new Faker().Random.Int(16, 32);
+
+            // Act
+            for (int index = 0; index < createCount; index++)
+                secrets.Add(Pbkdf2KeySecret.Create(size));
+
+            // Assert
+            secrets.Should().OnlyHaveUniqueItems();
+        }
+
         [Fact]
         public void Create_WithZeroSize_ThrowException()
         {
@@ -50,6 +66,22 @@ namespace Pbkdf2Tests
 
             // Assert
             secret.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Theory]
+        [InlineData(10)]
+        public void CreateToBase64_MultipleTimesWithSameSize_ReturnUniqueSecrets(int createCount)
+        {
+            // Arrange
+            var secrets = new List<string>();
+            int size = new Faker().Random.Int(16, 32);
+
+            // Act
+            for (int index = 0; index < createCount; index++)
+                secrets.Add(Pbkdf2KeySecret.CreateToBase64(size));
+
+            // Assert
+            secrets.Should().OnlyHaveUniqueItems();
         }
 
         [Fact]

@@ -71,7 +71,7 @@ namespace Application
 
         public async Task<string> RegisterAsync(UserDto userDto, CancellationToken cancellationToken = default)
         {
-            ValidatePasswordFormat(userDto.Password);
+            UserPasswordValidator.Validate(userDto.Password, _appSettings.Security);
 
             User? user = await _unitOfWork.Users.GetByUsernameAsync(userDto.Username, cancellationToken);
 
@@ -121,7 +121,7 @@ namespace Application
 
         public async Task ChangePasswordAsync(string userPublicId, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
         {
-            ValidatePasswordFormat(newPassword);
+            UserPasswordValidator.Validate(newPassword, _appSettings.Security);
 
             User user = await _unitOfWork.Users
                 .WhereIdEquals(userPublicId)
@@ -147,7 +147,7 @@ namespace Application
 
         public async Task ChangeEmailAsync(string userPublicId, string email, string password, CancellationToken cancellationToken = default)
         {
-            ValidatePasswordFormat(password);
+            UserPasswordValidator.Validate(password, _appSettings.Security);
 
             User user = await _unitOfWork.Users
                 .WhereIdEquals(userPublicId)
@@ -164,15 +164,6 @@ namespace Application
             user.Status.Reason = UserStatusReasons.EmailChanged;
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-        }
-
-        private void ValidatePasswordFormat(string? password)
-        {
-            if (string.IsNullOrWhiteSpace(password))
-                throw new BadRequestException("Password is required.");
-
-            if (!new Regex(_appSettings.Security.PasswordValidationRegex).IsMatch(password))
-                throw new BadRequestException($"Password must match the regular expression '{_appSettings.Security.PasswordValidationRegex}'.");
         }
     }
 }

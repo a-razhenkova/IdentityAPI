@@ -7,6 +7,31 @@ namespace ClientTests
     public class ClientSecretTests
     {
         [Fact]
+        public void Create_ReturnSecret()
+        {
+            // Act
+            string secret = ClientSecret.Create();
+
+            // Assert
+            secret.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Theory]
+        [InlineData(10)]
+        public void Create_MultipleTimes_ReturnUniqueSecrets(int createCount)
+        {
+            // Arrange
+            var secrets = new List<string>();
+
+            // Act
+            for (int index = 0; index < createCount; index++)
+                secrets.Add(ClientSecret.Create());
+
+            // Assert
+            secrets.Should().OnlyHaveUniqueItems();
+        }
+
+        [Fact]
         public void IsValid_CreateValidKey_ReturnTrue()
         {
             // Arrange

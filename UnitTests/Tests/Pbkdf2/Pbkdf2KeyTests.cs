@@ -10,26 +10,65 @@ namespace Pbkdf2Tests
         private const int HashLength = 128;
         private const int SaltLength = 16;
 
-        [Fact]
-        public void Create_HashSameStringTwice_ReturnDifferentHashes()
+        [Theory]
+        [InlineData(32)]
+        public void Create_ReturnHash(int strLength)
         {
             // Arrange
-            string str = new Faker().Random.String();
+            string str = new Faker().Random.String(strLength);
 
             // Act
             (string hash, string salt) = Pbkdf2Key.Create(str, Iterations, HashLength, SaltLength);
-            (string newHash, string newSalt) = Pbkdf2Key.Create(str, Iterations, HashLength, SaltLength);
 
             // Assert
-            hash.Should().NotBe(newHash);
-            salt.Should().NotBe(newSalt);
+            hash.Should().NotBeNullOrWhiteSpace();
+            salt.Should().NotBeNullOrWhiteSpace();
         }
 
-        [Fact]
-        public void RecreateString_ReturnMatchingHashes()
+        [Theory]
+        [InlineData(32, 10)]
+        public void Create_MultipleTimes_ReturnUniqueHashes(int strLength, int createCount)
         {
             // Arrange
-            string str = new Faker().Random.String();
+            string str = new Faker().Random.String(strLength);
+            var hashes = new List<string>();
+            var salts = new List<string>();
+
+            // Act
+            for (int index = 0; index < createCount; index++)
+            {
+                (string hash, string salt) = Pbkdf2Key.Create(str, Iterations, HashLength, SaltLength);
+                hashes.Add(hash);
+                salts.Add(salt);
+            }
+
+            // Assert
+            hashes.Should().OnlyHaveUniqueItems();
+            salts.Should().OnlyHaveUniqueItems();
+        }
+
+        [Theory]
+        [InlineData(32)]
+        public void Recreate_ReturnHash(int strLength)
+        {
+            // Arrange
+            string str = new Faker().Random.String(strLength);
+
+            // Act
+            (string hash, string salt) = Pbkdf2Key.Create(str, Iterations, HashLength, SaltLength);
+            (string newHash, string newSalt) = Pbkdf2Key.Recreate(str, salt, Iterations, HashLength);
+
+            // Assert
+            newHash.Should().NotBeNullOrWhiteSpace();
+            newSalt.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Theory]
+        [InlineData(32)]
+        public void Recreate_MultipleTimes_ReturnSameHash(int strLength)
+        {
+            // Arrange
+            string str = new Faker().Random.String(strLength);
 
             // Act
             (string hash, string salt) = Pbkdf2Key.Create(str, Iterations, HashLength, SaltLength);
@@ -40,32 +79,34 @@ namespace Pbkdf2Tests
             salt.Should().Be(newSalt);
         }
 
-        [Fact]
-        public void IsValid_ValidHash_ReturnTrue()
+        [Theory]
+        [InlineData(32)]
+        public void IsValid_ValidHash_ReturnTrue(int strLength)
         {
             // Arrange
-            string str = new Faker().Random.String();
+            string str = new Faker().Random.String(strLength);
             (string hash, string salt) = Pbkdf2Key.Create(str, Iterations, HashLength, SaltLength);
 
             // Act
             bool result = Pbkdf2Key.IsValid(hash, str, salt, Iterations, HashLength);
 
             // Assert
-            result.Should().Be(true);
+            result.Should().BeTrue();
         }
 
-        [Fact]
-        public void IsValid_InvalidHash_ReturnFalse()
+        [Theory]
+        [InlineData(32)]
+        public void IsValid_InvalidHash_ReturnFalse(int strLength)
         {
             // Arrange
-            string str = new Faker().Random.String();
+            string str = new Faker().Random.String(strLength);
             (string hash, string salt) = Pbkdf2Key.Create(str, Iterations, HashLength, SaltLength);
 
             // Act
             bool result = Pbkdf2Key.IsValid(hash, $"different_{str}", salt, Iterations, HashLength);
 
             // Assert
-            result.Should().Be(false);
+            result.Should().BeFalse();
         }
     }
 }

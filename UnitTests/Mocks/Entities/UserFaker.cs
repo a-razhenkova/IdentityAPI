@@ -2,7 +2,7 @@
 using Bogus;
 using Domain;
 
-namespace Tests.Mocks
+namespace UnitTests.Mocks
 {
     public class UserFaker : Faker<User>
     {
@@ -12,7 +12,7 @@ namespace Tests.Mocks
             RuleFor(s => s.PublicId, f => f.Random.Uuid().ToString());
             RuleFor(s => s.Username, f => f.Internet.UserName());
             RuleFor(s => s.Role, f => f.PickRandom<UserRoles>());
-            RuleFor(s => s.OtpSecret, UserOtpHandler.Create());
+            RuleFor(s => s.OtpSecret, UserOtp.Create());
             RuleFor(s => s.Email, f => f.Internet.Email());
             RuleFor(s => s.IsVerified, f => true);
             RuleFor(s => s.RegistrationTimestamp, f => DateTime.Now);

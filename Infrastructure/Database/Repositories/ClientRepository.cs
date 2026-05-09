@@ -29,8 +29,8 @@ namespace Infrastructure
 
         public async Task AddAsync(Client client, CancellationToken cancellationToken = default)
         {
-            client.Key = ClientKeyHandler.Create();
-            client.Secret = ClientSecretHandler.Create();
+            client.Key = ClientKey.Create();
+            client.Secret = ClientSecret.Create();
 
             await base.BasicAddAsync(client, cancellationToken);
         }

@@ -1,6 +1,7 @@
 ﻿using Application;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using UserPassword = Application.UserPassword;
 
 namespace Infrastructure.IdentityDb
 {
@@ -23,8 +24,8 @@ namespace Infrastructure.IdentityDb
         public async Task AddAsync(User user, string password, CancellationToken cancellationToken = default)
         {
             user.PublicId = Guid.NewGuid().ToString();
-            user.Password = UserPasswordHandler.Create(password);
-            user.OtpSecret = UserOtpHandler.Create();
+            user.Password = UserPassword.Create(password);
+            user.OtpSecret = UserOtp.Create();
 
             await _context.AddAsync(user, cancellationToken);
         }

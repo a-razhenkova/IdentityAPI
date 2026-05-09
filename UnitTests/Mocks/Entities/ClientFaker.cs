@@ -2,7 +2,7 @@
 using Bogus;
 using Domain;
 
-namespace Tests.Mocks
+namespace UnitTests.Mocks
 {
     public class ClientFaker : Faker<Client>
     {
@@ -10,7 +10,7 @@ namespace Tests.Mocks
         {
             RuleFor(s => s.Id, f => f.Random.Long());
             RuleFor(s => s.Name, f => f.Company.CompanyName());
-            RuleFor(s => s.Key, f => ClientSecretHandler.Create());
+            RuleFor(s => s.Key, f => ClientSecret.Create());
             RuleFor(s => s.WrongLoginAttemptsCounter, f => f.Random.Int(0, 2));
             RuleFor(s => s.IsInternal, f => true);
             RuleFor(s => s.Status, (f, c) => new ClientStatus()

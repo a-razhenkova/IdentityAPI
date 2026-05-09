@@ -1,6 +1,6 @@
 ﻿namespace Application
 {
-    public static class UserOtpHandler
+    public static class UserOtp
     {
         private const int UserSecretLength = 16;
 

@@ -134,7 +134,7 @@ namespace Application
             Client client = await _unitOfWork.Clients.GetByKeyAsync(key)
                 ?? throw new NotFoundException("Client not found.");
 
-            client.Secret = ClientSecretHandler.Create();
+            client.Secret = ClientSecret.Create();
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

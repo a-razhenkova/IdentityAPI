@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
-using Shared;
 
-namespace IntegrationTests
+namespace HealthTests
 {
-    public class HealthTests : IntegrationTestsBase
+    public class HeartbeatTests
     {
-        [Fact(DisplayName = "/api/v1/health/heartbeat")]
+        [Fact(DisplayName = "HEAD /api/v1/health/heartbeat")]
         public async Task HeartbeatAsync()
         {
             // Arrange

@@ -1,7 +1,7 @@
 ﻿using Application;
 using Bogus;
 
-namespace Tests.Mocks
+namespace UnitTests.Mocks
 {
     public class SecuritySettingsFaker : Faker<SecuritySettings>
     {

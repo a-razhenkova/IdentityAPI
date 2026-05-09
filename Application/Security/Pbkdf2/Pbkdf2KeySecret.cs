@@ -6,8 +6,12 @@ namespace Application
     {
         public static byte[] Create(int size)
         {
+            if (size <= 0)
+                throw new InvalidOperationException();
+
             var secret = new byte[size];
             RandomNumberGenerator.Fill(secret);
+
             return secret;
         }
 

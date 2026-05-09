@@ -4,9 +4,9 @@ using FluentAssertions;
 using Microsoft.IdentityModel.Tokens;
 using Shared;
 using System.IdentityModel.Tokens.Jwt;
-using Tests.Mocks;
+using UnitTests.Mocks;
 
-namespace UnitTests
+namespace TokenTests
 {
     public class UserAccessTokenTests
     {

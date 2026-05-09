@@ -2,7 +2,7 @@
 
 namespace Application
 {
-    public static class ClientKeyHandler
+    public static class ClientKey
     {
         public static string Create()
             => Guid.NewGuid().ToString();

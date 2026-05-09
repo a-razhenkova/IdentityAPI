@@ -131,7 +131,7 @@ namespace Application
             if (!user.Password.IsMatch(oldPassword))
                 throw new BadRequestException("Invalid old password.");
 
-            user.Password = UserPasswordHandler.Create(newPassword);
+            user.Password = UserPassword.Create(newPassword);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

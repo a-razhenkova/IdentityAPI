@@ -4,18 +4,18 @@ namespace Application
 {
     public interface IRedis
     {
-        Task<TValue?> LoadAsync<TValue>(RedisKey keyType, params object[] keyIds)
+        Task<TValue?> LoadAsync<TValue>(RedisKey keyType, object[] keyIds, CancellationToken cancellationToken = default)
             where TValue : class;
 
-        Task<TValue?> LoadOrCreateAsync<TValue>(RedisKey keyType, Func<Task<(TValue Value, DistributedCacheEntryOptions EntryOptions)>> loadAction, params object[] keyIds)
+        Task<TValue?> LoadOrCreateAsync<TValue>(RedisKey keyType, object[] keyIds, Func<CancellationToken, Task<(TValue Value, DistributedCacheEntryOptions EntryOptions)>> loadCallback, CancellationToken cancellationToken = default)
             where TValue : class;
 
-        Task AddOrUpdateAsync<TValue>(RedisKey keyType, TValue value, DistributedCacheEntryOptions entryOptions, params object[] keyIds)
+        Task AddOrUpdateAsync<TValue>(RedisKey keyType, TValue value, DistributedCacheEntryOptions entryOptions, object[] keyIds, CancellationToken cancellationToken = default)
             where TValue : class;
 
-        Task UpdateAsync<TValue>(RedisKey keyType, TValue value, params object[] keyIds)
+        Task UpdateAsync<TValue>(RedisKey keyType, TValue value, object[] keyIds, CancellationToken cancellationToken = default)
             where TValue : class;
 
-        Task DeleteAsync(RedisKey keyType, params object[] keyIds);
+        Task DeleteAsync(RedisKey keyType, object[] keyIds, CancellationToken cancellationToken = default);
     }
 }

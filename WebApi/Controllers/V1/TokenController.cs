@@ -22,14 +22,15 @@ namespace WebApi.V1
         /// <summary>
         /// Creates an access token for clients.
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [AllowAnonymous]
         [HttpPost, SensitiveData(IsResponseSensitive = true)]
         [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateAccessTokenAsync()
+        public async Task<IActionResult> CreateAccessTokenAsync(CancellationToken cancellationToken)
         {
             var authorization = new Authorization(HttpContext.GetAuthorization());
 
-            TokenDto token = await _token.CreateAccessTokenAsync(authorization);
+            TokenDto token = await _token.CreateAccessTokenAsync(authorization, cancellationToken);
 
             return Ok(_mapper.Map<TokenModel>(token));
         }

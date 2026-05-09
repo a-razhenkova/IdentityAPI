@@ -27,21 +27,21 @@ namespace Application
             _otpAuthenticator = otpAuthenticator;
         }
 
-        public async Task<TokenDto> CreateAccessTokenAsync(Authorization authorization)
+        public async Task<TokenDto> CreateAccessTokenAsync(Authorization authorization, CancellationToken cancellationToken = default)
         {
             switch (authorization.Schema)
             {
                 case AuthorizationSchema.Basic:
                     {
-                        Client client = await _basicAuthenticator.AuthenticateAsync(authorization);
-                        return await CreateAccessTokenAsync(client);
+                        Client client = await _basicAuthenticator.AuthenticateAsync(authorization, cancellationToken);
+                        return CreateAccessToken(client);
                     }
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        public async Task<TokenDto> CreateAccessTokenAsync(Client client)
+        public TokenDto CreateAccessToken(Client client)
         {
             var accessToken = new AccessToken(_appSettings.Security).Create(client);
 
@@ -51,13 +51,13 @@ namespace Application
             };
         }
 
-        public async Task<TokenDto> CreateAccessTokenAsync(string username, string password)
+        public async Task<TokenDto> CreateAccessTokenAsync(string username, string password, CancellationToken cancellationToken = default)
         {
-            User user = await _bearerAuthenticator.AuthenticateAsync(username, password);
-            return await CreateAccessTokenAsync(user);
+            User user = await _bearerAuthenticator.AuthenticateAsync(username, password, cancellationToken);
+            return CreateAccessToken(user);
         }
 
-        public async Task<TokenDto> CreateAccessTokenAsync(User user)
+        public TokenDto CreateAccessToken(User user)
         {
             string accessToken = new AccessToken(_appSettings.Security).Create(user);
             string refreshToken = new RefreshToken(_appSettings.Security).Create(user);
@@ -69,16 +69,16 @@ namespace Application
             };
         }
 
-        public async Task<TokenDto> CreateAccessTokenByOtpAsync(string userPublicId, string otp)
+        public async Task<TokenDto> CreateAccessTokenByOtpAsync(string userPublicId, string otp, CancellationToken cancellationToken = default)
         {
-            User user = await _otpAuthenticator.ValidateOtpAsync(userPublicId, otp);
-            return await CreateAccessTokenAsync(user);
+            User user = await _otpAuthenticator.AuthenticateAsync(userPublicId, otp, cancellationToken);
+            return CreateAccessToken(user);
         }
 
-        public async Task<TokenDto> RefreshAccessTokenAsync()
+        public async Task<TokenDto> RefreshAccessTokenAsync(CancellationToken cancellationToken = default)
         {
             var authorization = new Authorization(_httpContextAccessor.HttpContext.GetAuthorization());
-            User user = await _bearerAuthenticator.AuthenticateByRefreshTokenAsync(authorization);
+            User user = await _bearerAuthenticator.AuthenticateByRefreshTokenAsync(authorization, cancellationToken);
             
             string accessToken = new AccessToken(_appSettings.Security).Create(user);
 

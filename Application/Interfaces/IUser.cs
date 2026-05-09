@@ -2,18 +2,18 @@
 {
     public interface IUser
     {
-        Task<PaginatedReport<UserDto>> SearchAsync(UserSearchParams userSearchParams, CancellationToken cancellationToken);
+        Task<PaginatedReport<UserDto>> SearchAsync(UserSearchParams userSearchParams, CancellationToken cancellationToken = default);
 
-        Task<UserDto> GetAsync(string userPublicId);
+        Task<UserDto> GetAsync(string userPublicId, CancellationToken cancellationToken = default);
 
-        Task<string> RegisterAsync(UserDto userDto);
+        Task<string> RegisterAsync(UserDto userDto, CancellationToken cancellationToken = default);
 
-        Task UpdateAsync(string userPublicId, UserDto userDto);
+        Task UpdateAsync(string userPublicId, UserDto userDto, CancellationToken cancellationToken = default);
 
-        Task DeleteAsync(string userPublicId);
+        Task DeleteAsync(string userPublicId, CancellationToken cancellationToken = default);
 
-        Task ChangePasswordAsync(string userPublicId, string oldPassword, string newPassword);
+        Task ChangePasswordAsync(string userPublicId, string oldPassword, string newPassword, CancellationToken cancellationToken = default);
 
-        Task ChangeEmailAsync(string userPublicId, string email, string password);
+        Task ChangeEmailAsync(string userPublicId, string email, string password, CancellationToken cancellationToken = default);
     }
 }

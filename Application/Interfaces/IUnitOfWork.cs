@@ -6,6 +6,7 @@
 
         IUserRepository Users { get; }
 
-        Task SaveChangesAsync(bool hasChanges = true);
+        Task SaveChangesAsync(CancellationToken cancellationToken = default);
+        Task SaveChangesAsync(bool hasChanges, CancellationToken cancellationToken = default);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Application.Redis;
 using Domain;
-using Google.Authenticator;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Application
@@ -11,101 +10,52 @@ namespace Application
         private readonly AppSettings _appSettings;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRedis _redis;
-        private readonly IRabbitMq _rebbitMq;
 
         public OtpAuthenticationService(IOptionsSnapshot<AppSettings> appSettings,
                                        IUnitOfWork unitOfWork,
-                                       IRedis redis,
-                                       IRabbitMq rebbitMq)
+                                       IRedis redis)
         {
             _appSettings = appSettings.Value;
             _unitOfWork = unitOfWork;
             _redis = redis;
-            _rebbitMq = rebbitMq;
         }
 
-        public async Task<string> CreateAndSendOtpAsync(User user)
+        public async Task<User> AuthenticateAsync(string userPublicId, string otp, CancellationToken cancellationToken = default)
         {
-            CheckUserStatus(user.Status);
-
-            var twoFactorAuthenticator = new TwoFactorAuthenticator();
-            string otp = twoFactorAuthenticator.GetCurrentPIN(user.OtpSecret, false);
-
-            var otpModel = new OtpModel()
-            {
-                UserPublicId = user.PublicId,
-                Otp = otp,
-                WrongAuthAttemptsCounter = 0
-            };
-
-            var cacheEntryOptions = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_appSettings.Security.MultiFactorAuth.LifetimeInSeconds));
-            await _redis.AddOrUpdateAsync(RedisKey.OneTimePassword, otpModel, cacheEntryOptions, keyIds: user.PublicId);
-
-            var evt = new RabbitMq.NewUserOtpEvent()
-            {
-                UserId = user.Id,
-                Otp = otp
-            };
-
-            await _rebbitMq.PublishEventAsync(evt);
-
-            return user.PublicId;
-        }
-
-        public async Task<User> ValidateOtpAsync(string userPublicId, string otp)
-        {
-            OtpModel otpModel = await _redis.LoadAsync<OtpModel>(RedisKey.OneTimePassword, userPublicId)
+            OtpModel otpModel = await _redis.LoadAsync<OtpModel>(RedisKey.OneTimePassword, [userPublicId], cancellationToken)
                 ?? throw new UnauthorizedException("The code has expired.");
 
             if (!otpModel.Otp.Equals(otp))
             {
-                await ProcessLoginAttemptAsync(otpModel, isLoginSuccessful: false);
+                await ProcessWrongLoginAttempt(otpModel, cancellationToken);
                 throw new UnauthorizedException("Invalid code.");
             }
 
-            User user = await _unitOfWork.Users.GetByPublicIdAsync(userPublicId, loadStatus: true, loadLogin: true)
-               ?? throw new UnauthorizedException("The code has expired.");
+            User user = await _unitOfWork.Users
+                .WhereIdEquals(userPublicId)
+                .Include(u => u.Status)
+                .Include(u => u.Login)
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new UnauthorizedException("The code has expired.");
 
-            CheckUserStatus(user.Status);
+            if (user.Status.Value != UserStatuses.Active)
+                throw new ForbiddenException($"User status is '{user.Status.Value}'.");
 
-            bool isPinValid = new TwoFactorAuthenticator().ValidateTwoFactorPIN(user.OtpSecret, otp, true);
-
-            await ProcessLoginAttemptAsync(otpModel, isPinValid);
-
-            if (!isPinValid)
-                throw new UnauthorizedException("Invalid code.");
+            await _redis.DeleteAsync(RedisKey.OneTimePassword, [otpModel.UserPublicId], cancellationToken);
 
             return user;
         }
 
-        private void CheckUserStatus(UserStatus status)
+        private async Task ProcessWrongLoginAttempt(OtpModel otp, CancellationToken cancellationToken = default)
         {
-            if (status.Value == UserStatuses.Restricted
-             && status.Value == UserStatuses.Blocked
-             && status.Value == UserStatuses.Disabled)
-            {
-                throw new ForbiddenException($"User status is '{status.Value}'.");
-            }
-        }
+            otp.WrongAuthAttemptsCounter++;
 
-        private async Task ProcessLoginAttemptAsync(OtpModel otpModel, bool isLoginSuccessful)
-        {
-            if (isLoginSuccessful)
+            if (otp.WrongAuthAttemptsCounter >= _appSettings.Security.MultiFactorAuth.DefaultMaxWrongLoginAttemptsBeforeBlock)
             {
-                await _redis.DeleteAsync(RedisKey.OneTimePassword, otpModel.UserPublicId);
+                await _redis.DeleteAsync(RedisKey.OneTimePassword, keyIds: [otp.UserPublicId], cancellationToken);
             }
             else
             {
-                otpModel.WrongAuthAttemptsCounter++;
-
-                if (otpModel.WrongAuthAttemptsCounter >= _appSettings.Security.MultiFactorAuth.DefaultMaxWrongLoginAttemptsBeforeBlock)
-                {
-                    await _redis.DeleteAsync(RedisKey.OneTimePassword, otpModel.UserPublicId);
-                }
-                else
-                {
-                    await _redis.UpdateAsync(RedisKey.OneTimePassword, otpModel, otpModel.UserPublicId);
-                }
+                await _redis.UpdateAsync(RedisKey.OneTimePassword, otp, keyIds: [otp.UserPublicId], cancellationToken);
             }
         }
     }

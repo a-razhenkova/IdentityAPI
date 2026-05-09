@@ -16,18 +16,22 @@ namespace Application
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Client> AuthenticateAsync(string key)
+        public async Task<Client> AuthenticateAsync(string key, CancellationToken cancellationToken = default)
         {
-            Client client = await _unitOfWork.Clients.GetQueryAsync(c => c.Key == key, autoTrack: true, loadStatus: true, loadRight: true)
+            Client client = await _unitOfWork.Clients
+                .WhereKeyEquals(key)
+                .Include(c => c.Status)
+                .Include(c => c.Right)
                 .Include(c => c.Subscriptions.Where(s => s.Subscription.ExpirationDate >= DateTime.UtcNow.Date))
-                .SingleOrDefaultAsync() ?? throw new UnauthorizedException("Invalid credentials.");
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new UnauthorizedException("Invalid credentials.");
 
-            CheckClientStatus(client.Status);
+            if (client.Status.Value != ClientStatuses.Active)
+                throw new ForbiddenException($"Client status is '{client.Status.Value}'.");
 
             if (!client.IsInternal && !client.Subscriptions.Any())
             {
                 client.Block(ClientStatusReasons.ExpiredSubscription);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 throw new ForbiddenException("Client subscription has expired.");
             }
@@ -35,44 +39,30 @@ namespace Application
             return client;
         }
 
-        public async Task<Client> AuthenticateAsync(string key, string secret)
+        public async Task<Client> AuthenticateAsync(string key, string secret, CancellationToken cancellationToken = default)
         {
-            Client client = await AuthenticateAsync(key);
+            Client client = await AuthenticateAsync(key, cancellationToken);
 
-            bool isSecretValid = client.IsSecretValid(secret);
+            if (!client.Secret.Equals(secret))
+            {
+                ProcessWrongLoginAttempt(client);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await ProcessLoginAttempt(client, isSecretValid);
-
-            if (!isSecretValid)
                 throw new UnauthorizedException("Invalid credentials.");
+            }
+
+            client.WrongLoginAttemptsCounter = 0;
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return client;
         }
 
-        private void CheckClientStatus(ClientStatus status)
+        private void ProcessWrongLoginAttempt(Client client)
         {
-            if (status.Value == ClientStatuses.Blocked
-             || status.Value == ClientStatuses.Disabled)
-            {
-                throw new ForbiddenException($"Client status is '{status.Value}'.");
-            }
-        }
+            client.WrongLoginAttemptsCounter++;
 
-        private async Task ProcessLoginAttempt(Client client, bool isSecretValid)
-        {
-            if (isSecretValid)
-            {
-                client.WrongLoginAttemptsCounter = 0;
-            }
-            else
-            {
-                client.WrongLoginAttemptsCounter++;
-
-                if (client.WrongLoginAttemptsCounter >= _appSettings.Security.DefaultMaxWrongLoginAttemptsBeforeBlock)
-                    client.Block(ClientStatusReasons.MaxWrongLoginAttemptsReached);
-            }
-
-            await _unitOfWork.SaveChangesAsync();
+            if (client.WrongLoginAttemptsCounter >= _appSettings.Security.DefaultMaxWrongLoginAttemptsBeforeBlock)
+                client.Block(ClientStatusReasons.MaxWrongLoginAttemptsReached);
         }
     }
 }

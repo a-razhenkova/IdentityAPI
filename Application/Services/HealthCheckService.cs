@@ -12,7 +12,7 @@ namespace Application
             _defaultHealthCheckService = defaultHealthCheckService;
         }
 
-        public async Task<HealthReport> CheckHealthAsync()
-            => await _defaultHealthCheckService.CheckHealthAsync();
+        public async Task<HealthReport> CheckHealthAsync(CancellationToken cancellationToken = default)
+            => await _defaultHealthCheckService.CheckHealthAsync(cancellationToken);
     }
 }

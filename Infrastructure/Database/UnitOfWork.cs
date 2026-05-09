@@ -19,11 +19,14 @@ namespace Infrastructure
 
         public IUserRepository Users { get; private set; }
 
-        public async Task SaveChangesAsync(bool hasChanges = true)
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+            => await SaveChangesAsync(hasChanges: true, cancellationToken);
+
+        public async Task SaveChangesAsync(bool hasChanges, CancellationToken cancellationToken = default)
         {
             if (hasChanges)
             {
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
             }
             else
             {

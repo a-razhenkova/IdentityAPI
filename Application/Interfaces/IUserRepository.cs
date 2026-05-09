@@ -1,20 +1,19 @@
 ﻿using Domain;
-using System.Linq.Expressions;
 
 namespace Application
 {
     public interface IUserRepository : IRepository<User>
     {
-        Task<User?> GetByPublicIdAsync(string id, bool autoTrack = false, bool loadStatus = false, bool loadPassword = false, bool loadLogin = false);
+        Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
+        Task<User?> GetByIdWithNoTrackingAsync(string id, CancellationToken cancellationToken = default);
 
-        Task<User?> GetByUsernameAsync(string username, bool autoTrack = false, bool loadStatus = false, bool loadPassword = false, bool loadLogin = false);
+        Task<User?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default);
+        Task<User?> GetByUsernameWithNoTrackingAsync(string username, CancellationToken cancellationToken = default);
 
-        IQueryable<User> GetQueryAsync(Expression<Func<User, bool>> expression,
-            bool autoTrack = false,
-            bool loadStatus = false,
-            bool loadPassword = false,
-            bool loadLogin = false);
+        Task AddAsync(User user, string password, CancellationToken cancellationToken = default);
 
-        Task AddAsync(User user, string password);
+        IQueryable<User> WhereIdEquals(string id, bool autoTrack = true);
+
+        IQueryable<User> WhereUsernameEquals(string username, bool autoTrack = true);
     }
 }

@@ -1,21 +1,16 @@
 ﻿using Domain;
-using Shared;
-using System.Linq.Expressions;
 
 namespace Application
 {
     public interface IClientRepository : IRepository<Client>
     {
-        Task<Client?> GetByKeyAsync(string key, bool autoTrack = false, bool loadStatus = false, bool loadRight = false, bool loadSubscriptions = false);
+        Task<Client?> GetByKeyAsync(string key, CancellationToken cancellationToken = default);
+        Task<Client?> GetByKeyWithNoTrackingAsync(string key, CancellationToken cancellationToken = default);
 
-        IQueryable<Client> GetQueryAsync(Expression<Func<Client, bool>> expression,
-            bool autoTrack = false,
-            bool loadStatus = false,
-            bool loadRight = false,
-            bool loadSubscriptions = false);
+        Task<Document?> GetSubscriptionContractWithNoTrackingAsync(string clientKey, long contractId, CancellationToken cancellationToken = default);
 
-        Task<Document?> GetSubscriptionContract(string clientKey, long contractId, DocumentTypes documentType);
+        Task AddAsync(Client client, CancellationToken cancellationToken = default);
 
-        Task AddAsync(Client client);
+        IQueryable<Client> WhereKeyEquals(string key, bool autoTrack = true);
     }
 }

@@ -1,59 +1,41 @@
 ﻿using Application;
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Infrastructure
 {
     public class ClientRepository : Repository<Client>, IClientRepository
     {
-        public ClientRepository(IdentityContext context) : base(context)
-        {
+        public ClientRepository(IdentityContext context) : base(context) { }
 
-        }
+        public async Task<Client?> GetByKeyAsync(string key, CancellationToken cancellationToken = default)
+           => await WhereKeyEquals(key, autoTrack: true).SingleOrDefaultAsync(cancellationToken);
 
-        public async Task<Client?> GetByKeyAsync(string key, bool autoTrack = false, bool loadStatus = false, bool loadRight = false, bool loadSubscriptions = false)
-            => await GetQueryAsync(c => c.Key == key, autoTrack, loadStatus, loadRight, loadSubscriptions).SingleOrDefaultAsync();
+        public async Task<Client?> GetByKeyWithNoTrackingAsync(string key, CancellationToken cancellationToken = default)
+            => await WhereKeyEquals(key, autoTrack: false).SingleOrDefaultAsync(cancellationToken);
 
-        public IQueryable<Client> GetQueryAsync(Expression<Func<Client, bool>> expression,
-            bool autoTrack = false,
-            bool loadStatus = false,
-            bool loadRight = false,
-            bool loadSubscriptions = false)
-        {
-            IQueryable<Client> query = base.GetQueryAsync(expression, autoTrack: autoTrack);
-
-            if (loadStatus)
-                query = query.Include(c => c.Status);
-
-            if (loadRight)
-                query = query.Include(c => c.Right);
-
-            if (loadSubscriptions)
-                query = query.Include(c => c.Subscriptions);
-
-            return query;
-        }
-
-        public async Task<Document?> GetSubscriptionContract(string clientKey, long contractId, DocumentTypes documentType)
+        public async Task<Document?> GetSubscriptionContractWithNoTrackingAsync(string clientKey, long contractId, CancellationToken cancellationToken = default)
         {
             return await _context.ClientSubscription
+                .AsNoTracking()
                 .Where(c => c.Client.Key.Equals(clientKey)
                          && c.Subscription.Contract.Id == contractId
-                         && c.Subscription.Contract.Type == documentType)
+                         && c.Subscription.Contract.Type == DocumentTypes.SubscriptionContract)
                 .Include(c => c.Client)
                 .Include(c => c.Subscription).ThenInclude(s => s.Contract)
-                .AsNoTracking()
                 .Select(c => c.Subscription.Contract)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task AddAsync(Client client)
+        public async Task AddAsync(Client client, CancellationToken cancellationToken = default)
         {
             client.Key = ClientKey.Create();
             client.Secret = ClientSecret.Create();
 
-            await _context.AddAsync(client);
+            await base.BasicAddAsync(client, cancellationToken);
         }
+
+        public IQueryable<Client> WhereKeyEquals(string key, bool autoTrack = true)
+            => Where(x => x.Key.Equals(key), autoTrack: autoTrack);
     }
 }

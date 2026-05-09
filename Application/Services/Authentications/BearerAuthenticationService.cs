@@ -16,12 +16,12 @@ namespace Application
             _userAuthenticator = userAuthenticator;
         }
 
-        public async Task<User> AuthenticateAsync(string username, string password)
+        public async Task<User> AuthenticateAsync(string username, string password, CancellationToken cancellationToken = default)
         {
-            return await _userAuthenticator.AuthenticateAsync(username, password);
+            return await _userAuthenticator.AuthenticateAsync(username, password, cancellationToken);
         }
 
-        public async Task<User> AuthenticateByRefreshTokenAsync(Authorization authorization)
+        public async Task<User> AuthenticateByRefreshTokenAsync(Authorization authorization, CancellationToken cancellationToken = default)
         {
             if (authorization.Schema != AuthorizationSchema.Bearer)
                 throw new BadRequestException("Invalid token format.");
@@ -30,7 +30,7 @@ namespace Application
                 .GetClaim(TokenClaim.UserPublicId)
                 ?? throw new UnauthorizedException("Invalid token.");
 
-            return await _userAuthenticator.AuthenticateAsync(userPublicId);
+            return await _userAuthenticator.AuthenticateAsync(userPublicId, cancellationToken);
         }
     }
 }

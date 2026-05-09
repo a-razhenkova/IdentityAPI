@@ -22,6 +22,7 @@ namespace WebApi.V1
         /// Retrieves list of users.
         /// </summary>
         /// <param name="searchParams">Search parameters for filtering users.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A paginated report of users matching the search criteria.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(PaginatedReport<UserModel>), StatusCodes.Status200OK)]
@@ -35,12 +36,13 @@ namespace WebApi.V1
         /// Retrieves a user.
         /// </summary>
         /// <param name="id">The external ID of the user to be retrieved.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The user details if found.</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(UserModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetUserAsync(string id)
+        public async Task<IActionResult> GetUserAsync(string id, CancellationToken cancellationToken)
         {
-            UserDto user = await _user.GetAsync(id);
+            UserDto user = await _user.GetAsync(id, cancellationToken);
             return Ok(_mapper.Map<UserModel>(user));
         }
 
@@ -48,38 +50,41 @@ namespace WebApi.V1
         /// Registers a new user.
         /// </summary>
         /// <param name="requestModel">The model containing user registration details.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The external ID of the registered user.</returns>
         [HttpPost]
         [SensitiveData]
         [ProducesResponseType(typeof(SimpleResponseModel<string>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> RegisterUserAsync(UserRegistrationModel requestModel)
+        public async Task<IActionResult> RegisterUserAsync(UserRegistrationModel requestModel, CancellationToken cancellationToken)
         {
-            string userPublicId = await _user.RegisterAsync(_mapper.Map<UserDto>(requestModel));
+            string userPublicId = await _user.RegisterAsync(_mapper.Map<UserDto>(requestModel), cancellationToken);
             return Created(string.Empty, new SimpleResponseModel<string>(userPublicId));
         }
 
         /// <summary>
         /// Updates an existing user's details.
         /// </summary>
-        /// <param name="id">The external ID of the user to be updated.</param>  
+        /// <param name="id">The external ID of the user to be updated.</param>
         /// <param name="requestModel">The model containing the updated user details.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateUserAsync(string id, UserUpdateModel requestModel)
+        public async Task<IActionResult> UpdateUserAsync(string id, UserUpdateModel requestModel, CancellationToken cancellationToken)
         {
-            await _user.UpdateAsync(id, _mapper.Map<UserDto>(requestModel));
+            await _user.UpdateAsync(id, _mapper.Map<UserDto>(requestModel), cancellationToken);
             return Ok();
         }
 
-        /// <summary>  
-        /// Deletes a user.  
-        /// </summary>  
-        /// <param name="id">The external ID of the user to be deleted.</param>  
+        /// <summary>
+        /// Deletes a user.
+        /// </summary>
+        /// <param name="id">The external ID of the user to be deleted.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeleteUserAsync(string id)
+        public async Task<IActionResult> DeleteUserAsync(string id, CancellationToken cancellationToken)
         {
-            await _user.DeleteAsync(id);
+            await _user.DeleteAsync(id, cancellationToken);
             return Ok();
         }
 
@@ -88,11 +93,12 @@ namespace WebApi.V1
         /// </summary>
         /// <param name="id">The external ID of the user whose password is to be changed.</param>
         /// <param name="requestModel">The model containing the old and new passwords.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPatch("{id}/password"), SensitiveData]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> ChangeUserPasswordAsync(string id, UserPasswordModel requestModel)
+        public async Task<IActionResult> ChangeUserPasswordAsync(string id, UserPasswordModel requestModel, CancellationToken cancellationToken)
         {
-            await _user.ChangePasswordAsync(id, requestModel.OldPassword, requestModel.NewPassword);
+            await _user.ChangePasswordAsync(id, requestModel.OldPassword, requestModel.NewPassword, cancellationToken);
             return Ok();
         }
 
@@ -101,11 +107,12 @@ namespace WebApi.V1
         /// </summary>
         /// <param name="id">The external ID of the user whose email is to be changed.</param>
         /// <param name="requestModel">The model containing the new email and the user's password.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPatch("{id}/email"), SensitiveData]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> ChangeEmailAsync(string id, UserEmailModel requestModel)
+        public async Task<IActionResult> ChangeEmailAsync(string id, UserEmailModel requestModel, CancellationToken cancellationToken)
         {
-            await _user.ChangeEmailAsync(id, requestModel.Email, requestModel.Password);
+            await _user.ChangeEmailAsync(id, requestModel.Email, requestModel.Password, cancellationToken);
             return Ok();
         }
 

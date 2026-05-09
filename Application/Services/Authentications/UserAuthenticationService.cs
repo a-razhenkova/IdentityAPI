@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Shared;
 
@@ -27,77 +28,72 @@ namespace Application
             _rebbitMq = rebbitMq;
         }
 
-        public async Task<User> AuthenticateAsync(string userPublicId)
+        public async Task<User> AuthenticateAsync(string publicId, CancellationToken cancellationToken = default)
         {
-            User user = await _unitOfWork.Users.GetByPublicIdAsync(userPublicId, autoTrack: true, loadStatus: true, loadLogin: true)
-               ?? throw new UnauthorizedException();
+            User user = await _unitOfWork.Users
+                .WhereIdEquals(publicId, autoTrack: false)
+                .Include(u => u.Status)
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new UnauthorizedException();
 
-            CheckUserStatus(user.Status);
+            if (user.Status.Value != UserStatuses.Active)
+                throw new ForbiddenException($"User status is '{user.Status.Value}'.");
 
             return user;
         }
 
-        public async Task<User> AuthenticateAsync(string username, string password)
+        public async Task<User> AuthenticateAsync(string username, string password, CancellationToken cancellationToken = default)
         {
-            User user = await _unitOfWork.Users.GetByUsernameAsync(username, autoTrack: true, loadStatus: true, loadPassword: true, loadLogin: true)
-                ?? throw new UnauthorizedException("Invalid credentials.");
+            User user = await _unitOfWork.Users
+                .WhereUsernameEquals(username)
+                .Include(u => u.Status)
+                .Include(u => u.Password)
+                .Include(u => u.Login)
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new UnauthorizedException("Invalid credentials.");
 
-            CheckUserStatus(user.Status);
-
-            bool isPasswordValid = UserSecurePassword.IsValid(user.Password.Value, password, user.Password.Secret);
+            if (user.Status.Value != UserStatuses.Active)
+                throw new ForbiddenException($"User status is '{user.Status.Value}'.");
 
             user.Login ??= new Login();
-            string? lastLoginIpAddress = user.Login.LastLoginIpAddress;
 
-            await ProcessLoginAttempt(user, isPasswordValid);
-
-            if (user.Status.Value == UserStatuses.Blocked)
+            if (!user.Password.IsMatch(password))
             {
-                var evt = _mapper.Map<RabbitMq.LoginAttemptMadeEvent>(user);
-                await _rebbitMq.PublishEventAsync(evt);
-            }
+                await ProcessWrongLoginAttempt(user);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            if (!isPasswordValid)
                 throw new UnauthorizedException("Invalid credentials.");
-
-            if (lastLoginIpAddress is not null && !lastLoginIpAddress.Equals(user.Login.LastLoginIpAddress))
-            {
-                var evt = _mapper.Map<RabbitMq.LoginFromNewIpAddressEvent>(user);
-                await _rebbitMq.PublishEventAsync(evt);
             }
+
+            await ProcessSuccessfulLoginAttempt(user);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return user;
         }
 
-        private void CheckUserStatus(UserStatus status)
+        private async Task ProcessSuccessfulLoginAttempt(User user)
         {
-            if (status.Value == UserStatuses.Blocked
-             && status.Value == UserStatuses.Disabled)
+            user.Login.ResetCounter();
+
+            string? userIpAddress = _httpContextAccessor?.HttpContext?.GetUserIpAddress();
+            if (!string.IsNullOrWhiteSpace(userIpAddress) && !userIpAddress.Equals(user.Login.LastLoginIpAddress))
             {
-                throw new ForbiddenException($"User status is '{status.Value}'.");
+                user.Login.LastLoginIpAddress = userIpAddress;
+
+                var evt = _mapper.Map<RabbitMq.LoginFromNewIpAddressEvent>(user);
+                await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because login is already processed
             }
         }
 
-        private async Task ProcessLoginAttempt(User user, bool isPasswordValid)
+        private async Task ProcessWrongLoginAttempt(User user)
         {
-            if (isPasswordValid)
+            user.Login.WrongLoginAttemptsCounter++;
+
+            if (user.Login.WrongLoginAttemptsCounter >= _appSettings.Security.DefaultMaxWrongLoginAttemptsBeforeBlock)
             {
-                user.Login.WrongLoginAttemptsCounter = 0;
-                user.Login.LastLoginDate = DateTime.UtcNow;
+                user.Block(UserStatusReasons.MaxWrongLoginAttemptsReached);
 
-                string? userIpAddress = _httpContextAccessor?.HttpContext?.GetUserIpAddress();
-                if (!string.IsNullOrWhiteSpace(userIpAddress))
-                    user.Login.LastLoginIpAddress = userIpAddress;
+                var evt = _mapper.Map<RabbitMq.LoginAttemptMadeEvent>(user);
+                await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because login is already processed
             }
-            else
-            {
-                user.Login.WrongLoginAttemptsCounter++;
-
-                if (user.Login.WrongLoginAttemptsCounter >= _appSettings.Security.DefaultMaxWrongLoginAttemptsBeforeBlock)
-                    user.Block(UserStatusReasons.MaxWrongLoginAttemptsReached);
-            }
-
-            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

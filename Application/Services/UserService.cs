@@ -33,9 +33,9 @@ namespace Application
             _rebbitMq = rabbitMq;
         }
 
-        public async Task<PaginatedReport<UserDto>> SearchAsync(UserSearchParams userSearchParams, CancellationToken cancellationToken)
+        public async Task<PaginatedReport<UserDto>> SearchAsync(UserSearchParams userSearchParams, CancellationToken cancellationToken = default)
         {
-            IQueryable<User> searchQuery = _unitOfWork.Users.GetRepo();
+            IQueryable<User> searchQuery = _unitOfWork.Users.Init().AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(userSearchParams.Username))
             {
@@ -59,19 +59,21 @@ namespace Application
             return await _paginatedReport.Prepare<User, UserDto>(searchQuery, userSearchParams, cancellationToken);
         }
 
-        public async Task<UserDto> GetAsync(string userPubliclId)
+        public async Task<UserDto> GetAsync(string userPublicId, CancellationToken cancellationToken = default)
         {
-            User user = await _unitOfWork.Users.GetByPublicIdAsync(userPubliclId, loadStatus: true)
-                ?? throw new NotFoundException("User not found.");
+            User user = await _unitOfWork.Users
+                .WhereIdEquals(userPublicId, autoTrack: false)
+                .Include(u => u.Status)
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("User not found.");
 
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<string> RegisterAsync(UserDto userDto)
+        public async Task<string> RegisterAsync(UserDto userDto, CancellationToken cancellationToken = default)
         {
             ValidatePasswordFormat(userDto.Password);
 
-            User? user = await _unitOfWork.Users.GetAsync(u => u.Username == userDto.Username);
+            User? user = await _unitOfWork.Users.GetByUsernameAsync(userDto.Username, cancellationToken);
 
             if (user is not null)
                 throw new ConflictException($"User with username '{userDto.Username}' already registered.");
@@ -79,19 +81,24 @@ namespace Application
             user = _mapper.Map<User>(userDto);
 
             await _unitOfWork.Users.AddAsync(user, userDto.Password);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return user.PublicId;
         }
 
-        public async Task UpdateAsync(string userPublicId, UserDto userDto)
+        public async Task UpdateAsync(string userPublicId, UserDto userDto, CancellationToken cancellationToken = default)
         {
-            User user = await _unitOfWork.Users.GetByPublicIdAsync(userPublicId, autoTrack: true, loadStatus: true, loadPassword: true)
-                ?? throw new NotFoundException("User not found.");
+            User user = await _unitOfWork.Users
+                .WhereIdEquals(userPublicId)
+                .Include(u => u.Status)
+                .Include(u => u.Password)
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("User not found.");
 
             if (!user.Username.Equals(userDto.Username))
             {
-                if (await _unitOfWork.Users.ExistAsync(u => u.Username == userDto.Username))
+                bool isUsernameTaken = await _unitOfWork.Users.CheckIfExistAsync(expression: u => u.Username == userDto.Username);
+
+                if (!isUsernameTaken)
                     throw new ConflictException($"User with username '{userDto.Username}' already registered.");
             }
 
@@ -99,50 +106,56 @@ namespace Application
             user = _mapper.Map(userDto, user);
 
             bool hasChanges = !user.IsEqual(userSnapshot);
-            await _unitOfWork.SaveChangesAsync(hasChanges);
+            await _unitOfWork.SaveChangesAsync(hasChanges, cancellationToken);
         }
 
-        public async Task DeleteAsync(string userPublicId)
+        public async Task DeleteAsync(string userPublicId, CancellationToken cancellationToken = default)
         {
-            User? user = await _unitOfWork.Users.GetAsync(u => u.PublicId == userPublicId)
+            User? user = await _unitOfWork.Users.GetByIdAsync(userPublicId, cancellationToken)
                 ?? throw new NotFoundException("User not found.");
 
             // TODO: schadule for delete with Hangfire
             _unitOfWork.Users.BasicRemove(user);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task ChangePasswordAsync(string userPublicId, string oldPassword, string newPassword)
+        public async Task ChangePasswordAsync(string userPublicId, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
         {
             ValidatePasswordFormat(newPassword);
 
-            User user = await _unitOfWork.Users.GetByPublicIdAsync(userPublicId, autoTrack: true, loadPassword: true)
-                ?? throw new NotFoundException("User not found.");
+            User user = await _unitOfWork.Users
+                .WhereIdEquals(userPublicId)
+                .Include(u => u.Password)
+                .SingleOrDefaultAsync() ?? throw new NotFoundException("User not found.");
 
-            if (!UserSecurePassword.IsValid(user.Password.Value, oldPassword, user.Password.Secret))
+            if (!user.Password.IsMatch(oldPassword))
                 throw new BadRequestException("Invalid old password.");
 
-            user.Password = UserSecurePassword.Create(newPassword);
+            user.Password = UserPasswordHandler.Create(newPassword);
 
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(user.Email))
             {
                 var evt = _mapper.Map<RabbitMq.UserPasswordChangedEvent>(user);
                 evt.UserIpAddress = _httpContextAccessor?.HttpContext?.GetUserIpAddress();
 
-                _rebbitMq.PublishEventAsync(evt);
+                // cancellation is unnecessary because changes are already made
+                await _rebbitMq.PublishEventInBackground(evt);
             }
         }
 
-        public async Task ChangeEmailAsync(string userPublicId, string email, string password)
+        public async Task ChangeEmailAsync(string userPublicId, string email, string password, CancellationToken cancellationToken = default)
         {
             ValidatePasswordFormat(password);
 
-            User user = await _unitOfWork.Users.GetByPublicIdAsync(userPublicId, autoTrack: true, loadStatus: true, loadPassword: true)
-                ?? throw new NotFoundException("User not found.");
+            User user = await _unitOfWork.Users
+                .WhereIdEquals(userPublicId)
+                .Include(u => u.Status)
+                .Include(u => u.Password)
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("User not found.");
 
-            if (!UserSecurePassword.IsValid(user.Password.Value, password, user.Password.Secret))
+            if (!user.Password.IsMatch(password))
                 throw new BadRequestException("Invalid old password.");
 
             user.Email = email;
@@ -150,7 +163,7 @@ namespace Application
             user.Status.Value = UserStatuses.Restricted;
             user.Status.Reason = UserStatusReasons.EmailChanged;
 
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         private void ValidatePasswordFormat(string? password)

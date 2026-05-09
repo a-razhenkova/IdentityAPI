@@ -4,6 +4,6 @@ namespace Application
 {
     public interface IHealthChecker
     {
-        Task<HealthReport> CheckHealthAsync();
+        Task<HealthReport> CheckHealthAsync(CancellationToken cancellationToken = default);
     }
 }

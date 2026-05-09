@@ -15,54 +15,26 @@ namespace Infrastructure
             _context = context;
         }
 
-        public virtual IQueryable<TEntity> GetRepo()
+        public virtual IQueryable<TEntity> Init()
             => _context.Set<TEntity>();
 
-        public virtual async Task<bool> ExistAsync(Expression<Func<TEntity, bool>> expression)
-            => await _context.Set<TEntity>().AnyAsync(expression);
-
-        public virtual async Task<TEntity?> GetByIdAsync(long id,
-            Expression<Func<TEntity, object>>[]? includes = default,
-            bool autoTrack = false)
-        {
-            return await GetQueryAsync(e => e.Id == id, includes, autoTrack).SingleOrDefaultAsync();
-        }
-
-        public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>>? expression = default,
-            Expression<Func<TEntity, object>>[]? includes = default,
-            bool autoTrack = false)
-        {
-            return await GetQueryAsync(expression, includes, autoTrack).SingleOrDefaultAsync();
-        }
-
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, object>>[]? includes = default, bool autoTrack = false)
-            => await GetQueryAsync(default, includes, autoTrack).ToListAsync();
-
-        protected virtual IQueryable<TEntity> GetQueryAsync(Expression<Func<TEntity, bool>>? expression = default,
-            Expression<Func<TEntity, object>>[]? includes = default,
-            bool autoTrack = false)
-        {
-            IQueryable<TEntity> query = GetRepo();
-
-            if (expression is not null)
-                query = query.Where(expression);
-
-            if (includes is not null)
-            {
-                foreach (var include in includes)
-                    query = query.Include(include);
-            }
-
-            if (!autoTrack)
-                query = query.AsNoTracking();
-
-            return query;
-        }
-
-        public virtual async Task BasicAddAsync(TEntity entity)
-            => await _context.Set<TEntity>().AddAsync(entity);
+        public virtual async Task BasicAddAsync(TEntity entity, CancellationToken cancellationToken = default)
+            => await _context.Set<TEntity>().AddAsync(entity, cancellationToken);
 
         public virtual void BasicRemove(TEntity entity)
             => _context.Set<TEntity>().Remove(entity);
+
+        public virtual async Task<bool> CheckIfExistAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+            => await Init().AnyAsync(expression, cancellationToken);
+
+        public virtual IQueryable<TEntity> Where(Expression<Func<TEntity, bool>> expression, bool autoTrack = true)
+        {
+            IQueryable<TEntity> query = Init();
+
+            if (!autoTrack)
+                query.AsNoTracking();
+
+            return query.Where(expression);
+        }
     }
 }

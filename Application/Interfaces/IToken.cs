@@ -5,15 +5,15 @@ namespace Application
 {
     public interface IToken
     {
-        Task<TokenDto> CreateAccessTokenAsync(Authorization authorization);
-        Task<TokenDto> CreateAccessTokenAsync(Client client);
+        Task<TokenDto> CreateAccessTokenAsync(Authorization authorization, CancellationToken cancellationToken = default);
+        TokenDto CreateAccessToken(Client client);
         
-        Task<TokenDto> CreateAccessTokenAsync(string username, string password);
-        Task<TokenDto> CreateAccessTokenAsync(User user);
+        Task<TokenDto> CreateAccessTokenAsync(string username, string password, CancellationToken cancellationToken = default);
+        TokenDto CreateAccessToken(User user);
 
-        Task<TokenDto> CreateAccessTokenByOtpAsync(string userPublicId, string otp);
+        Task<TokenDto> CreateAccessTokenByOtpAsync(string userPublicId, string otp, CancellationToken cancellationToken = default);
 
-        Task<TokenDto> RefreshAccessTokenAsync();
+        Task<TokenDto> RefreshAccessTokenAsync(CancellationToken cancellationToken = default);
 
         Task<TokenValidationResult> ValidateAccessTokenAsync();
     }

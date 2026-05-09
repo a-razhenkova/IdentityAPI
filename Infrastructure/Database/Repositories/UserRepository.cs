@@ -1,50 +1,38 @@
 ﻿using Application;
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Infrastructure.IdentityDb
 {
     public class UserRepository : Repository<User>, IUserRepository
     {
-        public UserRepository(IdentityContext context) : base(context)
-        {
+        public UserRepository(IdentityContext context) : base(context) { }
 
-        }
+        public async Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+            => await WhereUsernameEquals(id, autoTrack: true).SingleOrDefaultAsync(cancellationToken);
 
-        public async Task<User?> GetByPublicIdAsync(string id, bool autoTrack = false, bool loadStatus = false, bool loadPassword = false, bool loadLogin = false)
-            => await GetQueryAsync(u => u.PublicId == id, autoTrack, loadStatus, loadPassword, loadLogin).SingleOrDefaultAsync();
+        public async Task<User?> GetByIdWithNoTrackingAsync(string id, CancellationToken cancellationToken = default)
+            => await WhereUsernameEquals(id, autoTrack: false).SingleOrDefaultAsync(cancellationToken);
 
-        public async Task<User?> GetByUsernameAsync(string username, bool autoTrack = false, bool loadStatus = false, bool loadPassword = false, bool loadLogin = false)
-            => await GetQueryAsync(u => u.Username == username, autoTrack, loadStatus, loadPassword, loadLogin).SingleOrDefaultAsync();
+        public async Task<User?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default)
+            => await WhereUsernameEquals(username, autoTrack: true).SingleOrDefaultAsync(cancellationToken);
 
-        public IQueryable<User> GetQueryAsync(Expression<Func<User, bool>> expression,
-            bool autoTrack = false,
-            bool loadStatus = false,
-            bool loadPassword = false,
-            bool loadLogin = false)
-        {
-            IQueryable<User> query = base.GetQueryAsync(expression, autoTrack: autoTrack);
+        public async Task<User?> GetByUsernameWithNoTrackingAsync(string username, CancellationToken cancellationToken = default)
+            => await WhereUsernameEquals(username, autoTrack: false).SingleOrDefaultAsync(cancellationToken);
 
-            if (loadStatus)
-                query = query.Include(u => u.Status);
-
-            if (loadPassword)
-                query = query.Include(u => u.Password);
-
-            if (loadLogin)
-                query = query.Include(u => u.Login);
-
-            return query;
-        }
-
-        public async Task AddAsync(User user, string password)
+        public async Task AddAsync(User user, string password, CancellationToken cancellationToken = default)
         {
             user.PublicId = Guid.NewGuid().ToString();
-            user.Password = UserSecurePassword.Create(password);
-            user.OtpSecret = UserOtpSecret.Create();
+            user.Password = UserPasswordHandler.Create(password);
+            user.OtpSecret = UserOtpHandler.Create();
 
-            await _context.AddAsync(user);
+            await _context.AddAsync(user, cancellationToken);
         }
+
+        public IQueryable<User> WhereIdEquals(string id, bool autoTrack = true)
+            => Where(x => x.PublicId.Equals(id), autoTrack: autoTrack);
+
+        public IQueryable<User> WhereUsernameEquals(string username, bool autoTrack = true)
+            => Where(x => x.Username.Equals(username), autoTrack: autoTrack);
     }
 }

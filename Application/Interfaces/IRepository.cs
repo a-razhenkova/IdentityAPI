@@ -1,26 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Application
 {
     public interface IRepository<TEntity>
     {
-        IQueryable<TEntity> GetRepo();
+        IQueryable<TEntity> Init();
 
-        Task<bool> ExistAsync(Expression<Func<TEntity, bool>> expression);
-
-        Task<TEntity?> GetByIdAsync(long id,
-            Expression<Func<TEntity, object>>[]? includes = default,
-            bool autoTrack = false);
-
-        Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>>? expression = default,
-            Expression<Func<TEntity, object>>[]? includes = default,
-            bool autoTrack = false);
-
-        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, object>>[]? includes = default, bool autoTrack = false);
-
-        Task BasicAddAsync(TEntity entity);
+        Task BasicAddAsync(TEntity entity, CancellationToken cancellationToken = default);
 
         void BasicRemove(TEntity entity);
+
+        Task<bool> CheckIfExistAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);
+
+        IQueryable<TEntity> Where(Expression<Func<TEntity, bool>> expression, bool autoTrack = true);
     }
 }

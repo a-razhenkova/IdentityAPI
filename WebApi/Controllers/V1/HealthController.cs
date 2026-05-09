@@ -52,8 +52,9 @@ namespace WebApi.V1
         /// <summary>
         /// Checks the health of the application and its dependencies.
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("checks"), SkipLog]
-        public async Task<IActionResult> CheckHealthAsync()
+        public async Task<IActionResult> CheckHealthAsync(CancellationToken cancellationToken)
         {
             HealthReport healthReport = await _healthChecker.CheckHealthAsync();
             return Ok(healthReport);

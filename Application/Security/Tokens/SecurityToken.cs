@@ -7,13 +7,15 @@ namespace Application
 {
     public class SecurityToken
     {
-        private string _token = string.Empty;
         protected readonly SecuritySettings _settings;
 
         public SecurityToken(string token, SecuritySettings settings, string key)
             : this(settings, key)
         {
-            _token = token;
+            if (string.IsNullOrWhiteSpace(token))
+                throw new InvalidOperationException();
+
+            Value = token;
         }
 
         protected SecurityToken(SecuritySettings settings, string key)
@@ -36,14 +38,15 @@ namespace Application
             };
         }
 
+        protected string Value { get; set; } = string.Empty;
         public TokenValidationParameters ValidationParams { get; init; }
 
         public async Task<TokenValidationResult> ValidateAsync()
         {
-            if (string.IsNullOrWhiteSpace(_token))
+            if (string.IsNullOrWhiteSpace(Value))
                 throw new InvalidOperationException();
 
-            return await new JwtSecurityTokenHandler().ValidateTokenAsync(_token, ValidationParams);
+            return await new JwtSecurityTokenHandler().ValidateTokenAsync(Value, ValidationParams);
         }
 
         public string? GetClaim(Enum claim)
@@ -68,14 +71,14 @@ namespace Application
 
         public JwtSecurityToken? Decode()
         {
-            if (string.IsNullOrWhiteSpace(_token))
+            if (string.IsNullOrWhiteSpace(Value))
                 throw new InvalidOperationException();
 
             JwtSecurityToken? jwt = null;
 
             try
             {
-                new JwtSecurityTokenHandler().ValidateToken(_token, ValidationParams, out Microsoft.IdentityModel.Tokens.SecurityToken validatedToken);
+                new JwtSecurityTokenHandler().ValidateToken(Value, ValidationParams, out Microsoft.IdentityModel.Tokens.SecurityToken validatedToken);
                 jwt = (JwtSecurityToken)validatedToken;
             }
             catch (Exception)

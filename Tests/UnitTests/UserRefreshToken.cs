@@ -1,4 +1,5 @@
 ﻿using Application;
+using Domain;
 using FluentAssertions;
 using Microsoft.IdentityModel.Tokens;
 using Shared;
@@ -9,43 +10,44 @@ namespace UnitTests
 {
     public class UserRefreshTokenTests
     {
-        [Fact]
-        public void RefreshToken_Create_ReturnTokenWithClaims()
+        [Theory]
+        [InlineData(UserRoles.Administrator, UserStatuses.Active)]
+        [InlineData(UserRoles.Customer, UserStatuses.Blocked)]
+        public void RefreshToken_Create_ReturnTokenWithClaims(UserRoles userRole, UserStatuses userStatus)
         {
             // Arrange
-            string publicId = Guid.NewGuid().ToString();
-            string issuer = Guid.NewGuid().ToString();
-            string audience = Guid.NewGuid().ToString();
+            var securitySettings = new SecuritySettingsFaker().Generate();
 
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings(issuer: issuer, audience: audience);
-            var user = UserMock.CreateBasicUser(publicId: publicId);
+            var user = new UserFaker().Generate();
+            user.Role = userRole;
+            user.Status.Value = userStatus;
 
             // Act
-            string refreshToken = new RefreshToken(securitySettings).Create(user);
+            var refreshToken = new RefreshToken(securitySettings);
+            refreshToken.Create(user);
 
             // Assert
-            var cfg = new RefreshToken(refreshToken, securitySettings);
-
-            JwtSecurityToken? jwt = cfg.Decode();
+            JwtSecurityToken? jwt = refreshToken.Decode();
             jwt.Should().NotBeNull();
-
             jwt.Claims.Count().Should().Be(6);
 
-            cfg.GetClaim(jwt, TokenClaim.Issuer).Should().Be(issuer);
-            cfg.GetClaim(jwt, TokenClaim.Audience).Should().Be(audience);
-            cfg.GetClaim(jwt, TokenClaim.UserPublicId).Should().Be(publicId);
+            refreshToken.GetClaim(jwt, TokenClaim.Issuer).Should().Be(securitySettings.TokenIssuer);
+            refreshToken.GetClaim(jwt, TokenClaim.Audience).Should().Be(securitySettings.TokenAudience);
+            refreshToken.GetClaim(jwt, TokenClaim.UserPublicId).Should().Be(user.PublicId);
         }
 
         [Fact]
         public async Task RefreshToken_Valid_ReturnIsValidTrue()
         {
             // Arrange
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings();
-            var user = UserMock.CreateBasicUser();
+            var user = new UserFaker().Generate();
+            var securitySettings = new SecuritySettingsFaker().Generate();
 
             // Act
-            string refreshToken = new RefreshToken(securitySettings).Create(user);
-            TokenValidationResult tokenValidationResult = await new RefreshToken(refreshToken, securitySettings).ValidateAsync();
+            var refreshToken = new RefreshToken(securitySettings);
+            refreshToken.Create(user);
+
+            TokenValidationResult tokenValidationResult = await refreshToken.ValidateAsync();
 
             // Assert
             tokenValidationResult.IsValid.Should().BeTrue();
@@ -55,16 +57,18 @@ namespace UnitTests
         public async Task RefreshToken_WithWrongIssuer_ReturnIsValidFalse()
         {
             // Arrange
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings();
-            var securitySettingsWithDifferentKey = SettingsMock.CreateBasicSecuritySettings(issuer: Guid.NewGuid().ToString(),
-                audience: securitySettings.TokenAudience, refreshKey: securitySettings.RefreshToken.Key, lifetime: securitySettings.RefreshToken.LifetimeInSeconds);
-            var user = UserMock.CreateBasicUser();
+            var user = new UserFaker().Generate();
+
+            var securitySettingsFaker = new SecuritySettingsFaker();
+            var securitySettings = securitySettingsFaker.Generate();
+            var securitySettingsWithDifferentIssuer = securitySettingsFaker.SetNewTokenIssuer().Generate();
 
             // Act
-            string refreshToken = new RefreshToken(securitySettings).Create(user);
-            TokenValidationResult tokenValidationResult = await new RefreshToken(refreshToken, securitySettingsWithDifferentKey).ValidateAsync();
+            var refreshToken = new RefreshToken(securitySettings).Create(user);
+            TokenValidationResult tokenValidationResult = await new RefreshToken(refreshToken, securitySettingsWithDifferentIssuer).ValidateAsync();
 
             // Assert
+            securitySettings.TokenIssuer.Should().NotBe(securitySettingsWithDifferentIssuer.TokenIssuer);
             tokenValidationResult.IsValid.Should().BeFalse();
             tokenValidationResult.Exception.Message.Should().Contain("Issuer validation failed.");
         }
@@ -73,14 +77,15 @@ namespace UnitTests
         public async Task RefreshToken_WithWrongAudience_ReturnIsValidFalse()
         {
             // Arrange
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings();
-            var securitySettingsWithDifferentKey = SettingsMock.CreateBasicSecuritySettings(issuer: securitySettings.TokenIssuer,
-                audience: Guid.NewGuid().ToString(), refreshKey: securitySettings.RefreshToken.Key, lifetime: securitySettings.RefreshToken.LifetimeInSeconds);
-            var user = UserMock.CreateBasicUser();
+            var user = new UserFaker().Generate();
+
+            var securitySettingsFaker = new SecuritySettingsFaker();
+            var securitySettings = securitySettingsFaker.Generate();
+            var securitySettingsWithDifferentAudience = securitySettingsFaker.SetNewTokenAudience().Generate();
 
             // Act
-            string refreshToken = new RefreshToken(securitySettings).Create(user);
-            TokenValidationResult tokenValidationResult = await new RefreshToken(refreshToken, securitySettingsWithDifferentKey).ValidateAsync();
+            var refreshToken = new RefreshToken(securitySettings).Create(user);
+            TokenValidationResult tokenValidationResult = await new RefreshToken(refreshToken, securitySettingsWithDifferentAudience).ValidateAsync();
 
             // Assert
             tokenValidationResult.IsValid.Should().BeFalse();
@@ -91,13 +96,14 @@ namespace UnitTests
         public async Task RefreshToken_WithWrongKey_ReturnIsValidFalse()
         {
             // Arrange
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings();
-            var securitySettingsWithDifferentKey = SettingsMock.CreateBasicSecuritySettings(securitySettings.TokenIssuer,
-                audience: securitySettings.TokenAudience, refreshKey: "Si8lk4k2%Y-UT0~S(pU7YEC56h{K6GXD", lifetime: securitySettings.RefreshToken.LifetimeInSeconds);
-            var user = UserMock.CreateBasicUser();
+            var user = new UserFaker().Generate();
+
+            var securitySettingsFaker = new SecuritySettingsFaker();
+            var securitySettings = securitySettingsFaker.Generate();
+            var securitySettingsWithDifferentKey = securitySettingsFaker.SetNewRefreshTokenKey().Generate();
 
             // Act
-            string refreshToken = new RefreshToken(securitySettings).Create(user);
+            var refreshToken = new RefreshToken(securitySettings).Create(user);
             TokenValidationResult tokenValidationResult = await new RefreshToken(refreshToken, securitySettingsWithDifferentKey).ValidateAsync();
 
             // Assert
@@ -105,19 +111,21 @@ namespace UnitTests
             tokenValidationResult.Exception.Message.Should().Contain("Signature validation failed.");
         }
 
-        [Fact]
-        public async Task ValidateRefreshToken_Expired_ReturnIsValidFalse()
+        [Theory]
+        [InlineData(1)]
+        public async Task ValidateRefreshToken_Expired_ReturnIsValidFalse(int lifetimeInSeconds)
         {
             // Arrange
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings(lifetime: 1);
-            var user = UserMock.CreateBasicUser();
+            var user = new UserFaker().Generate();
+            var securitySettings = new SecuritySettingsFaker().SetRefreshTokenLifetime(lifetimeInSeconds).Generate();
 
             // Act
-            string refreshToken = new RefreshToken(securitySettings).Create(user);
+            var refreshToken = new RefreshToken(securitySettings);
+            refreshToken.Create(user);
 
-            Thread.Sleep(1_000);
+            Thread.Sleep(lifetimeInSeconds * 1_000);
 
-            TokenValidationResult tokenValidationResult = await new RefreshToken(refreshToken, securitySettings).ValidateAsync();
+            TokenValidationResult tokenValidationResult = await refreshToken.ValidateAsync();
 
             // Assert
             tokenValidationResult.IsValid.Should().BeFalse();

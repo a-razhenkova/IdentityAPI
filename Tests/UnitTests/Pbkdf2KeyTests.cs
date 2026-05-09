@@ -9,12 +9,10 @@ namespace UnitTests
         private const int HashLength = 128;
         private const int SaltLength = 16;
 
-        [Fact]
-        public void Create_HashSameWordTwice_ReturnDifferentHashes()
+        [Theory]
+        [InlineData("password")]
+        public void Create_HashSameWordTwice_ReturnDifferentHashes(string word)
         {
-            // Arrange
-            const string word = "test";
-
             // Act
             (string hash, string salt) = Pbkdf2Key.Create(word, Iterations, HashLength, SaltLength);
             (string newHash, string newSalt) = Pbkdf2Key.Create(word, Iterations, HashLength, SaltLength);
@@ -24,12 +22,10 @@ namespace UnitTests
             salt.Should().NotBe(newSalt);
         }
 
-        [Fact]
-        public void Recreate_SameWord_ReturnMatchingHashes()
+        [Theory]
+        [InlineData("password")]
+        public void Recreate_SameWord_ReturnMatchingHashes(string word)
         {
-            // Arrange
-            const string word = "word";
-
             // Act
             (string hash, string salt) = Pbkdf2Key.Create(word, Iterations, HashLength, SaltLength);
             (string newHash, string newSalt) = Pbkdf2Key.Recreate(word, salt, Iterations, HashLength);
@@ -39,12 +35,11 @@ namespace UnitTests
             salt.Should().Be(newSalt);
         }
 
-        [Fact]
-        public void IsValid_ValidHash_ReturnTrue()
+        [Theory]
+        [InlineData("password")]
+        public void IsValid_ValidHash_ReturnTrue(string word)
         {
             // Arrange
-            const string word = "word";
-
             (string hash, string salt) = Pbkdf2Key.Create(word, Iterations, HashLength, SaltLength);
 
             // Act
@@ -54,14 +49,15 @@ namespace UnitTests
             result.Should().Be(true);
         }
 
-        [Fact]
-        public void IsValid_InvalidHash_ReturnFalse()
+        [Theory]
+        [InlineData("password")]
+        public void IsValid_InvalidHash_ReturnFalse(string word)
         {
             // Arrange
-            (string hash, string salt) = Pbkdf2Key.Create("word", Iterations, HashLength, SaltLength);
+            (string hash, string salt) = Pbkdf2Key.Create(word, Iterations, HashLength, SaltLength);
 
             // Act
-            bool result = Pbkdf2Key.IsValid(hash, "different_word", salt, Iterations, HashLength);
+            bool result = Pbkdf2Key.IsValid(hash, $"different_{word}", salt, Iterations, HashLength);
 
             // Assert
             result.Should().Be(false);

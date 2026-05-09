@@ -49,6 +49,8 @@ namespace Shared
         ClientStatus,
         [Description("isInternalClient")]
         IsInternalClient,
+        [Description("canNotify")]
+        CanClientNotify,
 
         // user
         [Description("userId")]
@@ -58,11 +60,7 @@ namespace Shared
         [Description("userRole")]
         UserRole,
         [Description("userStatus")]
-        UserStatus,
-
-        // rights
-        [Description("canNotify")]
-        CanNotify
+        UserStatus
     }
 
     public enum ResiliencePipelineType

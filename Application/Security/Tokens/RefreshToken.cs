@@ -16,15 +16,17 @@ namespace Application
 
         }
 
-        public string Create<TCaller>(TCaller caller)
+        public string Create(object type)
         {
-            ISecurityToken token = caller switch
+            ISecurityToken token = type switch
             {
                 User user => new UserRefreshToken(user, _settings.RefreshToken),
                 _ => throw new NotImplementedException()
             };
 
-            return new SecurityTokenHandler(token, _settings).Create();
+            Value = new SecurityTokenHandler(token, _settings).Create();
+
+            return Value;
         }
     }
 }

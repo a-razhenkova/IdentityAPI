@@ -11,46 +11,47 @@ namespace UnitTests
     public class ClientAccessTokenTests
     {
         [Theory]
-        [InlineData("read API", ClientStatuses.Active, true, false)]
-        [InlineData("write API", ClientStatuses.Blocked, false, true)]
-        public void AccessToken_Create_ReturnTokenWithClaims(string name, ClientStatuses clientStatus, bool isInternal, bool canNotify)
+        [InlineData(ClientStatuses.Active, true, false)]
+        [InlineData(ClientStatuses.Blocked, false, true)]
+        public void AccessToken_Create_ReturnTokenWithClaims(ClientStatuses clientStatus, bool isInternalClient, bool canClientNotify)
         {
             // Arrange
-            string issuer = Guid.NewGuid().ToString();
-            string audience = Guid.NewGuid().ToString();
+            var securitySettings = new SecuritySettingsFaker().Generate();
 
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings(issuer: issuer, audience: audience);
-            var client = ClientMock.CreateBasicClient(name: name, status: clientStatus, isInternal: isInternal, canNotify: canNotify);
+            var client = new ClientFaker().Generate();
+            client.Status.Value = clientStatus;
+            client.IsInternal = isInternalClient;
+            client.Right.CanNotify = canClientNotify;
 
             // Act
-            string accessToken = new AccessToken(securitySettings).Create(client);
+            var accessToken = new AccessToken(securitySettings);
+            accessToken.Create(client);
 
             // Assert
-            var cfg = new AccessToken(accessToken, securitySettings);
-
-            JwtSecurityToken? jwt = cfg.Decode();
+            JwtSecurityToken? jwt = accessToken.Decode();
             jwt.Should().NotBeNull();
-
             jwt.Claims.Count().Should().Be(9);
 
-            cfg.GetClaim(jwt, TokenClaim.Issuer).Should().Be(issuer);
-            cfg.GetClaim(jwt, TokenClaim.Audience).Should().Be(audience);
-            cfg.GetClaim(jwt, TokenClaim.ClientId).Should().Be(client.Key);
-            cfg.GetClaim(jwt, TokenClaim.ClientStatus).Should().Be(clientStatus.ToString().ToUpper());
-            cfg.GetClaim(jwt, TokenClaim.IsInternalClient).Should().Be(isInternal.ToString().ToLower());
-            cfg.GetClaim(jwt, TokenClaim.CanNotify).Should().Be(canNotify.ToString().ToLower());
+            accessToken.GetClaim(jwt, TokenClaim.Issuer).Should().Be(securitySettings.TokenIssuer);
+            accessToken.GetClaim(jwt, TokenClaim.Audience).Should().Be(securitySettings.TokenAudience);
+            accessToken.GetClaim(jwt, TokenClaim.ClientId).Should().Be(client.Key);
+            accessToken.GetClaim(jwt, TokenClaim.ClientStatus).Should().Be(clientStatus.ToString().ToUpper());
+            accessToken.GetClaim(jwt, TokenClaim.IsInternalClient).Should().Be(isInternalClient.ToString().ToLower());
+            accessToken.GetClaim(jwt, TokenClaim.CanClientNotify).Should().Be(canClientNotify.ToString().ToLower());
         }
 
         [Fact]
         public async Task AccessToken_Valid_ReturnIsValidTrue()
         {
             // Arrange
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings();
-            var client = ClientMock.CreateBasicClient();
+            var client = new ClientFaker().Generate();
+            var securitySettings = new SecuritySettingsFaker().Generate();
 
             // Act
-            string accessToken = new AccessToken(securitySettings).Create(client);
-            TokenValidationResult tokenValidationResult = await new AccessToken(accessToken, securitySettings).ValidateAsync();
+            var accessToken = new AccessToken(securitySettings);
+            accessToken.Create(client);
+
+            TokenValidationResult tokenValidationResult = await accessToken.ValidateAsync();
 
             // Assert
             tokenValidationResult.IsValid.Should().BeTrue();
@@ -60,14 +61,15 @@ namespace UnitTests
         public async Task AccessToken_WithWrongIssuer_ReturnIsValidFalse()
         {
             // Arrange
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings();
-            var securitySettingsWithDifferentKey = SettingsMock.CreateBasicSecuritySettings(issuer: Guid.NewGuid().ToString(),
-                audience: securitySettings.TokenAudience, accessKey: securitySettings.AccessToken.Key, lifetime: securitySettings.AccessToken.LifetimeInSeconds);
-            var client = ClientMock.CreateBasicClient();
+            var client = new ClientFaker().Generate();
+
+            var securitySettingsFaker = new SecuritySettingsFaker();
+            var securitySettings = securitySettingsFaker.Generate();
+            var securitySettingsWithDifferentIssuer = securitySettingsFaker.SetNewTokenIssuer().Generate();
 
             // Act
-            string accessToken = new AccessToken(securitySettings).Create(client);
-            TokenValidationResult tokenValidationResult = await new AccessToken(accessToken, securitySettingsWithDifferentKey).ValidateAsync();
+            var accessToken = new AccessToken(securitySettings).Create(client);
+            TokenValidationResult tokenValidationResult = await new AccessToken(accessToken, securitySettingsWithDifferentIssuer).ValidateAsync();
 
             // Assert
             tokenValidationResult.IsValid.Should().BeFalse();
@@ -78,14 +80,15 @@ namespace UnitTests
         public async Task AccessToken_WithWrongAudience_ReturnIsValidFalse()
         {
             // Arrange
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings();
-            var securitySettingsWithDifferentKey = SettingsMock.CreateBasicSecuritySettings(issuer: securitySettings.TokenIssuer,
-                audience: Guid.NewGuid().ToString(), accessKey: securitySettings.AccessToken.Key, lifetime: securitySettings.AccessToken.LifetimeInSeconds);
-            var client = ClientMock.CreateBasicClient();
+            var client = new ClientFaker().Generate();
+
+            var securitySettingsFaker = new SecuritySettingsFaker();
+            var securitySettings = securitySettingsFaker.Generate();
+            var securitySettingsWithDifferentAudience = securitySettingsFaker.SetNewTokenAudience().Generate();
 
             // Act
-            string accessToken = new AccessToken(securitySettings).Create(client);
-            TokenValidationResult tokenValidationResult = await new AccessToken(accessToken, securitySettingsWithDifferentKey).ValidateAsync();
+            var accessToken = new AccessToken(securitySettings).Create(client);
+            TokenValidationResult tokenValidationResult = await new AccessToken(accessToken, securitySettingsWithDifferentAudience).ValidateAsync();
 
             // Assert
             tokenValidationResult.IsValid.Should().BeFalse();
@@ -96,13 +99,14 @@ namespace UnitTests
         public async Task AccessToken_WithWrongKey_ReturnIsValidFalse()
         {
             // Arrange
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings();
-            var securitySettingsWithDifferentKey = SettingsMock.CreateBasicSecuritySettings(issuer: securitySettings.TokenIssuer,
-                audience: securitySettings.TokenAudience, accessKey: "VQJAz9-2cJu4?4|baop4#&E4sBtO0F/f", lifetime: securitySettings.AccessToken.LifetimeInSeconds);
-            var client = ClientMock.CreateBasicClient();
+            var client = new ClientFaker().Generate();
+
+            var securitySettingsFaker = new SecuritySettingsFaker();
+            var securitySettings = securitySettingsFaker.Generate();
+            var securitySettingsWithDifferentKey = securitySettingsFaker.SetNewAccessTokenKey().Generate();
 
             // Act
-            string accessToken = new AccessToken(securitySettings).Create(client);
+            var accessToken = new AccessToken(securitySettings).Create(client);
             TokenValidationResult tokenValidationResult = await new AccessToken(accessToken, securitySettingsWithDifferentKey).ValidateAsync();
 
             // Assert
@@ -110,19 +114,21 @@ namespace UnitTests
             tokenValidationResult.Exception.Message.Should().Contain("Signature validation failed.");
         }
 
-        [Fact]
-        public async Task ValidateAccessToken_Expired_ReturnIsValidFalse()
+        [Theory]
+        [InlineData(1)]
+        public async Task ValidateAccessToken_Expired_ReturnIsValidFalse(int lifetimeInSeconds)
         {
             // Arrange
-            var securitySettings = SettingsMock.CreateBasicSecuritySettings(lifetime: 1);
-            var client = ClientMock.CreateBasicClient();
+            var client = new ClientFaker().Generate();
+            var securitySettings = new SecuritySettingsFaker().SetAccessTokenLifetime(lifetimeInSeconds).Generate();
 
             // Act
-            string accessToken = new AccessToken(securitySettings).Create(client);
+            var accessToken = new AccessToken(securitySettings);
+            accessToken.Create(client);
 
-            Thread.Sleep(1_000);
+            Thread.Sleep(lifetimeInSeconds * 1_000);
 
-            TokenValidationResult tokenValidationResult = await new AccessToken(accessToken, securitySettings).ValidateAsync();
+            TokenValidationResult tokenValidationResult = await accessToken.ValidateAsync();
 
             // Assert
             tokenValidationResult.IsValid.Should().BeFalse();

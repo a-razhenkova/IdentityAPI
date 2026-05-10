@@ -46,7 +46,7 @@
   
 ---
 
-# :gear: Complete API documentation
+## :gear: Complete API documentation
 
 * [Postman collection](https://documenter.getpostman.com/view/34315168/2sBXqNmJmh)
 * [Swagger](/assets/swagger.json)
@@ -86,12 +86,32 @@
 > [!NOTE]
 > The data access is managed with **Repository** and **Unit of Work** patterns.
 
-> [!NOTE]
-> The token handling mechanism follows the **Strategy pattern** ([`SecurityTokenHandler`](/Application/Security/Tokens/SecurityTokenHandler.cs)).
+---
+
+## References
+| Functionality | Description | Reference |
+| --- | --- | --- |
+| Strategy Pattern | Used for handling tokens. | [SecurityTokenHandler.cs](/Application/Security/Tokens/SecurityTokenHandler.cs) |
+| [RabbitMQ](https://www.rabbitmq.com/tutorials/tutorial-one-dotnet-amqp10) | Asynchronous communication. Uses [Polly](https://www.pollydocs.org/strategies/index.html) for resilience. | [RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs) |
+| Rate Limiter | With fixed window counter, configurable by [`appsettings::Security::RateLimiter`](/WebApi/appsettings.json). | [AddRateLimiter()](/WebApi/Setup/WebAppBuilderExtensions.cs) |
+| [Serilog](https://serilog.net) | Global exception logging is handled [here](/WebApi/Middlewares/ExceptionHandlingMiddleware.cs).<br/>Global HTTP request and response logging is handled [here](WebApi/Middlewares/HttpMessageLoggingMiddleware.cs). | [LoggerSetup.cs](/WebApi/Setup/LoggerSetup.cs) |
+
+### Caching
+| Functionality | Description | Reference |
+| --- | --- | --- |
+| Redis | Distributed caching. | [RedisService.cs](/Infrastructure/Cache/RedisService.cs) |
+
+### Database
+| Functionality | Description | Reference |
+| --- | --- | --- |
+| Repository Pattern | The full list of repositories can be viewed [here](/Infrastructure/Database/Repositories). | [Repository.cs](/Infrastructure/Database/Repository.cs) |
+| Unit Of Work Pattern | Manages all access to the database. | [UnitOfWork.cs](/Infrastructure/Database/UnitOfWork.cs) |
+| [Migrations](https://www.learnentityframeworkcore.com/migrations) | Automatically executes pending [migrations](/Infrastructure/Database/Migrations) at startup. This functionality is configurable by [`appsettings::Database::IsDbMigrationAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/WebAppExtensions.cs) |
+| [DbUp](https://dbup.readthedocs.io/en/latest) | Automatically executes pending [scripts](/Infrastructure/Database/Scripts) at startup. This functionality is configurable by [`appsettings::Database::IsDbUpAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/WebAppExtensions.cs) |
 
 ---
 
-## Client Single-Factor Authentication
+## Client Single-Factor Authentication Steps
 1. Client credentials are received in the `Authorization` header using the format:  
    `Basic <base64_encoded_key>:<base64_encoded_secret>`
 2. The credentials from the header are decoded.
@@ -113,7 +133,7 @@
 
 ---
 
-## User Single-Factor Authentication
+## User Single-Factor Authentication Steps
 1. User `username` and `password` are received in the request body.
 2. A database query is executed to fetch user data using the provided `username`.
 3. If the `username` exists, the `user status` is validated.
@@ -137,7 +157,7 @@
 
 ---
 
-## User Multi-Factor Authentication
+## User Multi-Factor Authentication Steps
 1. User `username` and `password` are received in the request body.
 2. A database query is executed to fetch user data using the provided `username`.
 3. If the `username` exists, the `user status` is validated.
@@ -163,5 +183,11 @@
 
 > [!CAUTION]
 > A `failed login attempt counter` is maintained in `Redis` per `one-time password`. If the counter exceeds the allowed limit, the `one-time password` is deleted.
+
+---
+
+## Testing
+* [Unit Tests](/UnitTests/Tests)
+* [Integration Tests](/IntegrationTests/Tests)
 
 ---

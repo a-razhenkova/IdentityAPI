@@ -14,7 +14,7 @@
   > [!NOTE]
   > The **access token** can be validated via:\
   > `POST /api/v1/token/status`.
-  
+
 ---
 
 ## :iphone: User Authentication
@@ -46,7 +46,10 @@
   
 ---
 
-:gear: Complete API documentation can be found in [`swagger.json`](/assets/swagger.json).
+# :gear: Complete API documentation
+
+* [Postman collection](https://documenter.getpostman.com/view/34315168/2sBXqNmJmh)
+* [Swagger](/assets/swagger.json)
 
 ---
 
@@ -71,6 +74,8 @@
 > [!IMPORTANT]
 > The API requires running RabbitMQ broker.
 
+---
+
 ## Architecture
 
 ![Architecture Diagram](/assets/architecture-diagram.png)
@@ -83,6 +88,8 @@
 
 > [!NOTE]
 > The token handling mechanism follows the **Strategy pattern** ([`SecurityTokenHandler`](/Application/Security/Tokens/SecurityTokenHandler.cs)).
+
+---
 
 ## Client Single-Factor Authentication
 1. Client credentials are received in the `Authorization` header using the format:  
@@ -103,6 +110,8 @@
 
 > [!CAUTION]
 > If the `failed login attempt counter` exceeds the allowed limit, the `client status` is updated to `BLOCKED`.
+
+---
 
 ## User Single-Factor Authentication
 1. User `username` and `password` are received in the request body.
@@ -125,6 +134,8 @@
 
 > [!CAUTION]
 > If the `failed login attempt counter` exceeds the allowed limit, the `user status` is updated to `BLOCKED` and an alert for login attempt is registered.
+
+---
 
 ## User Multi-Factor Authentication
 1. User `username` and `password` are received in the request body.
@@ -152,3 +163,5 @@
 
 > [!CAUTION]
 > A `failed login attempt counter` is maintained in `Redis` per `one-time password`. If the counter exceeds the allowed limit, the `one-time password` is deleted.
+
+---

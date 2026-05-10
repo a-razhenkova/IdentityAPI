@@ -60,10 +60,10 @@
 > SDK: .NET Core 10\
 > Database: SQL Server 2022\
 > ORM: Entity Framework Core\
-> Caching: Redis\
-> Message Broker: RabbitMQ\
-> Additional Libraries: Serilog, Polly, AutoMapper, GoogleAuthenticator\
-> Tests: xUnit, FluentAssertions, Bogus
+> Caching: `Redis`\
+> Message Broker: `RabbitMQ`\
+> Additional Libraries: `Serilog`, `Polly`, `AutoMapper`, `GoogleAuthenticator`\
+> Tests: `xUnit`, `FluentAssertions`, `Bogus`
 
 > [!NOTE]
 > Database creation and schema management are handled through Entity Framework Core migrations.
@@ -92,9 +92,9 @@
 | Functionality | Description | Reference |
 | --- | --- | --- |
 | Strategy Pattern | Used for handling tokens. | [SecurityTokenHandler.cs](/Application/Security/Tokens/SecurityTokenHandler.cs) |
-| [RabbitMQ](https://www.rabbitmq.com/tutorials/tutorial-one-dotnet-amqp10) | Asynchronous communication. Uses [Polly](https://www.pollydocs.org/strategies/index.html) for resilience. | [RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs) |
+| RabbitMQ | Asynchronous communication. Uses [Polly](https://www.pollydocs.org/strategies/index.html) for resilience. | [RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs) |
 | Rate Limiter | With fixed window counter, configurable by [`appsettings::Security::RateLimiter`](/WebApi/appsettings.json). | [AddRateLimiter()](/WebApi/Setup/WebAppBuilderExtensions.cs) |
-| [Serilog](https://serilog.net) | Global exception logging is handled [here](/WebApi/Middlewares/ExceptionHandlingMiddleware.cs).<br/>Global HTTP request and response logging is handled [here](WebApi/Middlewares/HttpMessageLoggingMiddleware.cs). | [LoggerSetup.cs](/WebApi/Setup/LoggerSetup.cs) |
+| Serilog | Global exception logging is handled [here](/WebApi/Middlewares/ExceptionHandlingMiddleware.cs).<br/>Global HTTP request and response logging is handled [here](WebApi/Middlewares/HttpMessageLoggingMiddleware.cs). | [LoggerSetup.cs](/WebApi/Setup/LoggerSetup.cs) |
 
 ### Caching
 | Functionality | Description | Reference |
@@ -106,8 +106,8 @@
 | --- | --- | --- |
 | Repository Pattern | The full list of repositories can be viewed [here](/Infrastructure/Database/Repositories). | [Repository.cs](/Infrastructure/Database/Repository.cs) |
 | Unit Of Work Pattern | Manages all access to the database. | [UnitOfWork.cs](/Infrastructure/Database/UnitOfWork.cs) |
-| [Migrations](https://www.learnentityframeworkcore.com/migrations) | Automatically executes pending [migrations](/Infrastructure/Database/Migrations) at startup. This functionality is configurable by [`appsettings::Database::IsDbMigrationAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/WebAppExtensions.cs) |
-| [DbUp](https://dbup.readthedocs.io/en/latest) | Automatically executes pending [scripts](/Infrastructure/Database/Scripts) at startup. This functionality is configurable by [`appsettings::Database::IsDbUpAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/WebAppExtensions.cs) |
+| Migrations | Automatically executes pending [migrations](/Infrastructure/Database/Migrations) at startup. This functionality is configurable by [`appsettings::Database::IsDbMigrationAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/WebAppExtensions.cs) |
+| DbUp | Automatically executes pending [scripts](/Infrastructure/Database/Scripts) at startup. This functionality is configurable by [`appsettings::Database::IsDbUpAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/WebAppExtensions.cs) |
 
 ---
 

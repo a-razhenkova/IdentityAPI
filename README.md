@@ -189,5 +189,3 @@
 ## Testing
 * [Unit Tests](/UnitTests/Tests)
 * [Integration Tests](/IntegrationTests/Tests)
-
----

@@ -30,12 +30,10 @@ namespace Application
 
         public async Task<User> AuthenticateAsync(string publicId, CancellationToken cancellationToken = default)
         {
-            User user = await _unitOfWork.Users
-                .WhereIdEquals(publicId, autoTrack: false)
-                .Include(u => u.Status)
-                .SingleOrDefaultAsync(cancellationToken) ?? throw new UnauthorizedException();
+            User user = await _unitOfWork.Users.GetByIdWithNoTrackingAsync(publicId, cancellationToken)
+                ?? throw new UnauthorizedException();
 
-            if (user.Status.Value != UserStatuses.Active)
+            if (!user.IsActivate())
                 throw new ForbiddenException($"User status is '{user.Status.Value}'.");
 
             return user;
@@ -45,12 +43,11 @@ namespace Application
         {
             User user = await _unitOfWork.Users
                 .WhereUsernameEquals(username)
-                .Include(u => u.Status)
                 .Include(u => u.Password)
                 .Include(u => u.Login)
                 .SingleOrDefaultAsync(cancellationToken) ?? throw new UnauthorizedException("Invalid credentials.");
 
-            if (user.Status.Value != UserStatuses.Active)
+            if (!user.IsActivate())
                 throw new ForbiddenException($"User status is '{user.Status.Value}'.");
 
             user.Login ??= new Login();

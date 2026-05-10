@@ -6,6 +6,10 @@ namespace Domain
     {
         extension(Client client)
         {
+            public bool IsActivate() => client.Status.Value == ClientStatuses.Active;
+            public bool IsBlock() => client.Status.Value == ClientStatuses.Blocked;
+            public bool IsDisable() => client.Status.Value == ClientStatuses.Disabled;
+
             public void Activate()
             {
                 client.Status.Value = ClientStatuses.Active;
@@ -13,11 +17,18 @@ namespace Domain
                 client.Status.Note = null;
             }
 
-            public void Block(ClientStatusReasons reason)
+            public void Block(ClientStatusReasons reason = ClientStatusReasons.None, string note = default)
+            {
+                client.Status.Value = ClientStatuses.Blocked;
+                client.Status.Reason = reason;
+                client.Status.Note = note;
+            }
+
+            public void Disable(ClientStatusReasons reason = ClientStatusReasons.None, string note = default)
             {
                 client.Status.Value = ClientStatuses.Disabled;
                 client.Status.Reason = reason;
-                client.Status.Note = null;
+                client.Status.Note = note;
             }
 
             public void CreateNewSubscription(DateTime expirationDate, FileStream content, string fileExtension)

@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Shared;
 using System.Data;
-using System.Text.RegularExpressions;
 
 namespace Application
 {
@@ -61,10 +60,8 @@ namespace Application
 
         public async Task<UserDto> GetAsync(string userPublicId, CancellationToken cancellationToken = default)
         {
-            User user = await _unitOfWork.Users
-                .WhereIdEquals(userPublicId, autoTrack: false)
-                .Include(u => u.Status)
-                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("User not found.");
+            User user = await _unitOfWork.Users.GetByIdWithNoTrackingAsync(userPublicId, cancellationToken)
+                ?? throw new NotFoundException("User not found.");
 
             return _mapper.Map<UserDto>(user);
         }
@@ -90,7 +87,6 @@ namespace Application
         {
             User user = await _unitOfWork.Users
                 .WhereIdEquals(userPublicId)
-                .Include(u => u.Status)
                 .Include(u => u.Password)
                 .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("User not found.");
 
@@ -151,7 +147,6 @@ namespace Application
 
             User user = await _unitOfWork.Users
                 .WhereIdEquals(userPublicId)
-                .Include(u => u.Status)
                 .Include(u => u.Password)
                 .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("User not found.");
 
@@ -159,9 +154,7 @@ namespace Application
                 throw new BadRequestException("Invalid old password.");
 
             user.Email = email;
-            user.IsVerified = false;
-            user.Status.Value = UserStatuses.Restricted;
-            user.Status.Reason = UserStatusReasons.EmailChanged;
+            user.Restrict(UserStatusReasons.EmailChanged);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

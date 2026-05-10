@@ -1,6 +1,7 @@
 ﻿using Application;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Infrastructure
 {
@@ -36,6 +37,9 @@ namespace Infrastructure
         }
 
         public IQueryable<Client> WhereKeyEquals(string key, bool autoTrack = true)
-            => Where(x => x.Key.Equals(key), autoTrack: autoTrack);
+            => Where(c => c.Key.Equals(key), autoTrack: autoTrack);
+
+        public override IQueryable<Client> Where(Expression<Func<Client, bool>> expression, bool autoTrack = true)
+            => base.Where(expression, autoTrack).Include(c => c.Status).Include(c => c.Right);
     }
 }

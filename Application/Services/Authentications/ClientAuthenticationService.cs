@@ -20,12 +20,10 @@ namespace Application
         {
             Client client = await _unitOfWork.Clients
                 .WhereKeyEquals(key)
-                .Include(c => c.Status)
-                .Include(c => c.Right)
                 .Include(c => c.Subscriptions.Where(s => s.Subscription.ExpirationDate >= DateTime.UtcNow.Date))
                 .SingleOrDefaultAsync(cancellationToken) ?? throw new UnauthorizedException("Invalid credentials.");
 
-            if (client.Status.Value != ClientStatuses.Active)
+            if (!client.IsActivate())
                 throw new ForbiddenException($"Client status is '{client.Status.Value}'.");
 
             if (!client.IsInternal && !client.Subscriptions.Any())

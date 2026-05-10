@@ -64,11 +64,8 @@ namespace Application
 
         public async Task<ClientDto> LoadAsync(string key, CancellationToken cancellationToken = default)
         {
-            Client client = await _unitOfWork.Clients
-                .WhereKeyEquals(key, autoTrack: false)
-                .Include(c => c.Status)
-                .Include(c => c.Right)
-                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Client not found.");
+            Client client = await _unitOfWork.Clients.GetByKeyAsync(key, cancellationToken)
+                ?? throw new NotFoundException("Client not found.");
 
             return _mapper.Map<ClientDto>(client);
         }
@@ -85,11 +82,7 @@ namespace Application
 
         public async Task UpdateAsync(string key, ClientDto clientDto, CancellationToken cancellationToken = default)
         {
-            Client client = await _unitOfWork.Clients
-                .WhereKeyEquals(key)
-                .Include(c => c.Status)
-                .Include(c => c.Right)
-                .SingleOrDefaultAsync(cancellationToken)
+            Client client = await _unitOfWork.Clients.GetByKeyAsync(key, cancellationToken)
                 ?? throw new NotFoundException("Client not found");
 
             Client clientSnapshot = client.DeepCopy();
@@ -103,15 +96,12 @@ namespace Application
         {
             Client client = await _unitOfWork.Clients
                 .WhereKeyEquals(key)
-                .Include(c => c.Status)
-                .Include(c => c.Right)
                 .Include(c => c.Subscriptions)
                 .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Client not found.");
 
             if (client.Subscriptions.Any())
             {
-                client.Status.Value = ClientStatuses.Disabled;
-                client.Status.Reason = ClientStatusReasons.None;
+                client.Disable();
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
             else
@@ -153,7 +143,6 @@ namespace Application
 
             Client client = await _unitOfWork.Clients
                 .WhereKeyEquals(clientKey)
-                .Include(c => c.Status)
                 .Include(c => c.Subscriptions)
                 .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Client not found.");
 
@@ -171,10 +160,7 @@ namespace Application
                 client.CreateNewSubscription(expirationDate, content, fileExtension);
 
                 if (client.Status.Reason == ClientStatusReasons.ExpiredSubscription)
-                {
-                    client.Status.Value = ClientStatuses.Active;
-                    client.Status.Reason = ClientStatusReasons.None;
-                }
+                    client.Activate();
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }

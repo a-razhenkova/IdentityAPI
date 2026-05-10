@@ -33,11 +33,10 @@ namespace Application
 
             User user = await _unitOfWork.Users
                 .WhereIdEquals(userPublicId)
-                .Include(u => u.Status)
                 .Include(u => u.Login)
                 .SingleOrDefaultAsync(cancellationToken) ?? throw new UnauthorizedException("The code has expired.");
 
-            if (user.Status.Value != UserStatuses.Active)
+            if (!user.IsActivate())
                 throw new ForbiddenException($"User status is '{user.Status.Value}'.");
 
             await _redis.DeleteAsync(RedisKey.OneTimePassword, [otpModel.UserPublicId], cancellationToken);

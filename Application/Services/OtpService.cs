@@ -27,7 +27,7 @@ namespace Application
         {
             User user = await _userAuthenticator.AuthenticateAsync(username, password, cancellationToken);
 
-            if (user.Status.Value == UserStatuses.Restricted)
+            if (!user.IsVerified)
                 throw new ForbiddenException($"User cannot receive OTP.");
 
             string otp = await CreateAndSaveOtp(user, cancellationToken);

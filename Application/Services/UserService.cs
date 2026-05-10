@@ -80,6 +80,12 @@ namespace Application
             await _unitOfWork.Users.AddAsync(user, userDto.Password);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+            if (string.IsNullOrWhiteSpace(user.Email))
+            {
+                // cancellation is unnecessary because changes are already made
+                await SendEmailVerificationInBackgroundAsync(user);
+            }
+
             return user.PublicId;
         }
 
@@ -156,7 +162,39 @@ namespace Application
             user.Email = email;
             user.Restrict(UserStatusReasons.EmailChanged);
 
+            // cancellation is unnecessary because changes are already made
+            await SendEmailVerificationInBackgroundAsync(user);
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task SendEmailVerificationAsync(string userPublicId, CancellationToken cancellationToken = default)
+        {
+            User user = await _unitOfWork.Users.GetByIdWithNoTrackingAsync(userPublicId)
+                ?? throw new NotFoundException("User not found.");
+
+            if (string.IsNullOrWhiteSpace(user.Email))
+                throw new ForbiddenException("User email is missing.");
+
+            string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
+
+            var evt = new RabbitMq.EmailVerificationEvent()
+            {
+                VerificationToken = emailToken
+            };
+
+            await _rebbitMq.PublishEventAsync(evt, cancellationToken);
+        }
+
+        private async Task SendEmailVerificationInBackgroundAsync(User user, CancellationToken cancellationToken = default)
+        {
+            string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
+            var evt = new RabbitMq.EmailVerificationEvent()
+            {
+                VerificationToken = emailToken
+            };
+
+            await _rebbitMq.PublishEventInBackground(evt, cancellationToken);
         }
     }
 }

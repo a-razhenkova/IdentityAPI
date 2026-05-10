@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using Application;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.V1
@@ -7,8 +8,11 @@ namespace WebApi.V1
     [Route("api/v1/[controller]")]
     public class EmailController : JsonApiControllerBase
     {
-        public EmailController()
+        private readonly IEmail _email;
+
+        public EmailController(IEmail email)
         {
+            _email = email;
         }
 
         /// <summary>
@@ -17,9 +21,9 @@ namespace WebApi.V1
         /// <param name="token">The email verification.</param>
         [HttpPost("verification/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> VerifyUserEmailVerificationAsync(string token)
+        public async Task<IActionResult> VerifyEmailVerificationTokenAsync(string token)
         {
-            // TODO: email verification
+            await _email.VerifyToken(token);
             return Ok();
         }
     }

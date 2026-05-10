@@ -28,6 +28,8 @@ namespace Application
 
         public SecurityTokenSettings RefreshToken { get; init; } = new();
 
+        public SecurityTokenSettings EmailVerificationToken { get; init; } = new();
+
         public MultiFactorAuthSettings MultiFactorAuth { get; init; } = new();
     }
 

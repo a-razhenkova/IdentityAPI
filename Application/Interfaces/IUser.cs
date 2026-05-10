@@ -15,5 +15,7 @@
         Task ChangePasswordAsync(string userPublicId, string oldPassword, string newPassword, CancellationToken cancellationToken = default);
 
         Task ChangeEmailAsync(string userPublicId, string email, string password, CancellationToken cancellationToken = default);
+
+        Task SendEmailVerificationAsync(string userPublicId, CancellationToken cancellationToken = default);
     }
 }

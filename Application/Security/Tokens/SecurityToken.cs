@@ -9,7 +9,7 @@ namespace Application
     {
         protected readonly SecuritySettings _settings;
 
-        public SecurityToken(string token, SecuritySettings settings, string key)
+        protected SecurityToken(string token, SecuritySettings settings, string key)
             : this(settings, key)
         {
             if (string.IsNullOrWhiteSpace(token))

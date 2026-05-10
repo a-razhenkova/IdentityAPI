@@ -4,6 +4,7 @@ using Infrastructure;
 using Polly;
 using Polly.Retry;
 using Shared;
+
 namespace WebApi
 {
     public static class ServicesSetup
@@ -31,6 +32,7 @@ namespace WebApi
             builder.Services.AddScoped<IOtp, OtpService>();
             builder.Services.AddScoped<IClient, ClientService>();
             builder.Services.AddScoped<IUser, UserService>();
+            builder.Services.AddScoped<IEmail, EmailService>();
 
             return builder;
         }

@@ -24,6 +24,7 @@ namespace WebApi
                     config.Security.RateLimiter.Validate();
                     config.Security.AccessToken.Validate();
                     config.Security.RefreshToken.Validate();
+                    config.Security.EmailVerificationToken.Validate();
                     config.Security.MultiFactorAuth.Validate();
 
                     config.Database.Validate();

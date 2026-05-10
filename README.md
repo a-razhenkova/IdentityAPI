@@ -86,9 +86,7 @@
 > [!NOTE]
 > The data access is managed with **Repository** and **Unit of Work** patterns.
 
----
-
-## References
+### API
 | Functionality | Description | Reference |
 | --- | --- | --- |
 | Strategy Pattern | Used for handling tokens. | [SecurityTokenHandler.cs](/Application/Security/Tokens/SecurityTokenHandler.cs) |

@@ -46,7 +46,7 @@
   
 ---
 
-## :gear: Complete API documentation
+## :gear: Complete API Documentation
 
 * [Postman collection](https://documenter.getpostman.com/view/34315168/2sBXqNmJmh)
 * [Swagger](/assets/swagger.json)

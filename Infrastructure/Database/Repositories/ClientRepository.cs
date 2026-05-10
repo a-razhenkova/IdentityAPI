@@ -28,14 +28,6 @@ namespace Infrastructure
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task AddAsync(Client client, CancellationToken cancellationToken = default)
-        {
-            client.Key = ClientKey.Create();
-            client.Secret = ClientSecret.Create();
-
-            await base.BasicAddAsync(client, cancellationToken);
-        }
-
         public IQueryable<Client> WhereKeyEquals(string key, bool autoTrack = true)
             => Where(c => c.Key.Equals(key), autoTrack: autoTrack);
 

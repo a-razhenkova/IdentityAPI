@@ -22,15 +22,6 @@ namespace Infrastructure.IdentityDb
         public async Task<User?> GetByUsernameWithNoTrackingAsync(string username, CancellationToken cancellationToken = default)
             => await WhereUsernameEquals(username, autoTrack: false).SingleOrDefaultAsync(cancellationToken);
 
-        public async Task AddAsync(User user, string password, CancellationToken cancellationToken = default)
-        {
-            user.PublicId = Guid.NewGuid().ToString();
-            user.Password = UserPassword.Create(password);
-            user.OtpSecret = UserOtp.Create();
-
-            await _context.AddAsync(user, cancellationToken);
-        }
-
         public IQueryable<User> WhereIdEquals(string id, bool autoTrack = true)
             => Where(u => u.PublicId.Equals(id), autoTrack: autoTrack);
 

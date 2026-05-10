@@ -9,8 +9,6 @@ namespace Application
 
         Task<Document?> GetSubscriptionContractWithNoTrackingAsync(string clientKey, long contractId, CancellationToken cancellationToken = default);
 
-        Task AddAsync(Client client, CancellationToken cancellationToken = default);
-
         IQueryable<Client> WhereKeyEquals(string key, bool autoTrack = true);
     }
 }

@@ -11,8 +11,11 @@
 
             public void Activate()
             {
-                if (user.Status.Value == UserStatuses.Restricted && user.Status.Reason == UserStatusReasons.EmailChanged)
+                if (user.Status.Value == UserStatuses.Restricted
+                    && (user.Status.Reason == UserStatusReasons.EmailChanged || user.Status.Reason == UserStatusReasons.NewUser))
+                {
                     user.IsVerified = true;
+                }
 
                 if (!user.IsVerified)
                 {

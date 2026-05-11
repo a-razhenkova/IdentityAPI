@@ -65,13 +65,13 @@
 > Additional Libraries: `Serilog`, `Polly`, `AutoMapper`, `GoogleAuthenticator`\
 > Tests: `xUnit`, `FluentAssertions`, `Bogus`
 
-> [!NOTE]
-> Database creation and schema management are handled through Entity Framework Core migrations.
-
-> [!NOTE]
-> Initialization scripts are automatically executed using DbUp.
+> [!IMPORTANT]
+> Database creation and schema management are handled through `Entity Framework Core` migrations at runtime.
 
 > [!IMPORTANT]
+> Initialization scripts are automatically executed using `DbUp` at runtime.
+
+> [!CAUTION]
 > The API requires running RabbitMQ broker.
 
 > [!TIP]

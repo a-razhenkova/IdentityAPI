@@ -23,13 +23,13 @@ namespace Application
                 Subscriptions = new List<ClientSubscriptionDto>()
             };
 
-            foreach (var subscription in client.Subscriptions)
+            foreach (var subscription in client.Subscriptions.Select(s => s.Subscription))
             {
                 dto.Subscriptions.Add(new ClientSubscriptionDto()
                 {
-                    ExpirationDate = subscription.Subscription.ExpirationDate,
-                    ContractId = subscription.Subscription.Contract.Id,
-                    ContractName = subscription.Subscription.Contract.Name,
+                    ExpirationDate = subscription.ExpirationDate,
+                    ContractId = subscription.Contract.Id,
+                    ContractName = subscription.Contract.Name,
                 });
             }
 

@@ -119,7 +119,6 @@ namespace WebApi
         private static void AddXmlComments(this SwaggerGenOptions opt)
         {
             opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{WebApiAssembly.GetName()}.xml"));
-            opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{ApplicationAssembly.GetName()}.xml"));
         }
 
         private static void AddSummaryAndContact(this SwaggerGenOptions opt)

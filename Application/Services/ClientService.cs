@@ -48,7 +48,7 @@ namespace Application
                     .ThenInclude(s => s.Contract)
                 .OrderByDescending(c => c.Id);
 
-            return await _paginatedReport.Prepare<Client, ClientDto>(clientQuery, query, ClientMapper.MapToDto, cancellationToken);
+            return await _paginatedReport.Prepare(clientQuery, query, ClientMapper.MapToDto, cancellationToken);
         }
 
         public async Task<ClientDto> GetAsync(string key, CancellationToken cancellationToken = default)

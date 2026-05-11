@@ -7,7 +7,7 @@ using Shared;
 
 namespace WebApi
 {
-    public static class WebAppExtensions
+    public static class DbSetup
     {
         public static async Task<WebApplication> ApplyDbPendingMigrationsAndScriptsAsync(this WebApplication app)
         {

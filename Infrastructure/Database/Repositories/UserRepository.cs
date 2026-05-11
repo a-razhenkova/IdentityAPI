@@ -2,11 +2,10 @@
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using UserPassword = Application.UserPassword;
 
 namespace Infrastructure.IdentityDb
 {
-    public class UserRepository : Repository<User>, IUserRepository
+    public sealed class UserRepository : Repository<User>, IUserRepository
     {
         public UserRepository(IdentityContext context) : base(context) { }
 

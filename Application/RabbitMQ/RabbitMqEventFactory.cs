@@ -5,14 +5,22 @@ namespace Application
 {
     public static class RabbitMqEventFactory
     {
-        public static LoginAttemptMadeEvent CreateLoginAttemptMadeEvent(User user)
-            => new LoginAttemptMadeEvent()
+        public static EmailVerificationEvent CreateEmailVerificationEvent(User user, string token)
+            => new EmailVerificationEvent()
             {
                 UserId = user.Id,
                 UserEmail = user.Email,
                 Username = user.Username,
-                Timestamp = user.Password.LastChangedTimestamp,
-                IpAddress = user.Login.LastLoginIpAddress
+                VerificationToken = token
+            };
+
+        public static NewUserOtpEvent CreateNewUserOtpEvent(User user, string otp)
+            => new NewUserOtpEvent()
+            {
+                UserId = user.Id,
+                UserEmail = user.Email,
+                Username = user.Username,
+                Otp = otp
             };
 
         public static LoginFromNewIpAddressEvent CreateLoginFromNewIpAddressEvent(User user)
@@ -25,12 +33,6 @@ namespace Application
                 IpAddress = user.Login.LastLoginIpAddress
             };
 
-        public static EmailVerificationEvent CreateEmailVerificationEvent(string token)
-            => new EmailVerificationEvent()
-            {
-                VerificationToken = token
-            };
-
         public static UserPasswordChangedEvent CreateUserPasswordChangedEvent(User user, string? ipAddress)
             => new UserPasswordChangedEvent()
             {
@@ -39,6 +41,16 @@ namespace Application
                 Username = user.Username,
                 Timestamp = user.Password.LastChangedTimestamp,
                 UserIpAddress = ipAddress
+            };
+
+        public static LoginAttemptMadeEvent CreateLoginAttemptMadeEvent(User user)
+            => new LoginAttemptMadeEvent()
+            {
+                UserId = user.Id,
+                UserEmail = user.Email,
+                Username = user.Username,
+                Timestamp = user.Password.LastChangedTimestamp,
+                IpAddress = user.Login.LastLoginIpAddress
             };
     }
 }

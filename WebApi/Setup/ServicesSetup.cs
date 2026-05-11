@@ -1,9 +1,12 @@
 ﻿using Application;
 using AutoMapper;
 using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.Retry;
 using Shared;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace WebApi
 {
@@ -13,6 +16,7 @@ namespace WebApi
         {
             // external libraries
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddAutoMapper();
 
             // transient services
             builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -37,19 +41,23 @@ namespace WebApi
             return builder;
         }
 
-        public static MapperConfiguration CreateMapperConfig()
+        public static WebApplicationBuilder AddHealthChecks(this WebApplicationBuilder builder)
         {
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new V1.TokenProfile());
-                cfg.AddProfile(new V1.ClientProfile());
-                cfg.AddProfile(new V1.UserProfile());
-                cfg.AddProfile(new V2.TokenProfile());
-            });
+            string identityDbConnectionString = builder.Configuration.GetRequiredConnectionString(ConnectionStringNames.IdentityDb);
+            string identityDbAddress = Regex.Match(identityDbConnectionString, @"^Server=[^;]+;Database=[^;]+;").Value;
 
-            mapperConfig.AssertConfigurationIsValid();
+            string redisConnectionString = builder.Configuration.GetRequiredConnectionString(ConnectionStringNames.Redis);
+            string redisAddress = Regex.Match(redisConnectionString, @"^[^,]+").Value;
 
-            return mapperConfig;
+            string rabbitMqConnectionString = builder.Configuration.GetRequiredConnectionString(ConnectionStringNames.RabbitMq);
+            string rabbitMqAddress = Regex.Match(rabbitMqConnectionString, @"(?<=@)[^\/]+").Value;
+
+            builder.Services.AddHealthChecks()
+                            .AddDbContextCheck<IdentityContext>($"{ConnectionStringNames.IdentityDb}", tags: [HealthCheckImpactTag.Critical.ToString(), identityDbAddress])
+                            .AddRedis(redisConnectionString, $"{ConnectionStringNames.Redis}", tags: [HealthCheckImpactTag.Medium.ToString(), redisAddress], timeout: TimeSpan.FromSeconds(2))
+                            .AddCheck<RabbitMqHealthCheck>($"{ConnectionStringNames.RabbitMq}", tags: [HealthCheckImpactTag.Critical.ToString(), rabbitMqAddress], timeout: TimeSpan.FromSeconds(2));
+
+            return builder;
         }
 
         public static WebApplicationBuilder AddResiliencePipelines(this WebApplicationBuilder builder)
@@ -77,6 +85,52 @@ namespace WebApi
             });
 
             return builder;
+        }
+
+        public static WebApplicationBuilder AddCache(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddStackExchangeRedisCache(opt => opt.Configuration = builder.Configuration.GetRequiredConnectionString(ConnectionStringNames.Redis));
+            builder.Services.AddSingleton<IRedis, RedisService>();
+            return builder;
+        }
+
+        public static WebApplicationBuilder AddDatabase(this WebApplicationBuilder builder)
+        {
+            DatabaseAttribute identityConfig = typeof(IdentityContext).GetRequiredCustomAttribute<DatabaseAttribute>();
+            builder.Services.AddDbContext<IdentityContext>(opt =>
+            {
+                opt.UseSqlServer(builder.Configuration.GetRequiredConnectionString(identityConfig.ConnectionStringName), cfg =>
+                {
+                    cfg.CommandTimeout(identityConfig.CommandTimeoutInSeconds);
+                    cfg.MigrationsAssembly(InfrastructureAssembly.GetExecutingAssembly());
+                    cfg.MigrationsHistoryTable(identityConfig.MigrationsHistoryTableName, identityConfig.DefaultSchemaName);
+                });
+#if DEBUG
+                opt.LogTo(src => Debug.WriteLine(src));
+                opt.EnableDetailedErrors();
+                opt.EnableSensitiveDataLogging();
+#endif
+            });
+
+            return builder;
+        }
+
+        private static IServiceCollection AddAutoMapper(this IServiceCollection services)
+        {
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new V1.TokenProfile());
+                cfg.AddProfile(new V1.ClientProfile());
+                cfg.AddProfile(new V1.UserProfile());
+                cfg.AddProfile(new V2.TokenProfile());
+            });
+
+            mapperConfig.AssertConfigurationIsValid();
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
+            return services;
         }
     }
 }

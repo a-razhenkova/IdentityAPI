@@ -3,7 +3,7 @@ using Infrastructure.IdentityDb;
 
 namespace Infrastructure
 {
-    public class UnitOfWork : IUnitOfWork
+    public sealed class UnitOfWork : IUnitOfWork
     {
         private readonly IdentityContext _context;
 
@@ -25,13 +25,7 @@ namespace Infrastructure
         public async Task SaveChangesAsync(bool hasChanges, CancellationToken cancellationToken = default)
         {
             if (hasChanges)
-            {
                 await _context.SaveChangesAsync(cancellationToken);
-            }
-            else
-            {
-                return;
-            }
         }
 
         public void Dispose()

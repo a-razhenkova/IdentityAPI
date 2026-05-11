@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Infrastructure
 {
-    public class ClientRepository : Repository<Client>, IClientRepository
+    public sealed class ClientRepository : Repository<Client>, IClientRepository
     {
         public ClientRepository(IdentityContext context) : base(context) { }
 

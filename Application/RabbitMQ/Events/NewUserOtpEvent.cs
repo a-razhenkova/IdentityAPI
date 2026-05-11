@@ -1,10 +1,8 @@
 ﻿namespace Application.RabbitMq
 {
     [RabbitMqEvent("new-user-otp")]
-    public class NewUserOtpEvent
+    public class NewUserOtpEvent : UserEventBase
     {
-        public required long UserId { get; set; }
-
         public required string Otp { get; set; }
     }
 }

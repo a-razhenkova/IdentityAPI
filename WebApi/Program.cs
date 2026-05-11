@@ -2,23 +2,21 @@ using WebApi;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.BindConfigurationSources();
-
 builder.AddLogger();
-builder.AddResiliencePipelines();
 
-builder.AddCache();
-builder.AddDatabase();
-await builder.AddRabbitMqAsync();
-
-builder.AddMapper();
 builder.AddServices();
 builder.AddHealthChecks();
+builder.AddResiliencePipelines();
+builder.AddCache();
+builder.AddDatabase();
 
+builder.AddControllers();
 builder.AddAuthentication();
 builder.AddAuthorization();
 builder.AddRateLimiter();
 
-builder.AddControllers();
+await builder.AddRabbitMqAsync();
+
 builder.AddSwagger();
 
 var app = builder.Build();

@@ -76,7 +76,7 @@ namespace Application
             {
                 string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
 
-                var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(emailToken);
+                var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(user, emailToken);
                 await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because changes are already made
             }
 
@@ -161,7 +161,7 @@ namespace Application
             // sending email verification
             string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
 
-            var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(emailToken);
+            var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(user, emailToken);
             await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because changes are already made
         }
 
@@ -175,7 +175,7 @@ namespace Application
 
             string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
 
-            var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(emailToken);
+            var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(user, emailToken);
             await _rebbitMq.PublishEventAsync(evt, cancellationToken);
         }
     }

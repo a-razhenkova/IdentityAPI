@@ -47,7 +47,7 @@ namespace Infrastructure
 
             if (result.Outcome.State == OutcomeState.Accepted)
             {
-                _logger.LogInformation($"An event was sent to queue '{settings.QueueName}' with key '{settings.RoutingKey}'.");
+                _logger.LogInformation("An event was sent to queue '{QueueName}' with key '{RoutingKey}'.", settings.QueueName, settings.RoutingKey);
             }
             else
             {

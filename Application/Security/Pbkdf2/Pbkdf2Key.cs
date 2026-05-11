@@ -6,7 +6,7 @@ namespace Application
     public static class Pbkdf2Key
     {
         public static (string Pbkdf2Key, string Secret) Create(string value, int iterations, int hashLength, int saltLength)
-            => Create(value, iterations, hashLength, saltLength, secret: default);
+            => Create(value, iterations, hashLength, saltLength, secret: null);
 
         public static (string Pbkdf2Key, string Secret) Recreate(string value, string secret, int iterations, int hashLength)
             => Create(value, iterations, hashLength, secret);
@@ -20,7 +20,7 @@ namespace Application
         private static (string Pbkdf2Key, string Secret) Create(string value, int iterations, int hashLength, string secret)
             => Create(value, iterations, hashLength, secret.Length, secret);
 
-        private static (string Pbkdf2Key, string Secret) Create(string value, int iterations, int hashLength, int saltLength, string? secret = null)
+        private static (string Pbkdf2Key, string Secret) Create(string value, int iterations, int hashLength, int saltLength, string? secret)
         {
             if (string.IsNullOrWhiteSpace(value) || iterations <= 0 || hashLength <= 0)
                 throw new InvalidOperationException();

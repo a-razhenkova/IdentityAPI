@@ -57,12 +57,7 @@ namespace Application
 
         public async Task PublishUserOtp(User user, string otp, CancellationToken cancellationToken = default)
         {
-            var evt = new RabbitMq.NewUserOtpEvent()
-            {
-                UserId = user.Id,
-                Otp = otp
-            };
-
+            var evt = RabbitMqEventFactory.CreateNewUserOtpEvent(user, otp);
             await _rabbitMq.PublishEventAsync(evt, cancellationToken);
         }
     }

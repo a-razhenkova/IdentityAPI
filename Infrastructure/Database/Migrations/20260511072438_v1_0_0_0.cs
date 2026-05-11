@@ -56,7 +56,7 @@ namespace Infrastructure.Database.Migrations
                     public_id = table.Column<string>(type: "varchar(36)", unicode: false, maxLength: 36, nullable: false),
                     username = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     role = table.Column<int>(type: "int", nullable: false),
-                    otp_secret = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
+                    otp_key = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     is_verified = table.Column<bool>(type: "bit", nullable: false),
                     registration_timestamp = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -97,7 +97,7 @@ namespace Infrastructure.Database.Migrations
                     client_id = table.Column<long>(type: "bigint", nullable: false),
                     status = table.Column<int>(type: "int", nullable: false),
                     reason = table.Column<int>(type: "int", nullable: false),
-                    note = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    note = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -188,7 +188,7 @@ namespace Infrastructure.Database.Migrations
                     user_id = table.Column<long>(type: "bigint", nullable: false),
                     status = table.Column<int>(type: "int", nullable: false),
                     reason = table.Column<int>(type: "int", nullable: false),
-                    note = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    note = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {

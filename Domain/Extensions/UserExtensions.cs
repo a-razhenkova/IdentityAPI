@@ -28,6 +28,20 @@
                 user.Status.Note = null;
             }
 
+            public void Disable(UserStatusReasons reason = UserStatusReasons.None, string note = default)
+            {
+                user.Status.Value = UserStatuses.Disabled;
+                user.Status.Reason = reason;
+                user.Status.Note = note;
+            }
+
+            public void Block(UserStatusReasons reason = UserStatusReasons.None, string note = default)
+            {
+                user.Status.Value = UserStatuses.Blocked;
+                user.Status.Reason = reason;
+                user.Status.Note = note;
+            }
+
             public void Restrict(UserStatusReasons reason = UserStatusReasons.None, string note = default)
             {
                 if (reason == UserStatusReasons.EmailChanged)
@@ -42,18 +56,28 @@
                 user.Status.Note = note;
             }
 
-            public void Block(UserStatusReasons reason = UserStatusReasons.None, string note = default)
+            public void UpdateStatus(UserStatuses status, UserStatusReasons reason = UserStatusReasons.None, string note = default)
             {
-                user.Status.Value = UserStatuses.Blocked;
-                user.Status.Reason = reason;
-                user.Status.Note = note;
-            }
+                if (user.Status.Value == status && user.Status.Reason == reason && user.Status.Note == note)
+                    return; // has nothing to update
 
-            public void Disable(UserStatusReasons reason = UserStatusReasons.None, string note = default)
-            {
-                user.Status.Value = UserStatuses.Disabled;
-                user.Status.Reason = reason;
-                user.Status.Note = note;
+                switch (status)
+                {
+                    case UserStatuses.Active:
+                        user.Activate();
+                        break;
+                    case UserStatuses.Disabled:
+                        user.Disable(reason, note);
+                        break;
+                    case UserStatuses.Blocked:
+                        user.Block(reason, note);
+                        break;
+                    case UserStatuses.Restricted:
+                        user.Restrict(reason, note);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
             }
         }
     }

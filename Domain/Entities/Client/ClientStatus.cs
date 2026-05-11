@@ -20,6 +20,7 @@ namespace Domain
         public ClientStatusReasons Reason { get; set; }
 
         [Column("note", Order = 5)]
+        [MaxLength(ClientConstants.StatusNoteMaxLength)]
         public string Note { get; set; }
 
         #region Relationships

@@ -8,7 +8,7 @@ BEGIN TRY
 		   '2a47a4fc-3d90-4ddb-a1ec-a664c0a8a2f3' AS [public_id],
 		   'ivan.ivanov' AS [username],
 		   0 /* Administrator */ AS [role],
-		   'DNo+ZzGdBKpttZHUzuHxSQ==' AS [otp_secret],
+		   'DNo+ZzGdBKpttZHUzuHxSQ==' AS [otp_key],
 		   NULL AS [email],
 		   0 AS [is_verified],
 		   GETDATE() AS [registration_timestamp]

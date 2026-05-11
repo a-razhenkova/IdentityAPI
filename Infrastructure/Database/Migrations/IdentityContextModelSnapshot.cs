@@ -134,7 +134,8 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnOrder(2);
 
                     b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("note")
                         .HasColumnOrder(5);
 
@@ -353,12 +354,12 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnName("is_verified")
                         .HasColumnOrder(8);
 
-                    b.Property<string>("OtpSecret")
+                    b.Property<string>("OtpKey")
                         .IsRequired()
                         .HasMaxLength(64)
                         .IsUnicode(false)
                         .HasColumnType("varchar(64)")
-                        .HasColumnName("otp_secret")
+                        .HasColumnName("otp_key")
                         .HasColumnOrder(6);
 
                     b.Property<string>("PublicId")
@@ -469,7 +470,8 @@ namespace Infrastructure.Database.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("note")
                         .HasColumnOrder(5);
 

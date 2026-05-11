@@ -31,6 +31,27 @@ namespace Domain
                 client.Status.Note = note;
             }
 
+            public void UpdateStatus(ClientStatuses status, ClientStatusReasons reason = ClientStatusReasons.None, string note = default)
+            {
+                if (client.Status.Value == status && client.Status.Reason == reason && client.Status.Note == note)
+                    return; // has nothing to update
+
+                switch (status)
+                {
+                    case ClientStatuses.Active:
+                        client.Activate();
+                        break;
+                    case ClientStatuses.Disabled:
+                        client.Disable(reason, note);
+                        break;
+                    case ClientStatuses.Blocked:
+                        client.Block(reason, note);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
             public void CreateNewSubscription(DateTime expirationDate, FileStream content, string fileExtension)
             {
                 DateTime signTimestamp = DateTime.UtcNow;

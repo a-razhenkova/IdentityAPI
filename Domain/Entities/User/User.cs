@@ -24,9 +24,9 @@ namespace Domain
         public UserRoles Role { get; set; }
 
         [Required]
-        [Column("otp_secret", Order = 6)]
-        [MaxLength(UserConstants.UserSecretMaxLength), Unicode(false)]
-        public string OtpSecret { get; set; }
+        [Column("otp_key", Order = 6)]
+        [MaxLength(UserConstants.OtpKeyMaxLength), Unicode(false)]
+        public string OtpKey { get; set; }
 
         [Column("email", Order = 7)]
         [EmailAddress]
@@ -38,7 +38,7 @@ namespace Domain
 
         [Required]
         [Column("registration_timestamp", Order = 9)]
-        public DateTime RegistrationTimestamp { get; set; }
+        public DateTime RegistrationTimestamp { get; set; } = DateTime.UtcNow;
 
         #region Relationships
 

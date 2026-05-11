@@ -28,21 +28,21 @@
                 user.Status.Note = null;
             }
 
-            public void Disable(UserStatusReasons reason = UserStatusReasons.None, string note = default)
+            public void Disable(UserStatusReasons reason = UserStatusReasons.None, string note = null)
             {
                 user.Status.Value = UserStatuses.Disabled;
                 user.Status.Reason = reason;
                 user.Status.Note = note;
             }
 
-            public void Block(UserStatusReasons reason = UserStatusReasons.None, string note = default)
+            public void Block(UserStatusReasons reason = UserStatusReasons.None, string note = null)
             {
                 user.Status.Value = UserStatuses.Blocked;
                 user.Status.Reason = reason;
                 user.Status.Note = note;
             }
 
-            public void Restrict(UserStatusReasons reason = UserStatusReasons.None, string note = default)
+            public void Restrict(UserStatusReasons reason = UserStatusReasons.None, string note = null)
             {
                 if (reason == UserStatusReasons.EmailChanged)
                     user.IsVerified = false;
@@ -56,7 +56,7 @@
                 user.Status.Note = note;
             }
 
-            public void UpdateStatus(UserStatuses status, UserStatusReasons reason = UserStatusReasons.None, string note = default)
+            public void UpdateStatus(UserStatuses status, UserStatusReasons reason = UserStatusReasons.None, string note = null)
             {
                 if (user.Status.Value == status && user.Status.Reason == reason && user.Status.Note == note)
                     return; // has nothing to update

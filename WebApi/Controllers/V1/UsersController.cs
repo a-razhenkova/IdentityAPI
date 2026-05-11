@@ -96,7 +96,7 @@ namespace WebApi.V1
         }
 
         /// <summary>
-        /// Changes the password of an existing user.
+        /// Updates the password of an existing user.
         /// </summary>
         /// <param name="id">The external ID of the user whose password is to be changed.</param>
         /// <param name="request">Contains the old and new passwords.</param>
@@ -110,7 +110,7 @@ namespace WebApi.V1
         }
 
         /// <summary>
-        /// Changes the email address of an existing user.
+        /// Updates the email address of an existing user.
         /// </summary>
         /// <param name="id">The external ID of the user whose email is to be changed.</param>
         /// <param name="request">Contains the new email and the user's password.</param>
@@ -124,7 +124,7 @@ namespace WebApi.V1
         }
 
         /// <summary>
-        /// Creates and sends a verification email to the specified user.
+        /// Creates and sends a verification token to the specified user' email.
         /// </summary>
         /// <param name="id">The external ID of the user to whom the verification email will be sent.</param>
         [HttpPost("{id}/email/verification")]

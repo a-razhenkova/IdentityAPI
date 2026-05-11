@@ -108,7 +108,7 @@ namespace WebApi.V1
         }
 
         /// <summary>
-        /// Refreshes the secret for a client.
+        /// Updates the secret for a client.
         /// </summary>
         /// <param name="key">The key of the client whose secret is to be refreshed.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
@@ -121,7 +121,7 @@ namespace WebApi.V1
         }
 
         /// <summary>
-        /// Create a new subscription for a client.
+        /// Creates a new subscription for a client.
         /// </summary>
         /// <param name="key">The key of the client whose subscription is to be renewed.</param>
         /// <param name="expirationDate">The expiration date for the subscription.</param>

@@ -72,7 +72,7 @@ namespace Application
             await _unitOfWork.Users.BasicAddAsync(user, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            if (string.IsNullOrWhiteSpace(user.Email))
+            if (!string.IsNullOrWhiteSpace(user.Email))
             {
                 string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
 
@@ -94,7 +94,7 @@ namespace Application
             {
                 bool isUsernameTaken = await _unitOfWork.Users.CheckIfExistAsync(expression: u => u.Username == command.Username);
 
-                if (!isUsernameTaken)
+                if (isUsernameTaken)
                     throw new ConflictException($"User with username '{command.Username}' already registered.");
             }
 

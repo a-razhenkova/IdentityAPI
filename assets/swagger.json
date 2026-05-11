@@ -51,6 +51,7 @@
             "name": "RequestedPageNumber",
             "in": "query",
             "description": "The page number to retrieve from the paginated results.",
+            "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -60,6 +61,7 @@
             "name": "ItemsPerPage",
             "in": "query",
             "description": "The number of items to include per page in the paginated results.",
+            "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -79,7 +81,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -89,7 +91,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ClientModelPaginatedReport_V1"
+                  "$ref": "#/components/schemas/ClientResponsePaginatedReportResponse_V1"
                 }
               }
             }
@@ -100,8 +102,8 @@
         "tags": [
           "Clients"
         ],
-        "summary": "Registers a new client.",
-        "operationId": "RegisterClientAsync_V1",
+        "summary": "Creates a new client.",
+        "operationId": "CreateClientAsync_V1",
         "parameters": [
           {
             "name": "X-Correlation-ID",
@@ -112,11 +114,11 @@
           }
         ],
         "requestBody": {
-          "description": "The model containing client registration details.",
+          "description": "Contains client registration details.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ClientRegistrationModel_V1"
+                "$ref": "#/components/schemas/CreateClientRequest_V1"
               }
             }
           }
@@ -127,7 +129,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -137,7 +139,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StringSimpleResponseModel_V1"
+                  "$ref": "#/components/schemas/StringSimpleResponse_V1"
                 }
               }
             }
@@ -151,7 +153,7 @@
           "Clients"
         ],
         "summary": "Retrieves a client.",
-        "operationId": "LoadClientAsync_V1",
+        "operationId": "GetClientAsync_V1",
         "parameters": [
           {
             "name": "key",
@@ -176,7 +178,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -186,7 +188,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ClientModel_V1"
+                  "$ref": "#/components/schemas/ClientResponse_V1"
                 }
               }
             }
@@ -218,11 +220,11 @@
           }
         ],
         "requestBody": {
-          "description": "The model containing the updated client details.",
+          "description": "Contains the updated client details.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ClientUpdateModel_V1"
+                "$ref": "#/components/schemas/UpdateClientRequest_V1"
               }
             }
           }
@@ -233,7 +235,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -273,7 +275,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -290,7 +292,7 @@
           "Clients"
         ],
         "summary": "Retrieves the secret of a client.",
-        "operationId": "LoadClientSecretAsync_V1",
+        "operationId": "GetClientSecretAsync_V1",
         "parameters": [
           {
             "name": "key",
@@ -315,7 +317,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -325,7 +327,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StringSimpleResponseModel_V1"
+                  "$ref": "#/components/schemas/StringSimpleResponse_V1"
                 }
               }
             }
@@ -336,7 +338,7 @@
         "tags": [
           "Clients"
         ],
-        "summary": "Refreshes the secret for a client.",
+        "summary": "Updates the secret for a client.",
         "operationId": "RefreshClientSecretAsync_V1",
         "parameters": [
           {
@@ -362,7 +364,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -378,8 +380,8 @@
         "tags": [
           "Clients"
         ],
-        "summary": "Adds new subscription for a client.",
-        "operationId": "AddNewClientSubscriptionAsync_V1",
+        "summary": "Creates a new subscription for a client.",
+        "operationId": "CreateClientSubscriptionAsync_V1",
         "parameters": [
           {
             "name": "key",
@@ -458,7 +460,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -475,7 +477,7 @@
           "Clients"
         ],
         "summary": "Downloads the subscription contract for a specific client.",
-        "operationId": "DownloadClientSubscriptionContractAsync_V1",
+        "operationId": "GetClientSubscriptionContractAsync_V1",
         "parameters": [
           {
             "name": "key",
@@ -510,12 +512,12 @@
             "content": {
               "application/pdf": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -546,7 +548,7 @@
           "Email"
         ],
         "summary": "Verifies a user's email using the provided verification token.",
-        "operationId": "VerifyUserEmailVerificationAsync_V1",
+        "operationId": "VerifyEmailVerificationTokenAsync_V1",
         "parameters": [
           {
             "name": "token",
@@ -571,7 +573,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -604,7 +606,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -637,7 +639,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -647,7 +649,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeployInfoModel_V1"
+                  "$ref": "#/components/schemas/DeployInfoResponse_V1"
                 }
               }
             }
@@ -677,7 +679,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -706,7 +708,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserCredentialsModel_V1"
+                "$ref": "#/components/schemas/CreateOtpRequest_V1"
               }
             }
           }
@@ -717,7 +719,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -727,7 +729,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StringSimpleResponseModel_V1"
+                  "$ref": "#/components/schemas/StringSimpleResponse_V1"
                 }
               }
             }
@@ -756,7 +758,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserCredentialsModel_V2"
+                "$ref": "#/components/schemas/UserCredentialsResponse_V2"
               }
             }
           }
@@ -767,7 +769,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -777,7 +779,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenModel_V1"
+                  "$ref": "#/components/schemas/TokenResponse_V1"
                 }
               }
             }
@@ -806,7 +808,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserCredentialsModel_V1"
+                "$ref": "#/components/schemas/CreateOtpRequest_V1"
               }
             }
           }
@@ -817,7 +819,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -827,7 +829,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenModel_V2"
+                  "$ref": "#/components/schemas/TokenResponse_V2"
                 }
               }
             }
@@ -855,7 +857,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -865,7 +867,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenModel_V2"
+                  "$ref": "#/components/schemas/TokenResponse_V2"
                 }
               }
             }
@@ -895,7 +897,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -905,7 +907,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenModel_V1"
+                  "$ref": "#/components/schemas/TokenResponse_V1"
                 }
               }
             }
@@ -935,7 +937,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -945,7 +947,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenValidationResultModel_V1"
+                  "$ref": "#/components/schemas/TokenValidationResultResponse_V1"
                 }
               }
             }
@@ -991,6 +993,7 @@
             "name": "RequestedPageNumber",
             "in": "query",
             "description": "The page number to retrieve from the paginated results.",
+            "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -1000,6 +1003,7 @@
             "name": "ItemsPerPage",
             "in": "query",
             "description": "The number of items to include per page in the paginated results.",
+            "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -1019,7 +1023,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -1029,7 +1033,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserModelPaginatedReport_V1"
+                  "$ref": "#/components/schemas/UserResponsePaginatedReportResponse_V1"
                 }
               }
             }
@@ -1040,8 +1044,8 @@
         "tags": [
           "Users"
         ],
-        "summary": "Registers a new user.",
-        "operationId": "RegisterUserAsync_V1",
+        "summary": "Creates a new user.",
+        "operationId": "CreateUserAsync_V1",
         "parameters": [
           {
             "name": "X-Correlation-ID",
@@ -1052,11 +1056,11 @@
           }
         ],
         "requestBody": {
-          "description": "The model containing user registration details.",
+          "description": "Contains user registration details.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserRegistrationModel_V1"
+                "$ref": "#/components/schemas/CreateUserRequest_V1"
               }
             }
           }
@@ -1067,7 +1071,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -1077,7 +1081,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StringSimpleResponseModel_V1"
+                  "$ref": "#/components/schemas/StringSimpleResponse_V1"
                 }
               }
             }
@@ -1116,7 +1120,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -1126,7 +1130,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserModel_V1"
+                  "$ref": "#/components/schemas/UserResponse_V1"
                 }
               }
             }
@@ -1158,11 +1162,11 @@
           }
         ],
         "requestBody": {
-          "description": "The model containing the updated user details.",
+          "description": "Contains the updated user details.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserUpdateModel_V1"
+                "$ref": "#/components/schemas/UpdateUserRequest_V1"
               }
             }
           }
@@ -1173,7 +1177,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -1213,7 +1217,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -1229,8 +1233,8 @@
         "tags": [
           "Users"
         ],
-        "summary": "Changes the password of an existing user.",
-        "operationId": "ChangeUserPasswordAsync_V1",
+        "summary": "Updates the password of an existing user.",
+        "operationId": "UpdateUserPasswordAsync_V1",
         "parameters": [
           {
             "name": "id",
@@ -1250,11 +1254,11 @@
           }
         ],
         "requestBody": {
-          "description": "The model containing the old and new passwords.",
+          "description": "Contains the old and new passwords.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserPasswordModel_V1"
+                "$ref": "#/components/schemas/UpdateUserPasswordRequest_V1"
               }
             }
           }
@@ -1265,7 +1269,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -1281,8 +1285,8 @@
         "tags": [
           "Users"
         ],
-        "summary": "Changes the email address of an existing user.",
-        "operationId": "ChangeEmailAsync_V1",
+        "summary": "Updates the email address of an existing user.",
+        "operationId": "UpdateEmailAsync_V1",
         "parameters": [
           {
             "name": "id",
@@ -1302,11 +1306,11 @@
           }
         ],
         "requestBody": {
-          "description": "The model containing the new email and the user's password.",
+          "description": "Contains the new email and the user's password.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserEmailModel_V1"
+                "$ref": "#/components/schemas/UpdateUserEmailRequest_V1"
               }
             }
           }
@@ -1317,7 +1321,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -1333,8 +1337,8 @@
         "tags": [
           "Users"
         ],
-        "summary": "Sends a verification email to the specified user.",
-        "operationId": "SendUserEmailVerificationAsync_V1",
+        "summary": "Creates and sends a verification token to the specified user' email.",
+        "operationId": "CreateAndSendUserEmailVerificationAsync_V1",
         "parameters": [
           {
             "name": "id",
@@ -1359,7 +1363,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExceptionModel_V1"
+                  "$ref": "#/components/schemas/ExceptionResponse_V1"
                 }
               }
             }
@@ -1373,7 +1377,7 @@
   },
   "components": {
     "schemas": {
-      "ClientModelPaginatedReport_V1": {
+      "ClientResponsePaginatedReportResponse_V1": {
         "required": [
           "data",
           "itemsPerPage",
@@ -1400,7 +1404,7 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ClientModel_V1"
+              "$ref": "#/components/schemas/ClientResponse_V1"
             },
             "description": "Collection of data items for the current page.",
             "nullable": true
@@ -1408,7 +1412,7 @@
         },
         "additionalProperties": false
       },
-      "ClientModel_V1": {
+      "ClientResponse_V1": {
         "required": [
           "key",
           "name",
@@ -1436,49 +1440,22 @@
             "example": "Auth API"
           },
           "status": {
-            "$ref": "#/components/schemas/ClientStatusModel_V1"
+            "$ref": "#/components/schemas/ClientStatusResponse_V1"
           },
           "right": {
-            "$ref": "#/components/schemas/ClientRightModel_V1"
+            "$ref": "#/components/schemas/ClientRightResponse_V1"
           },
           "subscriptions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ClientSubscriptionModel_V1"
+              "$ref": "#/components/schemas/ClientSubscriptionResponse_V1"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "ClientRegistrationModel_V1": {
-        "required": [
-          "isInternal",
-          "name",
-          "right"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "maxLength": 36,
-            "minLength": 0,
-            "pattern": "^[a-zA-Z][\\w .-]+[a-zA-Z]$",
-            "type": "string",
-            "description": "Name.",
-            "nullable": true,
-            "example": "Auth API"
-          },
-          "right": {
-            "$ref": "#/components/schemas/ClientRightModel_V1"
-          },
-          "isInternal": {
-            "type": "boolean",
-            "description": "Flag indicating whether the client is for our system."
-          }
-        },
-        "additionalProperties": false
-      },
-      "ClientRightModel_V1": {
+      "ClientRightResponse_V1": {
         "required": [
           "canNotify"
         ],
@@ -1491,7 +1468,7 @@
         },
         "additionalProperties": false
       },
-      "ClientStatusModel_V1": {
+      "ClientStatusResponse_V1": {
         "required": [
           "reason",
           "value"
@@ -1522,7 +1499,7 @@
         ],
         "type": "string"
       },
-      "ClientSubscriptionModel_V1": {
+      "ClientSubscriptionResponse_V1": {
         "required": [
           "contractId",
           "contractName",
@@ -1549,12 +1526,11 @@
         },
         "additionalProperties": false
       },
-      "ClientUpdateModel_V1": {
+      "CreateClientRequest_V1": {
         "required": [
           "isInternal",
           "name",
-          "right",
-          "status"
+          "right"
         ],
         "type": "object",
         "properties": {
@@ -1567,152 +1543,30 @@
             "nullable": true,
             "example": "Auth API"
           },
-          "status": {
-            "$ref": "#/components/schemas/ClientStatusModel_V1"
-          },
-          "right": {
-            "$ref": "#/components/schemas/ClientRightModel_V1"
-          },
           "isInternal": {
             "type": "boolean",
             "description": "Flag indicating whether the client is for our system."
+          },
+          "right": {
+            "$ref": "#/components/schemas/CreateClientRightRequest_V1"
           }
         },
         "additionalProperties": false
       },
-      "DeployInfoModel_V1": {
+      "CreateClientRightRequest_V1": {
         "required": [
-          "environment",
-          "machineName",
-          "machineTimestamp",
-          "version"
+          "canNotify"
         ],
         "type": "object",
         "properties": {
-          "version": {
-            "type": "string",
-            "description": "The application version.",
-            "nullable": true,
-            "example": "1.0.0.0"
-          },
-          "environment": {
-            "type": "string",
-            "description": "The environment in which the application is running.",
-            "nullable": true,
-            "example": "Development"
-          },
-          "machineName": {
-            "type": "string",
-            "description": "The name of the machine where the application is deployed.",
-            "nullable": true,
-            "example": "TEST-123"
-          },
-          "machineTimestamp": {
-            "type": "string",
-            "description": "Timestamp of the machine when the information was captured.",
-            "format": "date-time"
-          }
-        },
-        "additionalProperties": false
-      },
-      "ExceptionModel_V1": {
-        "required": [
-          "title"
-        ],
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "Message.",
-            "nullable": true,
-            "example": "Internal Server Error"
-          },
-          "message": {
-            "type": "string",
-            "description": "Exception message.",
-            "nullable": true,
-            "example": "Invalid column name."
-          },
-          "details": {
-            "type": "string",
-            "description": "Exception details.",
-            "nullable": true,
-            "example": null
-          }
-        },
-        "additionalProperties": false
-      },
-      "StringSimpleResponseModel_V1": {
-        "required": [
-          "value"
-        ],
-        "type": "object",
-        "properties": {
-          "value": {
-            "type": "string",
-            "description": "Value.",
-            "nullable": true,
-            "example": "value"
-          }
-        },
-        "additionalProperties": false
-      },
-      "TokenModel_V1": {
-        "required": [
-          "accessToken"
-        ],
-        "type": "object",
-        "properties": {
-          "accessToken": {
-            "type": "string",
-            "description": "Access token.",
-            "nullable": true,
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6ImRiYTFkMjVhLTAwNjItNDllNy1iNGYwLTMxMjI0YTY5ZjllNCIsImNsaWVudFN0YXR1cyI6IkFDVElWRSIsImlzSW50ZXJuYWxDbGllbnQiOnRydWUsImNhbk5vdGlmeSI6dHJ1ZSwibmJmIjoxNzc4MTYwNjg4LCJleHAiOjE3NzgxNjE4ODgsImlhdCI6MTc3ODE2MDY4OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzMDEiLCJhdWQiOiJBbGVrc2FuZHJpbmEgUmF6aGVua292YSJ9._N_-fZJke50_z137XRpZRXw3qhbKjEvbu22aapMIPB0"
-          }
-        },
-        "additionalProperties": false
-      },
-      "TokenModel_V2": {
-        "required": [
-          "accessToken",
-          "refreshToken"
-        ],
-        "type": "object",
-        "properties": {
-          "accessToken": {
-            "type": "string",
-            "description": "Access token.",
-            "nullable": true,
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTQ3YTRmYy0zZDkwLTRkZGItYTFlYy1hNjY0YzBhOGEyZjMiLCJ1c2VybmFtZSI6Iml2YW4uaXZhbm92IiwidXNlclJvbGUiOiJBZG1pbmlzdHJhdG9yIiwidXNlclN0YXR1cyI6IkFjdGl2ZSIsIm5iZiI6MTc3ODA5MDk1MywiZXhwIjoxNzc4MDkyMTUzLCJpYXQiOjE3NzgwOTA5NTMsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0MzAxIiwiYXVkIjoiQWxla3NhbmRyaW5hIFJhemhlbmtvdmEifQ.EKDIqIkGZkj5MKyr-6wsykPxs-s-Pl8zSAw7rDFrvG0"
-          },
-          "refreshToken": {
-            "type": "string",
-            "description": "Refresh token.",
-            "nullable": true,
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTQ3YTRmYy0zZDkwLTRkZGItYTFlYy1hNjY0YzBhOGEyZjMiLCJuYmYiOjE3NzgwOTA5NTMsImV4cCI6MTc3ODI2Mzc1MywiaWF0IjoxNzc4MDkwOTUzLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo0NDMwMSIsImF1ZCI6IkFsZWtzYW5kcmluYSBSYXpoZW5rb3ZhIn0.IUQm6Ptb2QOuNeRVG55WmisNKdojFIRDEB0clEIy-58"
-          }
-        },
-        "additionalProperties": false
-      },
-      "TokenValidationResultModel_V1": {
-        "required": [
-          "isValid"
-        ],
-        "type": "object",
-        "properties": {
-          "isValid": {
+          "canNotify": {
             "type": "boolean",
-            "description": "Flag indicating whether the token is valid."
-          },
-          "exception": {
-            "type": "string",
-            "description": "Exception if token is invalid.",
-            "nullable": true
+            "description": "Flag indicating whether the client has the right to notify a party."
           }
         },
         "additionalProperties": false
       },
-      "UserCredentialsModel_V1": {
+      "CreateOtpRequest_V1": {
         "required": [
           "password",
           "username"
@@ -1739,170 +1593,7 @@
         },
         "additionalProperties": false
       },
-      "UserCredentialsModel_V2": {
-        "required": [
-          "oneTimePassword",
-          "userId",
-          "username"
-        ],
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "description": "User external ID.",
-            "nullable": true,
-            "example": "2a47a4fc-3d90-4ddb-a1ec-a664c0a8a2f3"
-          },
-          "username": {
-            "type": "string",
-            "description": "User external ID.",
-            "nullable": true,
-            "example": "ivan.ivanov"
-          },
-          "oneTimePassword": {
-            "maxLength": 6,
-            "minLength": 0,
-            "type": "string",
-            "description": "One time password (OTP).",
-            "nullable": true,
-            "example": "271967"
-          }
-        },
-        "additionalProperties": false
-      },
-      "UserEmailModel_V1": {
-        "required": [
-          "email",
-          "password"
-        ],
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "description": "Email.",
-            "format": "email",
-            "nullable": true,
-            "example": "ivan.ivanov@mail.com"
-          },
-          "password": {
-            "maxLength": 128,
-            "minLength": 0,
-            "type": "string",
-            "description": "Old password.",
-            "nullable": true,
-            "example": "m4A0?Edis66a"
-          }
-        },
-        "additionalProperties": false
-      },
-      "UserModelPaginatedReport_V1": {
-        "required": [
-          "data",
-          "itemsPerPage",
-          "pagesCount",
-          "requestedPageNumber"
-        ],
-        "type": "object",
-        "properties": {
-          "requestedPageNumber": {
-            "type": "integer",
-            "description": "Requested page number for the report.",
-            "format": "int32"
-          },
-          "pagesCount": {
-            "type": "integer",
-            "description": "Total number of pages available in the report.",
-            "format": "int32"
-          },
-          "itemsPerPage": {
-            "type": "integer",
-            "description": "Number of items per page in the report.",
-            "format": "int32"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserModel_V1"
-            },
-            "description": "Collection of data items for the current page.",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "UserModel_V1": {
-        "required": [
-          "id",
-          "registrationTimestamp",
-          "role",
-          "status",
-          "username"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "User external ID.",
-            "nullable": true,
-            "example": "2a47a4fc-3d90-4ddb-a1ec-a664c0a8a2f3"
-          },
-          "username": {
-            "maxLength": 64,
-            "minLength": 6,
-            "pattern": "^[a-zA-Z][\\w.-]+[a-zA-Z]$",
-            "type": "string",
-            "description": "Username.",
-            "nullable": true,
-            "example": "ivan.ivanov"
-          },
-          "role": {
-            "$ref": "#/components/schemas/UserRoles"
-          },
-          "status": {
-            "$ref": "#/components/schemas/UserStatusModel_V1"
-          },
-          "email": {
-            "type": "string",
-            "description": "Email.",
-            "format": "email",
-            "nullable": true,
-            "example": "ivan.ivanov@mail.com"
-          },
-          "registrationTimestamp": {
-            "type": "string",
-            "description": "Registration timestamp.",
-            "format": "date-time"
-          }
-        },
-        "additionalProperties": false
-      },
-      "UserPasswordModel_V1": {
-        "required": [
-          "newPassword",
-          "oldPassword"
-        ],
-        "type": "object",
-        "properties": {
-          "oldPassword": {
-            "maxLength": 128,
-            "minLength": 0,
-            "type": "string",
-            "description": "Old password.",
-            "nullable": true,
-            "example": "m4A0?Edis66a"
-          },
-          "newPassword": {
-            "maxLength": 128,
-            "minLength": 0,
-            "type": "string",
-            "description": "New password.",
-            "nullable": true,
-            "example": "8ENy$0YV936k"
-          }
-        },
-        "additionalProperties": false
-      },
-      "UserRegistrationModel_V1": {
+      "CreateUserRequest_V1": {
         "required": [
           "password",
           "role",
@@ -1939,15 +1630,183 @@
         },
         "additionalProperties": false
       },
-      "UserRoles": {
-        "enum": [
-          "ADMINISTRATOR",
-          "EMPLOYEE",
-          "CUSTOMER"
+      "DeployInfoResponse_V1": {
+        "required": [
+          "environment",
+          "machineName",
+          "machineTimestamp",
+          "version"
         ],
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "The application version.",
+            "nullable": true,
+            "example": "1.0.0.0"
+          },
+          "environment": {
+            "type": "string",
+            "description": "The environment in which the application is running.",
+            "nullable": true,
+            "example": "Development"
+          },
+          "machineName": {
+            "type": "string",
+            "description": "The name of the machine where the application is deployed.",
+            "nullable": true,
+            "example": "TEST-123"
+          },
+          "machineTimestamp": {
+            "type": "string",
+            "description": "Timestamp of the machine when the information was captured.",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
       },
-      "UserStatusModel_V1": {
+      "ExceptionResponse_V1": {
+        "required": [
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Message.",
+            "nullable": true,
+            "example": "Internal Server Error"
+          },
+          "message": {
+            "type": "string",
+            "description": "Exception message.",
+            "nullable": true,
+            "example": "Invalid column name."
+          },
+          "details": {
+            "type": "string",
+            "description": "Exception details.",
+            "nullable": true,
+            "example": null
+          }
+        },
+        "additionalProperties": false
+      },
+      "StringSimpleResponse_V1": {
+        "required": [
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Value.",
+            "nullable": true,
+            "example": "value"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TokenResponse_V1": {
+        "required": [
+          "accessToken"
+        ],
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Access token.",
+            "nullable": true,
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6ImRiYTFkMjVhLTAwNjItNDllNy1iNGYwLTMxMjI0YTY5ZjllNCIsImNsaWVudFN0YXR1cyI6IkFDVElWRSIsImlzSW50ZXJuYWxDbGllbnQiOnRydWUsImNhbk5vdGlmeSI6dHJ1ZSwibmJmIjoxNzc4MTYwNjg4LCJleHAiOjE3NzgxNjE4ODgsImlhdCI6MTc3ODE2MDY4OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzMDEiLCJhdWQiOiJBbGVrc2FuZHJpbmEgUmF6aGVua292YSJ9._N_-fZJke50_z137XRpZRXw3qhbKjEvbu22aapMIPB0"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TokenResponse_V2": {
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ],
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Access token.",
+            "nullable": true,
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTQ3YTRmYy0zZDkwLTRkZGItYTFlYy1hNjY0YzBhOGEyZjMiLCJ1c2VybmFtZSI6Iml2YW4uaXZhbm92IiwidXNlclJvbGUiOiJBZG1pbmlzdHJhdG9yIiwidXNlclN0YXR1cyI6IkFjdGl2ZSIsIm5iZiI6MTc3ODA5MDk1MywiZXhwIjoxNzc4MDkyMTUzLCJpYXQiOjE3NzgwOTA5NTMsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0MzAxIiwiYXVkIjoiQWxla3NhbmRyaW5hIFJhemhlbmtvdmEifQ.EKDIqIkGZkj5MKyr-6wsykPxs-s-Pl8zSAw7rDFrvG0"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token.",
+            "nullable": true,
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTQ3YTRmYy0zZDkwLTRkZGItYTFlYy1hNjY0YzBhOGEyZjMiLCJuYmYiOjE3NzgwOTA5NTMsImV4cCI6MTc3ODI2Mzc1MywiaWF0IjoxNzc4MDkwOTUzLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo0NDMwMSIsImF1ZCI6IkFsZWtzYW5kcmluYSBSYXpoZW5rb3ZhIn0.IUQm6Ptb2QOuNeRVG55WmisNKdojFIRDEB0clEIy-58"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TokenValidationResultResponse_V1": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "isValid": {
+            "type": "boolean",
+            "description": "Flag indicating whether the token is valid."
+          },
+          "exception": {
+            "type": "string",
+            "description": "Exception if token is invalid.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateClientRequest_V1": {
+        "required": [
+          "isInternal",
+          "name",
+          "right",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 36,
+            "minLength": 0,
+            "pattern": "^[a-zA-Z][\\w .-]+[a-zA-Z]$",
+            "type": "string",
+            "description": "Name.",
+            "nullable": true,
+            "example": "Auth API"
+          },
+          "status": {
+            "$ref": "#/components/schemas/UpdateClientStatusRequest_V1"
+          },
+          "right": {
+            "$ref": "#/components/schemas/UpdateClientRightRequest_V1"
+          },
+          "isInternal": {
+            "type": "boolean",
+            "description": "Flag indicating whether the client is for our system."
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateClientRightRequest_V1": {
+        "required": [
+          "canNotify"
+        ],
+        "type": "object",
+        "properties": {
+          "canNotify": {
+            "type": "boolean",
+            "description": "Flag indicating whether the client has the right to notify a party."
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateClientStatusRequest_V1": {
         "required": [
           "reason",
           "value"
@@ -1970,25 +1829,58 @@
         },
         "additionalProperties": false
       },
-      "UserStatusReasons": {
-        "enum": [
-          "NONE",
-          "MAX_WRONG_LOGIN_ATTEMPTS_REACHED",
-          "NEW_USER",
-          "EMAIL_CHANGED"
+      "UpdateUserEmailRequest_V1": {
+        "required": [
+          "email",
+          "password"
         ],
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email.",
+            "format": "email",
+            "nullable": true,
+            "example": "ivan.ivanov@mail.com"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 0,
+            "type": "string",
+            "description": "Old password.",
+            "nullable": true,
+            "example": "m4A0?Edis66a"
+          }
+        },
+        "additionalProperties": false
       },
-      "UserStatuses": {
-        "enum": [
-          "DISABLED",
-          "ACTIVE",
-          "BLOCKED",
-          "RESTRICTED"
+      "UpdateUserPasswordRequest_V1": {
+        "required": [
+          "newPassword",
+          "oldPassword"
         ],
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "maxLength": 128,
+            "minLength": 0,
+            "type": "string",
+            "description": "Old password.",
+            "nullable": true,
+            "example": "m4A0?Edis66a"
+          },
+          "newPassword": {
+            "maxLength": 128,
+            "minLength": 0,
+            "type": "string",
+            "description": "New password.",
+            "nullable": true,
+            "example": "8ENy$0YV936k"
+          }
+        },
+        "additionalProperties": false
       },
-      "UserUpdateModel_V1": {
+      "UpdateUserRequest_V1": {
         "required": [
           "role",
           "status",
@@ -2009,10 +1901,194 @@
             "$ref": "#/components/schemas/UserRoles"
           },
           "status": {
-            "$ref": "#/components/schemas/UserStatusModel_V1"
+            "$ref": "#/components/schemas/UpdateUserStatusRequest_V1"
           }
         },
         "additionalProperties": false
+      },
+      "UpdateUserStatusRequest_V1": {
+        "required": [
+          "reason",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/UserStatuses"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/UserStatusReasons"
+          },
+          "note": {
+            "pattern": "^[a-zA-Z\\d\\s\\-.!?()]*$",
+            "type": "string",
+            "description": "Additional note for the status.",
+            "nullable": true,
+            "example": "test"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserCredentialsResponse_V2": {
+        "required": [
+          "oneTimePassword",
+          "userId",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User external ID.",
+            "nullable": true,
+            "example": "2a47a4fc-3d90-4ddb-a1ec-a664c0a8a2f3"
+          },
+          "username": {
+            "type": "string",
+            "description": "User external ID.",
+            "nullable": true,
+            "example": "ivan.ivanov"
+          },
+          "oneTimePassword": {
+            "maxLength": 6,
+            "minLength": 0,
+            "type": "string",
+            "description": "One time password (OTP).",
+            "nullable": true,
+            "example": "271967"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserResponsePaginatedReportResponse_V1": {
+        "required": [
+          "data",
+          "itemsPerPage",
+          "pagesCount",
+          "requestedPageNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "requestedPageNumber": {
+            "type": "integer",
+            "description": "Requested page number for the report.",
+            "format": "int32"
+          },
+          "pagesCount": {
+            "type": "integer",
+            "description": "Total number of pages available in the report.",
+            "format": "int32"
+          },
+          "itemsPerPage": {
+            "type": "integer",
+            "description": "Number of items per page in the report.",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResponse_V1"
+            },
+            "description": "Collection of data items for the current page.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserResponse_V1": {
+        "required": [
+          "id",
+          "registrationTimestamp",
+          "role",
+          "status",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User external ID.",
+            "nullable": true,
+            "example": "2a47a4fc-3d90-4ddb-a1ec-a664c0a8a2f3"
+          },
+          "username": {
+            "maxLength": 64,
+            "minLength": 6,
+            "pattern": "^[a-zA-Z][\\w.-]+[a-zA-Z]$",
+            "type": "string",
+            "description": "Username.",
+            "nullable": true,
+            "example": "ivan.ivanov"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRoles"
+          },
+          "status": {
+            "$ref": "#/components/schemas/UserStatusResponse_V1"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email.",
+            "format": "email",
+            "nullable": true,
+            "example": "ivan.ivanov@mail.com"
+          },
+          "registrationTimestamp": {
+            "type": "string",
+            "description": "Registration timestamp.",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserRoles": {
+        "enum": [
+          "ADMINISTRATOR",
+          "EMPLOYEE",
+          "CUSTOMER"
+        ],
+        "type": "string"
+      },
+      "UserStatusReasons": {
+        "enum": [
+          "NONE",
+          "MAX_WRONG_LOGIN_ATTEMPTS_REACHED",
+          "NEW_USER",
+          "EMAIL_CHANGED"
+        ],
+        "type": "string"
+      },
+      "UserStatusResponse_V1": {
+        "required": [
+          "reason",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/UserStatuses"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/UserStatusReasons"
+          },
+          "note": {
+            "pattern": "^[a-zA-Z\\d\\s\\-.!?()]*$",
+            "type": "string",
+            "description": "Additional note for the status.",
+            "nullable": true,
+            "example": "test"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserStatuses": {
+        "enum": [
+          "DISABLED",
+          "ACTIVE",
+          "BLOCKED",
+          "RESTRICTED"
+        ],
+        "type": "string"
       }
     },
     "securitySchemes": {

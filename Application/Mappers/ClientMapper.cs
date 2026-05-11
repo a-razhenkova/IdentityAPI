@@ -51,8 +51,9 @@ namespace Application
 
         public static Client Map(this Client client, CreateClientCommand command)
         {
-            client.Key = ClientKey.Create();
             client.Name = command.Name;
+            client.Key = ClientKey.Create();
+            client.Secret = ClientSecret.Create();
             client.IsInternal = command.IsInternal;
             client.Status = new ClientStatus()
             {

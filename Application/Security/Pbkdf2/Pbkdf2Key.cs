@@ -20,7 +20,7 @@ namespace Application
         private static (string Pbkdf2Key, string Secret) Create(string value, int iterations, int hashLength, string secret)
             => Create(value, iterations, hashLength, secret.Length, secret);
 
-        private static (string Pbkdf2Key, string Secret) Create(string value, int iterations, int hashLength, int saltLength, string? secret = default)
+        private static (string Pbkdf2Key, string Secret) Create(string value, int iterations, int hashLength, int saltLength, string? secret = null)
         {
             if (string.IsNullOrWhiteSpace(value) || iterations <= 0 || hashLength <= 0)
                 throw new InvalidOperationException();

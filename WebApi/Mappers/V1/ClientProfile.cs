@@ -13,6 +13,8 @@ namespace WebApi.V1
 
             Create_ClientDto_To_ClientResponse_Map();
 
+            CreateMap<SearchClientRequest, SearchClientQuery>();
+
             CreateMap<PaginatedReportDto<ClientDto>, PaginatedReportDto<ClientResponse>>();
         }
 

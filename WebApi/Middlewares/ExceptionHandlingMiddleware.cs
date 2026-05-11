@@ -63,7 +63,7 @@ namespace WebApi
         {
             try
             {
-                var exceptionModel = new V1.ExceptionResponse()
+                var response = new V1.ExceptionResponse()
                 {
                     Title = title,
                     Message = exception?.Message,
@@ -71,7 +71,7 @@ namespace WebApi
                 };
 
                 httpContext.Response.StatusCode = statusCode;
-                await httpContext.Response.WriteAsJsonAsync(exceptionModel);
+                await httpContext.Response.WriteAsJsonAsync(response);
             }
             catch
             {

@@ -17,21 +17,21 @@ namespace Domain
                 client.Status.Note = null;
             }
 
-            public void Block(ClientStatusReasons reason = ClientStatusReasons.None, string note = default)
+            public void Block(ClientStatusReasons reason = ClientStatusReasons.None, string note = null)
             {
                 client.Status.Value = ClientStatuses.Blocked;
                 client.Status.Reason = reason;
                 client.Status.Note = note;
             }
 
-            public void Disable(ClientStatusReasons reason = ClientStatusReasons.None, string note = default)
+            public void Disable(ClientStatusReasons reason = ClientStatusReasons.None, string note = null)
             {
                 client.Status.Value = ClientStatuses.Disabled;
                 client.Status.Reason = reason;
                 client.Status.Note = note;
             }
 
-            public void UpdateStatus(ClientStatuses status, ClientStatusReasons reason = ClientStatusReasons.None, string note = default)
+            public void UpdateStatus(ClientStatuses status, ClientStatusReasons reason = ClientStatusReasons.None, string note = null)
             {
                 if (client.Status.Value == status && client.Status.Reason == reason && client.Status.Note == note)
                     return; // has nothing to update

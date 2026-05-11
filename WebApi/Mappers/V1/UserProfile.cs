@@ -13,6 +13,8 @@ namespace WebApi.V1
 
             Create_UserDto_To_UserResponse_Map();
 
+            CreateMap<SearchUserRequest, SearchUserQuery>();
+
             CreateMap<PaginatedReportDto<UserDto>, PaginatedReportResponse<UserResponse>>();
         }
 

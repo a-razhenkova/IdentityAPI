@@ -27,7 +27,7 @@ namespace UserTests
         public void Create_MultipleTimes_ReturnUniquePasswords(int passwordLength, int createCount)
         {
             // Arrange
-            string password = new Faker().Random.String();
+            string password = new Faker().Random.String(passwordLength);
             var hashes = new List<string>();
             var secrets = new List<string>();
 

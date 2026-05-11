@@ -9,7 +9,7 @@ namespace UserTests
         public void Create_ReturnOtp()
         {
             // Act
-            string otp = UserOtp.Create();
+            string otp = UserOtpKey.Create();
 
             // Assert
             otp.Should().NotBeNullOrWhiteSpace();
@@ -24,7 +24,7 @@ namespace UserTests
 
             // Act
             for (int index = 0; index < createCount; index++)
-                otps.Add(UserOtp.Create());
+                otps.Add(UserOtpKey.Create());
 
             // Assert
             otps.Should().OnlyHaveUniqueItems();

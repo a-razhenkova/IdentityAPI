@@ -12,7 +12,7 @@ namespace UnitTests.Mocks
             RuleFor(s => s.PublicId, f => f.Random.Uuid().ToString());
             RuleFor(s => s.Username, f => f.Internet.UserName());
             RuleFor(s => s.Role, f => f.PickRandom<UserRoles>());
-            RuleFor(s => s.OtpSecret, UserOtp.Create());
+            RuleFor(s => s.OtpKey, UserOtpKey.Create());
             RuleFor(s => s.Email, f => f.Internet.Email());
             RuleFor(s => s.IsVerified, f => true);
             RuleFor(s => s.RegistrationTimestamp, f => DateTime.Now);

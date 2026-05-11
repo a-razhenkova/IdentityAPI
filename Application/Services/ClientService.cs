@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Domain;
+﻿using Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -12,44 +11,34 @@ namespace Application
     {
         private readonly AppSettings _appSettings;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly IPaginatedReport _paginatedReport;
 
         public ClientService(IOptionsSnapshot<AppSettings> appSettings,
                             IUnitOfWork unitOfWork,
-                            IMapper mapper,
                             IPaginatedReport paginatedReport)
         {
             _appSettings = appSettings.Value;
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _paginatedReport = paginatedReport;
         }
 
-        public async Task<PaginatedReport<ClientDto>> SearchAsync(ClientSearchParams clientSearchParams, CancellationToken cancellationToken = default)
+        public async Task<PaginatedReportDto<ClientDto>> SearchAsync(SearchClientQuery query, CancellationToken cancellationToken = default)
         {
-            IQueryable<Client> searchQuery = _unitOfWork.Clients.Init().AsNoTracking();
+            IQueryable<Client> clientQuery = _unitOfWork.Clients.Init().AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(clientSearchParams.Key))
-            {
-                searchQuery = searchQuery.Where(c => c.Key == clientSearchParams.Key);
-            }
+            if (!string.IsNullOrWhiteSpace(query.Key))
+                clientQuery = clientQuery.Where(c => c.Key == query.Key);
 
-            if (!string.IsNullOrWhiteSpace(clientSearchParams.Name))
-            {
-                searchQuery = searchQuery.Where(c => EF.Functions.Like(c.Name, $"%{clientSearchParams.Name}%"));
-            }
-            if (clientSearchParams.Status is not null)
-            {
-                searchQuery = searchQuery.Where(c => c.Status.Value == clientSearchParams.Status);
-            }
+            if (!string.IsNullOrWhiteSpace(query.Name))
+                clientQuery = clientQuery.Where(c => EF.Functions.Like(c.Name, $"%{query.Name}%"));
 
-            if (clientSearchParams.CanNotify is not null)
-            {
-                searchQuery = searchQuery.Where(c => c.Right.CanNotify == clientSearchParams.CanNotify);
-            }
+            if (query.Status is not null)
+                clientQuery = clientQuery.Where(c => c.Status.Value == query.Status);
 
-            searchQuery = searchQuery
+            if (query.CanNotify is not null)
+                clientQuery = clientQuery.Where(c => c.Right.CanNotify == query.CanNotify);
+
+            clientQuery = clientQuery
                 .Include(c => c.Status)
                 .Include(c => c.Right)
                 .Include(c => c.Subscriptions
@@ -59,20 +48,20 @@ namespace Application
                     .ThenInclude(s => s.Contract)
                 .OrderByDescending(c => c.Id);
 
-            return await _paginatedReport.Prepare<Client, ClientDto>(searchQuery, clientSearchParams, cancellationToken);
+            return await _paginatedReport.Prepare<Client, ClientDto>(clientQuery, query, ClientMapper.MapToDto, cancellationToken);
         }
 
-        public async Task<ClientDto> LoadAsync(string key, CancellationToken cancellationToken = default)
+        public async Task<ClientDto> GetAsync(string key, CancellationToken cancellationToken = default)
         {
             Client client = await _unitOfWork.Clients.GetByKeyAsync(key, cancellationToken)
                 ?? throw new NotFoundException("Client not found.");
 
-            return _mapper.Map<ClientDto>(client);
+            return client.MapToDto();
         }
 
-        public async Task<string> RegisterAsync(ClientDto clientDto, CancellationToken cancellationToken = default)
+        public async Task<string> CreateAsync(CreateClientCommand command, CancellationToken cancellationToken = default)
         {
-            Client client = _mapper.Map<Client>(clientDto);
+            Client client = new Client().Map(command);
 
             await _unitOfWork.Clients.BasicAddAsync(client, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -80,13 +69,13 @@ namespace Application
             return client.Key;
         }
 
-        public async Task UpdateAsync(string key, ClientDto clientDto, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(string key, UpdateClientCommand command, CancellationToken cancellationToken = default)
         {
             Client client = await _unitOfWork.Clients.GetByKeyAsync(key, cancellationToken)
                 ?? throw new NotFoundException("Client not found");
 
             Client clientSnapshot = client.DeepCopy();
-            client = _mapper.Map(clientDto, client);
+            client.Map(command);
 
             bool hasChanges = !client.IsEqual(clientSnapshot);
             await _unitOfWork.SaveChangesAsync(hasChanges, cancellationToken);
@@ -111,7 +100,7 @@ namespace Application
             }
         }
 
-        public async Task<string> LoadSecretAsync(string key, CancellationToken cancellationToken = default)
+        public async Task<string> GetSecretAsync(string key, CancellationToken cancellationToken = default)
         {
             Client client = await _unitOfWork.Clients.GetByKeyWithNoTrackingAsync(key, cancellationToken)
                 ?? throw new NotFoundException("Client not found.");
@@ -119,7 +108,7 @@ namespace Application
             return client.Secret;
         }
 
-        public async Task<string> RefreshSecretAsync(string key, CancellationToken cancellationToken = default)
+        public async Task<string> UpdateSecretAsync(string key, CancellationToken cancellationToken = default)
         {
             Client client = await _unitOfWork.Clients.GetByKeyAsync(key)
                 ?? throw new NotFoundException("Client not found.");
@@ -131,7 +120,7 @@ namespace Application
             return client.Secret;
         }
 
-        public async Task AddNewSubscription(string clientKey, DateTime expirationDate, IFormFile file, CancellationToken cancellationToken = default)
+        public async Task CreateSubscription(string clientKey, DateTime expirationDate, IFormFile file, CancellationToken cancellationToken = default)
         {
             if (expirationDate <= DateTime.UtcNow.Date)
                 throw new BadRequestException("Invalid expiration date.");
@@ -173,7 +162,7 @@ namespace Application
             }
         }
 
-        public async Task<FileDto> DownloadSubscriptionContractAsync(string clientKey, long contractId, CancellationToken cancellationToken = default)
+        public async Task<FileDto> GetSubscriptionContractAsync(string clientKey, long contractId, CancellationToken cancellationToken = default)
         {
             Document contract = await _unitOfWork.Clients.GetSubscriptionContractWithNoTrackingAsync(clientKey, contractId, cancellationToken)
                 ?? throw new NotFoundException("Contract not found.");

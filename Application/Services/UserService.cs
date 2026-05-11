@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Domain;
+﻿using Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -13,49 +12,40 @@ namespace Application
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppSettings _appSettings;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly IPaginatedReport _paginatedReport;
         private readonly IRabbitMq _rebbitMq;
 
         public UserService(IHttpContextAccessor httpContextAccessor,
                           IOptionsSnapshot<AppSettings> appSettings,
                           IUnitOfWork unitOfWork,
-                          IMapper mapper,
                           IPaginatedReport paginatedReport,
                           IRabbitMq rabbitMq)
         {
             _httpContextAccessor = httpContextAccessor;
             _appSettings = appSettings.Value;
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _paginatedReport = paginatedReport;
             _rebbitMq = rabbitMq;
         }
 
-        public async Task<PaginatedReport<UserDto>> SearchAsync(UserSearchParams userSearchParams, CancellationToken cancellationToken = default)
+        public async Task<PaginatedReportDto<UserDto>> SearchAsync(SearchUserQuery query, CancellationToken cancellationToken = default)
         {
-            IQueryable<User> searchQuery = _unitOfWork.Users.Init().AsNoTracking();
+            IQueryable<User> userQuery = _unitOfWork.Users.Init().AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(userSearchParams.Username))
-            {
-                searchQuery = searchQuery.Where(u => EF.Functions.Like(u.Username, $"%{userSearchParams.Username}%"));
-            }
+            if (!string.IsNullOrWhiteSpace(query.Username))
+                userQuery = userQuery.Where(u => EF.Functions.Like(u.Username, $"%{query.Username}%"));
 
-            if (userSearchParams.Role is not null)
-            {
-                searchQuery = searchQuery.Where(u => u.Role == userSearchParams.Role);
-            }
+            if (query.Role is not null)
+                userQuery = userQuery.Where(u => u.Role == query.Role);
 
-            if (userSearchParams.Status is not null)
-            {
-                searchQuery = searchQuery.Where(u => u.Status.Value == userSearchParams.Status);
-            }
+            if (query.Status is not null)
+                userQuery = userQuery.Where(u => u.Status.Value == query.Status);
 
-            searchQuery = searchQuery
+            userQuery = userQuery
                 .Include(u => u.Status)
                 .OrderByDescending(u => u.Id);
 
-            return await _paginatedReport.Prepare<User, UserDto>(searchQuery, userSearchParams, cancellationToken);
+            return await _paginatedReport.Prepare(userQuery, query, UserMapper.MapToDto, cancellationToken);
         }
 
         public async Task<UserDto> GetAsync(string userPublicId, CancellationToken cancellationToken = default)
@@ -63,49 +53,53 @@ namespace Application
             User user = await _unitOfWork.Users.GetByIdWithNoTrackingAsync(userPublicId, cancellationToken)
                 ?? throw new NotFoundException("User not found.");
 
-            return _mapper.Map<UserDto>(user);
+            return UserMapper.MapToDto(user);
         }
 
-        public async Task<string> RegisterAsync(UserDto userDto, CancellationToken cancellationToken = default)
+        public async Task<string> CreateAsync(CreateUserCommand command, CancellationToken cancellationToken = default)
         {
-            UserPasswordValidator.Validate(userDto.Password, _appSettings.Security);
+            string? passwordValidationError = _appSettings.Security.ValidatePassword(command.Password);
+            if (passwordValidationError is not null)
+                throw new BadRequestException(passwordValidationError);
 
-            User? user = await _unitOfWork.Users.GetByUsernameAsync(userDto.Username, cancellationToken);
+            User? user = await _unitOfWork.Users.GetByUsernameAsync(command.Username, cancellationToken);
 
             if (user is not null)
-                throw new ConflictException($"User with username '{userDto.Username}' already registered.");
+                throw new ConflictException($"User with username '{command.Username}' already registered.");
 
-            user = _mapper.Map<User>(userDto);
+            user = new User().Map(command);
 
-            await _unitOfWork.Users.AddAsync(user, userDto.Password);
+            await _unitOfWork.Users.BasicAddAsync(user, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             if (string.IsNullOrWhiteSpace(user.Email))
             {
-                // cancellation is unnecessary because changes are already made
-                await SendEmailVerificationInBackgroundAsync(user);
+                string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
+
+                var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(emailToken);
+                await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because changes are already made
             }
 
             return user.PublicId;
         }
 
-        public async Task UpdateAsync(string userPublicId, UserDto userDto, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(string userPublicId, UpdateUserCommand command, CancellationToken cancellationToken = default)
         {
             User user = await _unitOfWork.Users
                 .WhereIdEquals(userPublicId)
                 .Include(u => u.Password)
                 .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("User not found.");
 
-            if (!user.Username.Equals(userDto.Username))
+            if (!user.Username.Equals(command.Username))
             {
-                bool isUsernameTaken = await _unitOfWork.Users.CheckIfExistAsync(expression: u => u.Username == userDto.Username);
+                bool isUsernameTaken = await _unitOfWork.Users.CheckIfExistAsync(expression: u => u.Username == command.Username);
 
                 if (!isUsernameTaken)
-                    throw new ConflictException($"User with username '{userDto.Username}' already registered.");
+                    throw new ConflictException($"User with username '{command.Username}' already registered.");
             }
 
             User userSnapshot = user.DeepCopy();
-            user = _mapper.Map(userDto, user);
+            user.Map(command);
 
             bool hasChanges = !user.IsEqual(userSnapshot);
             await _unitOfWork.SaveChangesAsync(hasChanges, cancellationToken);
@@ -116,14 +110,15 @@ namespace Application
             User? user = await _unitOfWork.Users.GetByIdAsync(userPublicId, cancellationToken)
                 ?? throw new NotFoundException("User not found.");
 
-            // TODO: schadule for delete with Hangfire
             _unitOfWork.Users.BasicRemove(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task ChangePasswordAsync(string userPublicId, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
+        public async Task UpdatePasswordAsync(string userPublicId, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
         {
-            UserPasswordValidator.Validate(newPassword, _appSettings.Security);
+            string? passwordValidationError = _appSettings.Security.ValidatePassword(newPassword);
+            if (passwordValidationError is not null)
+                throw new BadRequestException(passwordValidationError);
 
             User user = await _unitOfWork.Users
                 .WhereIdEquals(userPublicId)
@@ -139,17 +134,16 @@ namespace Application
 
             if (!string.IsNullOrWhiteSpace(user.Email))
             {
-                var evt = _mapper.Map<RabbitMq.UserPasswordChangedEvent>(user);
-                evt.UserIpAddress = _httpContextAccessor?.HttpContext?.GetUserIpAddress();
-
-                // cancellation is unnecessary because changes are already made
-                await _rebbitMq.PublishEventInBackground(evt);
+                var evt = RabbitMqEventFactory.CreateUserPasswordChangedEvent(user, _httpContextAccessor?.HttpContext?.GetUserIpAddress()); 
+                await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because changes are already made
             }
         }
 
-        public async Task ChangeEmailAsync(string userPublicId, string email, string password, CancellationToken cancellationToken = default)
+        public async Task UpdateEmailAsync(string userPublicId, string email, string password, CancellationToken cancellationToken = default)
         {
-            UserPasswordValidator.Validate(password, _appSettings.Security);
+            string? passwordValidationError = _appSettings.Security.ValidatePassword(password);
+            if (passwordValidationError is not null)
+                throw new BadRequestException(passwordValidationError);
 
             User user = await _unitOfWork.Users
                 .WhereIdEquals(userPublicId)
@@ -162,13 +156,16 @@ namespace Application
             user.Email = email;
             user.Restrict(UserStatusReasons.EmailChanged);
 
-            // cancellation is unnecessary because changes are already made
-            await SendEmailVerificationInBackgroundAsync(user);
-
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // sending email verification
+            string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
+
+            var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(emailToken);
+            await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because changes are already made
         }
 
-        public async Task SendEmailVerificationAsync(string userPublicId, CancellationToken cancellationToken = default)
+        public async Task CreateAndSendEmailVerificationAsync(string userPublicId, CancellationToken cancellationToken = default)
         {
             User user = await _unitOfWork.Users.GetByIdWithNoTrackingAsync(userPublicId)
                 ?? throw new NotFoundException("User not found.");
@@ -178,23 +175,8 @@ namespace Application
 
             string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
 
-            var evt = new RabbitMq.EmailVerificationEvent()
-            {
-                VerificationToken = emailToken
-            };
-
+            var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(emailToken);
             await _rebbitMq.PublishEventAsync(evt, cancellationToken);
-        }
-
-        private async Task SendEmailVerificationInBackgroundAsync(User user, CancellationToken cancellationToken = default)
-        {
-            string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
-            var evt = new RabbitMq.EmailVerificationEvent()
-            {
-                VerificationToken = emailToken
-            };
-
-            await _rebbitMq.PublishEventInBackground(evt, cancellationToken);
         }
     }
 }

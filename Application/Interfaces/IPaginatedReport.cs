@@ -2,6 +2,7 @@
 {
     public interface IPaginatedReport
     {
-        Task<PaginatedReport<TDataDto>> Prepare<TData, TDataDto>(IQueryable<TData> query, PaginationParams pageParams, CancellationToken cancellationToken);
+        Task<PaginatedReportDto<TDataDto>> Prepare<TData, TDataDto>(IQueryable<TData> dataQuery, PaginatedQuery settings,
+            Func<IEnumerable<TData>, IEnumerable<TDataDto>> mapperCallback, CancellationToken cancellationToken = default);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Application
 {
-    public class ClientSearchParams : PaginationParams
+    public sealed record SearchClientQuery : PaginatedQuery
     {
         public string? Key { get; set; }
 

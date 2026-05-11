@@ -1,6 +1,6 @@
 ﻿namespace Application
 {
-    public class PaginatedReport<TData>
+    public class PaginatedReportDto<TData>
     {
         /// <summary>
         /// Requested page number for the report.

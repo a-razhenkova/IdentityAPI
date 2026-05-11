@@ -1,6 +1,4 @@
-﻿using Domain;
-
-namespace Application
+﻿namespace Application
 {
     public class ClientDto
     {
@@ -14,29 +12,6 @@ namespace Application
 
         public bool IsInternal { get; set; } = false;
 
-        public IEnumerable<ClientSubscriptionDto> Subscriptions { get; set; } = new List<ClientSubscriptionDto>();
-    }
-
-    public class ClientStatusDto
-    {
-        public ClientStatuses Value { get; set; } = ClientStatuses.Active;
-
-        public ClientStatusReasons Reason { get; set; } = ClientStatusReasons.None;
-
-        public string? Note { get; set; }
-    }
-
-    public class ClientRightDto
-    {
-        public bool CanNotify { get; set; } = false;
-    }
-
-    public class ClientSubscriptionDto
-    {
-        public DateTime ExpirationDate { get; set; } = DateTime.Now;
-
-        public long ContractId { get; set; } = 0;
-
-        public string ContractName { get; set; } = string.Empty;
+        public ICollection<ClientSubscriptionDto> Subscriptions { get; set; } = new List<ClientSubscriptionDto>();
     }
 }

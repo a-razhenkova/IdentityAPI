@@ -2,20 +2,20 @@
 {
     public interface IUser
     {
-        Task<PaginatedReport<UserDto>> SearchAsync(UserSearchParams userSearchParams, CancellationToken cancellationToken = default);
+        Task<PaginatedReportDto<UserDto>> SearchAsync(SearchUserQuery query, CancellationToken cancellationToken = default);
 
         Task<UserDto> GetAsync(string userPublicId, CancellationToken cancellationToken = default);
 
-        Task<string> RegisterAsync(UserDto userDto, CancellationToken cancellationToken = default);
+        Task<string> CreateAsync(CreateUserCommand command, CancellationToken cancellationToken = default);
 
-        Task UpdateAsync(string userPublicId, UserDto userDto, CancellationToken cancellationToken = default);
+        Task UpdateAsync(string userPublicId, UpdateUserCommand command, CancellationToken cancellationToken = default);
 
         Task DeleteAsync(string userPublicId, CancellationToken cancellationToken = default);
 
-        Task ChangePasswordAsync(string userPublicId, string oldPassword, string newPassword, CancellationToken cancellationToken = default);
+        Task UpdatePasswordAsync(string userPublicId, string oldPassword, string newPassword, CancellationToken cancellationToken = default);
 
-        Task ChangeEmailAsync(string userPublicId, string email, string password, CancellationToken cancellationToken = default);
+        Task UpdateEmailAsync(string userPublicId, string email, string password, CancellationToken cancellationToken = default);
 
-        Task SendEmailVerificationAsync(string userPublicId, CancellationToken cancellationToken = default);
+        Task CreateAndSendEmailVerificationAsync(string userPublicId, CancellationToken cancellationToken = default);
     }
 }

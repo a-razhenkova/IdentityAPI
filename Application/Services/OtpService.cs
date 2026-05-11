@@ -40,7 +40,7 @@ namespace Application
         public async Task<string> CreateAndSaveOtp(User user, CancellationToken cancellationToken = default)
         {
             var twoFactorAuthenticator = new TwoFactorAuthenticator();
-            string otp = twoFactorAuthenticator.GetCurrentPIN(user.OtpSecret, false);
+            string otp = twoFactorAuthenticator.GetCurrentPIN(user.OtpKey, false);
 
             var otpModel = new Redis.OtpModel()
             {

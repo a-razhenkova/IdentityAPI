@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Domain;
+﻿using Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -12,19 +11,16 @@ namespace Application
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppSettings _appSettings;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly IRabbitMq _rebbitMq;
 
         public UserAuthenticationService(IHttpContextAccessor httpContextAccessor,
                                         IOptionsSnapshot<AppSettings> appSettings,
                                         IUnitOfWork unitOfWork,
-                                        IMapper mapper,
                                         IRabbitMq rebbitMq)
         {
             _httpContextAccessor = httpContextAccessor;
             _appSettings = appSettings.Value;
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _rebbitMq = rebbitMq;
         }
 
@@ -75,7 +71,7 @@ namespace Application
             {
                 user.Login.LastLoginIpAddress = userIpAddress;
 
-                var evt = _mapper.Map<RabbitMq.LoginFromNewIpAddressEvent>(user);
+                var evt = RabbitMqEventFactory.CreateLoginFromNewIpAddressEvent(user);
                 await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because login is already processed
             }
         }
@@ -88,7 +84,7 @@ namespace Application
             {
                 user.Block(UserStatusReasons.MaxWrongLoginAttemptsReached);
 
-                var evt = _mapper.Map<RabbitMq.LoginAttemptMadeEvent>(user);
+                var evt = RabbitMqEventFactory.CreateLoginAttemptMadeEvent(user);
                 await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because login is already processed
             }
         }

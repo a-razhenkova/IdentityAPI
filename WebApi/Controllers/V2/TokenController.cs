@@ -27,11 +27,13 @@ namespace WebApi.V2
         /// <param name="userCredentials">User authentication credentials.</param>
         [AllowAnonymous]
         [HttpPost, SensitiveData(IsResponseSensitive = true)]
-        [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateAccessTokenAsync(V1.UserCredentialsModel userCredentials)
+        [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateAccessTokenAsync(V1.CreateOtpRequest userCredentials)
         {
             TokenDto token = await _token.CreateAccessTokenAsync(userCredentials.Username, userCredentials.Password);
-            return Ok(_mapper.Map<TokenModel>(token));
+
+            var response = _mapper.Map<TokenResponse>(token);
+            return Ok(response);
         }
 
         /// <summary>
@@ -39,11 +41,13 @@ namespace WebApi.V2
         /// </summary>
         [AllowAnonymous]
         [HttpPut, SensitiveData(IsResponseSensitive = true)]
-        [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> RefreshAccessTokenAsync()
         {
             TokenDto token = await _token.RefreshAccessTokenAsync();
-            return Ok(_mapper.Map<V1.TokenModel>(token));
+
+            var response = _mapper.Map<TokenResponse>(token);
+            return Ok(response);
         }
     }
 }

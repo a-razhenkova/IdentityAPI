@@ -41,11 +41,10 @@ namespace WebApi
         {
             var mapperConfig = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile(new DomainProfile());
-                cfg.AddProfile(new EventsProfile());
-
-                cfg.AddProfile(new V1.CommonProfile());
-                cfg.AddProfile(new V2.CommonProfile());
+                cfg.AddProfile(new V1.TokenProfile());
+                cfg.AddProfile(new V1.ClientProfile());
+                cfg.AddProfile(new V1.UserProfile());
+                cfg.AddProfile(new V2.TokenProfile());
             });
 
             mapperConfig.AssertConfigurationIsValid();

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.V1
 {
-    public class UserPasswordModel
+    public class UpdateUserPasswordRequest
     {
         /// <summary>
         /// Old password.

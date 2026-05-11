@@ -1,6 +1,6 @@
 ﻿namespace WebApi.V1
 {
-    public class ClientSubscriptionModel
+    public class ClientSubscriptionResponse
     {
         /// <summary>
         /// The expiration date of the subscription.

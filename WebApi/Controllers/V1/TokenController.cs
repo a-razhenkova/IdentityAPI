@@ -25,14 +25,14 @@ namespace WebApi.V1
         /// <param name="cancellationToken">Cancellation token.</param>
         [AllowAnonymous]
         [HttpPost, SensitiveData(IsResponseSensitive = true)]
-        [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateAccessTokenAsync(CancellationToken cancellationToken)
         {
             var authorization = new Authorization(HttpContext.GetAuthorization());
-
             TokenDto token = await _token.CreateAccessTokenAsync(authorization, cancellationToken);
 
-            return Ok(_mapper.Map<TokenModel>(token));
+            var response = _mapper.Map<TokenResponse>(token);
+            return Ok(response);
         }
 
         /// <summary>
@@ -40,11 +40,13 @@ namespace WebApi.V1
         /// </summary>
         [AllowAnonymous]
         [HttpPost("status"), SkipLog]  
-        [ProducesResponseType(typeof(TokenValidationResultModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TokenValidationResultResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> ValidateAccessTokenAsync()
         {
             TokenValidationResult tokenValidationResult = await _token.ValidateAccessTokenAsync();
-            return Ok(_mapper.Map<TokenValidationResultModel>(tokenValidationResult));
+
+            var response = _mapper.Map<TokenValidationResultResponse>(tokenValidationResult);
+            return Ok(response);
         }
     }
 }

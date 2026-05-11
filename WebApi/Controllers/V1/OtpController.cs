@@ -17,16 +17,18 @@ namespace WebApi.V1
         /// <summary>
         /// Generates a OTP for the user based on the provided credentials.
         /// </summary>
-        /// <param name="userCredentials">User authentication credentials.</param>
+        /// <param name="request">User authentication credentials.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The user's external ID associated with the generated OTP.</returns>
         [AllowAnonymous]
         [HttpPost]
-        [ProducesResponseType(typeof(SimpleResponseModel<string>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateAndSendOtpAsync(UserCredentialsModel userCredentials, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(SimpleResponse<string>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateAndSendOtpAsync(CreateOtpRequest request, CancellationToken cancellationToken)
         {
-            string userPublicId = await _otp.CreateAndSendAsync(userCredentials.Username, userCredentials.Password, cancellationToken);
-            return Ok(new SimpleResponseModel<string>(userPublicId));
+            string userPublicId = await _otp.CreateAndSendAsync(request.Username, request.Password, cancellationToken);
+
+            var response = new SimpleResponse<string>(userPublicId);
+            return Ok(response);
         }
     }
 }

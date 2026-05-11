@@ -21,15 +21,18 @@ namespace WebApi.V1
         /// <summary>
         /// Retrieves list of users.
         /// </summary>
-        /// <param name="searchParams">Search parameters for filtering users.</param>
+        /// <param name="request">Search parameters for filtering users.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A paginated report of users matching the search criteria.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(PaginatedReport<UserModel>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> SearchUsersAsync([FromQuery] UserSearchParams searchParams, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(PaginatedReportResponse<UserResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SearchUsersAsync([FromQuery] SearchUserRequest request, CancellationToken cancellationToken)
         {
-            PaginatedReport<UserDto> searchResult = await _user.SearchAsync(searchParams, cancellationToken);
-            return Ok(_mapper.Map<PaginatedReport<UserModel>>(searchResult));
+            var command = _mapper.Map<SearchUserQuery>(request);
+            PaginatedReportDto<UserDto> searchResult = await _user.SearchAsync(command, cancellationToken);
+
+            var response = _mapper.Map <PaginatedReportResponse<UserResponse>>(searchResult);
+            return Ok(response);
         }
 
         /// <summary>
@@ -39,39 +42,43 @@ namespace WebApi.V1
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The user details if found.</returns>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(UserModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUserAsync(string id, CancellationToken cancellationToken)
         {
             UserDto user = await _user.GetAsync(id, cancellationToken);
-            return Ok(_mapper.Map<UserModel>(user));
+            return Ok(_mapper.Map<UserResponse>(user));
         }
 
         /// <summary>
-        /// Registers a new user.
+        /// Creates a new user.
         /// </summary>
-        /// <param name="requestModel">The model containing user registration details.</param>
+        /// <param name="request">Contains user registration details.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The external ID of the registered user.</returns>
         [HttpPost]
         [SensitiveData]
-        [ProducesResponseType(typeof(SimpleResponseModel<string>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> RegisterUserAsync(UserRegistrationModel requestModel, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(SimpleResponse<string>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateUserAsync(CreateUserRequest request, CancellationToken cancellationToken)
         {
-            string userPublicId = await _user.RegisterAsync(_mapper.Map<UserDto>(requestModel), cancellationToken);
-            return Created(string.Empty, new SimpleResponseModel<string>(userPublicId));
+            var command = _mapper.Map<CreateUserCommand>(request);
+            string userPublicId = await _user.CreateAsync(command, cancellationToken);
+
+            var response = new SimpleResponse<string>(userPublicId);
+            return Created(string.Empty, response);
         }
 
         /// <summary>
         /// Updates an existing user's details.
         /// </summary>
         /// <param name="id">The external ID of the user to be updated.</param>
-        /// <param name="requestModel">The model containing the updated user details.</param>
+        /// <param name="request">Contains the updated user details.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateUserAsync(string id, UserUpdateModel requestModel, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateUserAsync(string id, UpdateUserRequest request, CancellationToken cancellationToken)
         {
-            await _user.UpdateAsync(id, _mapper.Map<UserDto>(requestModel), cancellationToken);
+            var command = _mapper.Map<UpdateUserCommand>(request);
+            await _user.UpdateAsync(id, command, cancellationToken);
             return Ok();
         }
 
@@ -92,13 +99,13 @@ namespace WebApi.V1
         /// Changes the password of an existing user.
         /// </summary>
         /// <param name="id">The external ID of the user whose password is to be changed.</param>
-        /// <param name="requestModel">The model containing the old and new passwords.</param>
+        /// <param name="request">Contains the old and new passwords.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPatch("{id}/password"), SensitiveData]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> ChangeUserPasswordAsync(string id, UserPasswordModel requestModel, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateUserPasswordAsync(string id, UpdateUserPasswordRequest request, CancellationToken cancellationToken)
         {
-            await _user.ChangePasswordAsync(id, requestModel.OldPassword, requestModel.NewPassword, cancellationToken);
+            await _user.UpdatePasswordAsync(id, request.OldPassword, request.NewPassword, cancellationToken);
             return Ok();
         }
 
@@ -106,25 +113,25 @@ namespace WebApi.V1
         /// Changes the email address of an existing user.
         /// </summary>
         /// <param name="id">The external ID of the user whose email is to be changed.</param>
-        /// <param name="requestModel">The model containing the new email and the user's password.</param>
+        /// <param name="request">Contains the new email and the user's password.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPatch("{id}/email"), SensitiveData]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> ChangeEmailAsync(string id, UserEmailModel requestModel, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateEmailAsync(string id, UpdateUserEmailRequest request, CancellationToken cancellationToken)
         {
-            await _user.ChangeEmailAsync(id, requestModel.Email, requestModel.Password, cancellationToken);
+            await _user.UpdateEmailAsync(id, request.Email, request.Password, cancellationToken);
             return Ok();
         }
 
         /// <summary>
-        /// Sends a verification email to the specified user.
+        /// Creates and sends a verification email to the specified user.
         /// </summary>
         /// <param name="id">The external ID of the user to whom the verification email will be sent.</param>
         [HttpPost("{id}/email/verification")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> SendUserEmailVerificationAsync(string id)
+        public async Task<IActionResult> CreateAndSendUserEmailVerificationAsync(string id)
         {
-            await _user.SendEmailVerificationAsync(id);
+            await _user.CreateAndSendEmailVerificationAsync(id);
             return Ok();
         }
     }

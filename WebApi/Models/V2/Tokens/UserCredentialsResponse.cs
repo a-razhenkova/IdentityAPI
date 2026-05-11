@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace WebApi.V2
 {
-    public class UserCredentialsModel
+    public class UserCredentialsResponse
     {
         /// <summary>
         /// User external ID.

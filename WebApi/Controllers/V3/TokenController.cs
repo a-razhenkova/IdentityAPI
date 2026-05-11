@@ -27,11 +27,13 @@ namespace WebApi.V3
         /// <param name="userCredentials">The user's OTP and related two-factor authentication information.</param>
         [AllowAnonymous]
         [HttpPost, SensitiveData(IsResponseSensitive = true)]
-        [ProducesResponseType(typeof(V1.TokenModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateAccessTokenAsync(V2.UserCredentialsModel userCredentials)
+        [ProducesResponseType(typeof(V1.TokenResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateAccessTokenAsync(V2.UserCredentialsResponse userCredentials)
         {
             TokenDto token = await _token.CreateAccessTokenByOtpAsync(userCredentials.UserId, userCredentials.OneTimePassword);
-            return Ok(_mapper.Map<V1.TokenModel>(token));
+
+            var response = _mapper.Map<V1.TokenResponse>(token);
+            return Ok(response);
         }
     }
 }

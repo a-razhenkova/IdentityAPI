@@ -1,6 +1,6 @@
 ﻿namespace WebApi.V2
 {
-    public class TokenModel
+    public class TokenResponse
     {
         /// <summary>
         /// Access token.

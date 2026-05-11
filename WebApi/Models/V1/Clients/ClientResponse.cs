@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.V1
 {
-    public class ClientModel
+    public class ClientResponse
     {
         /// <summary>
         /// Client key.
@@ -24,13 +24,13 @@ namespace WebApi.V1
         /// <summary>
         /// Client status.
         /// </summary>
-        public required ClientStatusModel Status { get; set; }
+        public required ClientStatusResponse Status { get; set; }
 
         /// <summary>
         /// Client right.
         /// </summary>
-        public required ClientRightModel Right { get; set; }
+        public required ClientRightResponse Right { get; set; }
 
-        public required IEnumerable<ClientSubscriptionModel> Subscriptions { get; set; }
+        public required IEnumerable<ClientSubscriptionResponse> Subscriptions { get; set; }
     }
 }

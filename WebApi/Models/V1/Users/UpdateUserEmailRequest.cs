@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.V1
 {
-    public class UserEmailModel
+    public class UpdateUserEmailRequest
     {
         /// <summary>
         /// Email.

@@ -35,10 +35,10 @@ namespace WebApi.V1
         /// </summary>
         /// <returns>Deploy details.</returns>
         [HttpGet, SkipLog]
-        [ProducesResponseType(typeof(DeployInfoModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DeployInfoResponse), StatusCodes.Status200OK)]
         public IActionResult LoadDeployInfo()
         {
-            var deployInfo = new DeployInfoModel()
+            var response = new DeployInfoResponse()
             {
                 Version = WebApiAssembly.GetVersion(),
                 Environment = _environment.EnvironmentName,
@@ -46,7 +46,7 @@ namespace WebApi.V1
                 MachineTimestamp = DateTime.Now
             };
 
-            return Ok(deployInfo);
+            return Ok(response);
         }
 
         /// <summary>

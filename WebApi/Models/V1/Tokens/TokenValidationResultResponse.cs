@@ -1,6 +1,6 @@
 ﻿namespace WebApi.V1
 {
-    public class TokenValidationResultModel
+    public class TokenValidationResultResponse
     {
         /// <summary>
         /// Flag indicating whether the token is valid.

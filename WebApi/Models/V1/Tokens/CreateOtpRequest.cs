@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace WebApi.V1
 {
-    public class UserCredentialsModel
+    public class CreateOtpRequest
     {
         /// <summary>
         /// Username.

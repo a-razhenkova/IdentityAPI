@@ -2,7 +2,7 @@
 
 namespace WebApi.V1
 {
-    public class ExceptionModel
+    public class ExceptionResponse
     {
         /// <summary>
         /// Message.

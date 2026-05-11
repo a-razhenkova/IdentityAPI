@@ -2,10 +2,10 @@
 
 namespace WebApi.V1
 {
-    public class SimpleResponseModel<TValue>
+    public class SimpleResponse<TValue>
     {
         [SetsRequiredMembers]
-        public SimpleResponseModel(TValue value)
+        public SimpleResponse(TValue value)
         {
             Value = value;
         }

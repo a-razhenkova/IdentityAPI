@@ -63,7 +63,7 @@ namespace WebApi
         {
             try
             {
-                var exceptionModel = new V1.ExceptionModel()
+                var exceptionModel = new V1.ExceptionResponse()
                 {
                     Title = title,
                     Message = exception?.Message,

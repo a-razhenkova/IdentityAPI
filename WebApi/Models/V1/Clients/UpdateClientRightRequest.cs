@@ -1,6 +1,6 @@
 ﻿namespace WebApi.V1
 {
-    public class ClientRightModel
+    public class UpdateClientRightRequest
     {
         /// <summary>
         /// Flag indicating whether the client has the right to notify a party.

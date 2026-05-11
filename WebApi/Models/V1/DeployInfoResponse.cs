@@ -1,6 +1,6 @@
 ﻿namespace WebApi.V1
 {
-    public class DeployInfoModel
+    public class DeployInfoResponse
     {
         /// <summary>
         /// The application version.

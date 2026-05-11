@@ -1,10 +1,9 @@
 ﻿using Domain;
-using Shared;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.V1
 {
-    public class ClientStatusModel
+    public class UpdateUserStatusRequest
     {
         /// <summary>
         /// Status.
@@ -20,7 +19,7 @@ namespace WebApi.V1
         /// Additional note for the status.
         /// </summary>
         /// <example>test</example>
-        [RegularExpression(ClientConstants.StatusNoteRegex)]
+        [RegularExpression(UserConstants.StatusNoteRegex)]
         public string? Note { get; set; }
     }
 }

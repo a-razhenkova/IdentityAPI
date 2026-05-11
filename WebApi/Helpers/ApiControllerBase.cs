@@ -13,7 +13,7 @@ namespace WebApi
 
     [Authorize]
     [ApiController]
-    [ProducesResponseType(typeof(V1.ExceptionModel), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(V1.ExceptionResponse), StatusCodes.Status500InternalServerError)]
     public class ApiControllerBase : ControllerBase
     {
 

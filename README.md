@@ -95,7 +95,7 @@
 | Strategy Pattern | Used for handling tokens. | [SecurityTokenHandler.cs](/Application/Security/Tokens/SecurityTokenHandler.cs) |
 | Data Mapping | Used `AutoMapper` for `request`/`response` mappings.<br/>Used manual mapping for `entity` mappings. | [Request/Response Mappings](/WebApi/Mappers)<br/>[Entity Mappings](/Application/Mappers) |
 | RabbitMQ | Used for asynchronous communication. Added resilience using `Polly`. | [RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs) |
-| Rate Limiter | With fixed window counter, configurable by [`appsettings::Security::RateLimiter`](/WebApi/appsettings.json). | [AddRateLimiter()](/WebApi/Setup/WebAppBuilderExtensions.cs) |
+| Rate Limiter | Used with fixed window counter, configurable by [`appsettings::Security::RateLimiter`](/WebApi/appsettings.json). | [AddRateLimiter()](/WebApi/Setup/WebAppBuilderExtensions.cs) |
 | Serilog | Global exception logging is handled [here](/WebApi/Middlewares/ExceptionHandlingMiddleware.cs).<br/>Global HTTP request and response logging is handled [here](WebApi/Middlewares/HttpMessageLoggingMiddleware.cs). | [LoggerSetup.cs](/WebApi/Setup/LoggerSetup.cs) |
 
 ### Caching

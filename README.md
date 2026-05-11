@@ -108,8 +108,8 @@
 | --- | --- | --- |
 | Repository Pattern | The full list of repositories can be viewed [here](/Infrastructure/Database/Repositories). | [Repository.cs](/Infrastructure/Database/Repository.cs) |
 | Unit Of Work Pattern | Manages all access to the database. | [UnitOfWork.cs](/Infrastructure/Database/UnitOfWork.cs) |
-| Migrations | Automatically executes pending [migrations](/Infrastructure/Database/Migrations) at startup. This functionality is configurable by [`appsettings::Database::IsDbMigrationAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/WebAppExtensions.cs) |
-| DbUp | Automatically executes pending [scripts](/Infrastructure/Database/Scripts) at startup. This functionality is configurable by [`appsettings::Database::IsDbUpAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/WebAppExtensions.cs) |
+| Migrations | Automatically executes pending [migrations](/Infrastructure/Database/Migrations) at startup. This functionality is configurable by [`appsettings::Database::IsDbMigrationAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/ControllersSetup.cs) |
+| DbUp | Automatically executes pending [scripts](/Infrastructure/Database/Scripts) at startup. This functionality is configurable by [`appsettings::Database::IsDbUpAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/ControllersSetup.cs) |
 
 ---
 

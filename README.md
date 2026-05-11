@@ -74,6 +74,9 @@
 > [!IMPORTANT]
 > The API requires running RabbitMQ broker.
 
+> [!TIP]
+> The application supports updating configuration values from `appsettings.json` at runtime without requiring a restart.
+
 ---
 
 ## Architecture
@@ -90,14 +93,14 @@
 | Functionality | Description | Reference |
 | --- | --- | --- |
 | Strategy Pattern | Used for handling tokens. | [SecurityTokenHandler.cs](/Application/Security/Tokens/SecurityTokenHandler.cs) |
-| RabbitMQ | Asynchronous communication. Uses [Polly](https://www.pollydocs.org/strategies/index.html) for resilience. | [RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs) |
+| RabbitMQ | Used for asynchronous communication. Uses `Polly` for resilience. | [RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs) |
 | Rate Limiter | With fixed window counter, configurable by [`appsettings::Security::RateLimiter`](/WebApi/appsettings.json). | [AddRateLimiter()](/WebApi/Setup/WebAppBuilderExtensions.cs) |
 | Serilog | Global exception logging is handled [here](/WebApi/Middlewares/ExceptionHandlingMiddleware.cs).<br/>Global HTTP request and response logging is handled [here](WebApi/Middlewares/HttpMessageLoggingMiddleware.cs). | [LoggerSetup.cs](/WebApi/Setup/LoggerSetup.cs) |
 
 ### Caching
 | Functionality | Description | Reference |
 | --- | --- | --- |
-| Redis | Distributed caching. | [RedisService.cs](/Infrastructure/Cache/RedisService.cs) |
+| Redis | Distributed caching. | [RedisService.cs](/Infrastructure/Cache/RedisService.cs), [RedisKeyBuilder.cs](/Application/Redis/RedisKeyBuilder.cs) |
 
 ### Database
 | Functionality | Description | Reference |

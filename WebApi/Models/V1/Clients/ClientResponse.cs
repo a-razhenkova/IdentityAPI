@@ -17,7 +17,7 @@ namespace WebApi.V1
         /// Name.
         /// </summary>
         /// <example>Auth API</example>
-        [StringLength(ClientConstants.Name)]
+        [StringLength(ClientConstants.NameMaxLength)]
         [RegularExpression(ClientConstants.NameRegex)]
         public required string Name { get; set; }
 

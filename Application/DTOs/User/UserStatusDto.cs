@@ -4,9 +4,9 @@ namespace Application
 {
     public class UserStatusDto
     {
-        public UserStatuses Value { get; set; } = UserStatuses.Active;
+        public required UserStatuses Value { get; set; }
 
-        public UserStatusReasons Reason { get; set; } = UserStatusReasons.None;
+        public required UserStatusReasons Reason { get; set; }
 
         public string? Note { get; set; }
     }

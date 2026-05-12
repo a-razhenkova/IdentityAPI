@@ -4,16 +4,16 @@ namespace Application
 {
     public class UserDto
     {
-        public string Id { get; set; } = string.Empty;
+        public required string Id { get; set; }
 
-        public string Username { get; set; } = string.Empty;
+        public required string Username { get; set; }
 
-        public UserRoles Role { get; set; } = UserRoles.Administrator;
+        public required UserRoles Role { get; set; }
 
-        public UserStatusDto Status { get; set; } = new UserStatusDto();
+        public required UserStatusDto Status { get; set; }
 
         public string? Email { get; set; }
 
-        public DateTime RegistrationTimestamp { get; set; } = DateTime.UtcNow;
+        public required DateTime RegistrationTimestamp { get; set; }
     }
 }

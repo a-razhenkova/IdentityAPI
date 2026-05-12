@@ -2,8 +2,8 @@
 {
     public class FileDto
     {
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
 
-        public byte[] Content { get; set; } = [];
+        public required byte[] Content { get; set; }
     }
 }

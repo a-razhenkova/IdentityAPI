@@ -2,16 +2,16 @@
 {
     public class ClientDto
     {
-        public string Key { get; set; } = string.Empty;
+        public required string Key { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
 
-        public ClientStatusDto Status { get; set; } = new ClientStatusDto();
+        public required ClientStatusDto Status { get; set; }
 
-        public ClientRightDto Right { get; set; } = new ClientRightDto();
+        public required ClientRightDto Right { get; set; }
 
-        public bool IsInternal { get; set; } = false;
+        public required bool IsInternal { get; set; }
 
-        public ICollection<ClientSubscriptionDto> Subscriptions { get; set; } = new List<ClientSubscriptionDto>();
+        public ICollection<ClientSubscriptionDto>? Subscriptions { get; set; }
     }
 }

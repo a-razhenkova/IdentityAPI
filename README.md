@@ -58,10 +58,10 @@
 ![Design Diagram](/assets/design-diagram.png)
 
 > SDK: .NET Core 10\
-> Database: SQL Server 2022\
-> ORM: Entity Framework Core\
+> Databases: `SQL Server 2022`\
+> ORM: `Entity Framework Core`\
 > Caching: `Redis`\
-> Message Broker: `RabbitMQ`\
+> Message Brokers: `RabbitMQ`\
 > Additional Libraries: `Serilog`, `Polly`, `AutoMapper`, `GoogleAuthenticator`\
 > Tests: `xUnit`, `FluentAssertions`, `Bogus`
 

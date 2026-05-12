@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using Shared;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Application
@@ -28,7 +29,7 @@ namespace Application
             if (string.IsNullOrWhiteSpace(secret) && saltLength < 0)
                 throw new InvalidOperationException();
 
-            byte[] salt = string.IsNullOrWhiteSpace(secret) ? Pbkdf2KeySecret.Create(saltLength) : Convert.FromBase64String(secret);
+            byte[] salt = string.IsNullOrWhiteSpace(secret) ? new RandomKey(saltLength).Create() : Convert.FromBase64String(secret);
             ReadOnlySpan<byte> key = Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(value), salt, iterations, HashAlgorithmName.SHA256, hashLength);
 
             return (Convert.ToBase64String(key), Convert.ToBase64String(salt));

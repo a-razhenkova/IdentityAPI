@@ -137,19 +137,36 @@ namespace Application
 
             DateTime signTimestamp = DateTime.UtcNow;
             string fileName = $"{client.Key}_{signTimestamp:yyyyMMddHHmmssfff}{fileExtension}";
-            string contractPath = Path.Combine(_appSettings.ClientSubscriptionContractDirectory, signTimestamp.Year.ToString(), fileName);
-
-            FileExtensions.EnsureFileDirectoryExists(contractPath);
+            string contractPath = Path.Combine(_appSettings.ClientSubscriptionContractDirectory, DateTime.UtcNow.Year.ToString(), fileName);
 
             try
             {
-                using FileStream content = File.Create(contractPath);
-                await file.CopyToAsync(content, cancellationToken);
+                AesEncryptedFile encryptedFile = await file.CreateAndAesEncryptAsync(contractPath, cancellationToken);
 
-                client.CreateNewSubscription(expirationDate, content, fileExtension);
+                client.Subscriptions.Add(new ClientSubscription()
+                {
+                    Subscription = new Subscription()
+                    {
+                        CreateTimestamp = signTimestamp.Date,
+                        ExpirationDate = expirationDate.Date,
+                        Contract = new Document()
+                        {
+                            SignTimestamp = signTimestamp,
+                            Name = fileName,
+                            Checksum = encryptedFile.Checksum,
+                            Type = DocumentTypes.SubscriptionContract,
+                            Key = encryptedFile.Key,
+                            Secret = encryptedFile.Secret
+                        }
+                    }
+                });
 
-                if (client.Status.Reason == ClientStatusReasons.ExpiredSubscription)
+                if (!client.IsActivate()
+                    && client.Status.Value == ClientStatuses.Blocked
+                    && client.Status.Reason == ClientStatusReasons.ExpiredSubscription)
+                {
                     client.Activate();
+                }
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
@@ -168,11 +185,12 @@ namespace Application
                 ?? throw new NotFoundException("Contract not found.");
 
             string contractPath = Path.Combine(_appSettings.ClientSubscriptionContractDirectory, contract.SignTimestamp.Year.ToString(), contract.Name);
+            byte[] content = await FileExtensions.ReadAndAesDecryptAllBytesAsync(contractPath, contract.Key, contract.Secret, cancellationToken);
 
             return new FileDto()
             {
                 Name = contract.Name,
-                Content = await File.ReadAllBytesAsync(contractPath, cancellationToken)
+                Content = content
             };
         }
     }

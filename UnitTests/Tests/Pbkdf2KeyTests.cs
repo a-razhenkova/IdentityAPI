@@ -2,7 +2,7 @@
 using Bogus;
 using FluentAssertions;
 
-namespace Pbkdf2Tests
+namespace Pbkdf2KeyTests
 {
     public class Pbkdf2KeyTests
     {

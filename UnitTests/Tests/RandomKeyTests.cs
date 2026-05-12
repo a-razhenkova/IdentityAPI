@@ -1,10 +1,10 @@
-﻿using Application;
-using Bogus;
+﻿using Bogus;
 using FluentAssertions;
+using Shared;
 
-namespace Pbkdf2Tests
+namespace RandomKeyTests
 {
-    public class Pbkdf2KeySecretTests
+    public class RandomKeyTests
     {
         [Fact]
         public void Create_WithRandomSize_ReturnSecret()
@@ -13,7 +13,7 @@ namespace Pbkdf2Tests
             int size = new Faker().Random.Int(16, 32);
 
             // Act
-            byte[] secret = Pbkdf2KeySecret.Create(size);
+            byte[] secret = new RandomKey(size).Create();
 
             // Assert
             secret.Should().HaveCount(size);
@@ -29,7 +29,7 @@ namespace Pbkdf2Tests
 
             // Act
             for (int index = 0; index < createCount; index++)
-                secrets.Add(Pbkdf2KeySecret.Create(size));
+                secrets.Add(new RandomKey(size).Create());
 
             // Assert
             secrets.Should().OnlyHaveUniqueItems();
@@ -39,7 +39,7 @@ namespace Pbkdf2Tests
         public void Create_WithZeroSize_ThrowException()
         {
             // Arrange
-            var func = FluentActions.Invoking(() => Pbkdf2KeySecret.Create(0));
+            var func = FluentActions.Invoking(() => new RandomKey(0).Create());
 
             // Act
             func.Should().Throw();
@@ -49,7 +49,7 @@ namespace Pbkdf2Tests
         public void Create_WithNegativeSize_ThrowException()
         {
             // Arrange
-            var func = FluentActions.Invoking(() => Pbkdf2KeySecret.Create(-1));
+            var func = FluentActions.Invoking(() => new RandomKey(-1).Create());
 
             // Act
             func.Should().Throw();
@@ -62,7 +62,7 @@ namespace Pbkdf2Tests
             int size = new Faker().Random.Int(16, 32);
 
             // Act
-            string secret = Pbkdf2KeySecret.CreateToBase64(size);
+            string secret = new RandomKey(size).CreateToBase64();
 
             // Assert
             secret.Should().NotBeNullOrWhiteSpace();
@@ -78,7 +78,7 @@ namespace Pbkdf2Tests
 
             // Act
             for (int index = 0; index < createCount; index++)
-                secrets.Add(Pbkdf2KeySecret.CreateToBase64(size));
+                secrets.Add(new RandomKey(size).CreateToBase64());
 
             // Assert
             secrets.Should().OnlyHaveUniqueItems();
@@ -88,7 +88,7 @@ namespace Pbkdf2Tests
         public void CreateToBase64_WithZeroSize_ThrowException()
         {
             // Arrange
-            var func = FluentActions.Invoking(() => Pbkdf2KeySecret.CreateToBase64(0));
+            var func = FluentActions.Invoking(() => new RandomKey(0).CreateToBase64());
 
             // Act
             func.Should().Throw();
@@ -98,7 +98,7 @@ namespace Pbkdf2Tests
         public void CreateToBase64_WithNegativeSize_ThrowException()
         {
             // Arrange
-            var func = FluentActions.Invoking(() => Pbkdf2KeySecret.CreateToBase64(-1));
+            var func = FluentActions.Invoking(() => new RandomKey(-1).CreateToBase64());
 
             // Act
             func.Should().Throw();

@@ -1,6 +1,4 @@
-﻿using Shared;
-
-namespace Domain
+﻿namespace Domain
 {
     public static class ClientExtensions
     {
@@ -50,28 +48,6 @@ namespace Domain
                     default:
                         throw new NotImplementedException();
                 }
-            }
-
-            public void CreateNewSubscription(DateTime expirationDate, FileStream content, string fileExtension)
-            {
-                DateTime signTimestamp = DateTime.UtcNow;
-                string fileName = $"{client.Key}_{signTimestamp:yyyyMMddHHmmssfff}{fileExtension}";
-
-                client.Subscriptions.Add(new ClientSubscription()
-                {
-                    Subscription = new Subscription()
-                    {
-                        CreateTimestamp = expirationDate.Date,
-                        ExpirationDate = expirationDate.Date,
-                        Contract = new Document()
-                        {
-                            SignTimestamp = signTimestamp,
-                            Name = fileName,
-                            Checksum = content.ComputeMd5Checksum(),
-                            Type = DocumentTypes.SubscriptionContract
-                        }
-                    }
-                });
             }
         }
     }

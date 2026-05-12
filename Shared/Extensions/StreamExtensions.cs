@@ -8,7 +8,7 @@ namespace Shared
         {
             value.Position = 0;
 
-            var streamReader = new StreamReader(value);
+            using var streamReader = new StreamReader(value, leaveOpen: true);
             string valueString = await streamReader.ReadToEndAsync();
 
             value.Position = 0;

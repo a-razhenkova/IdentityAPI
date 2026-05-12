@@ -37,9 +37,11 @@ namespace Infrastructure.Database.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     sign_timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    checksum = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    type = table.Column<int>(type: "int", nullable: false)
+                    name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    checksum = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
+                    type = table.Column<int>(type: "int", nullable: false),
+                    key = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
+                    secret = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -57,7 +59,7 @@ namespace Infrastructure.Database.Migrations
                     username = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     role = table.Column<int>(type: "int", nullable: false),
                     otp_key = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
-                    email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    email = table.Column<string>(type: "varchar(320)", unicode: false, maxLength: 320, nullable: true),
                     is_verified = table.Column<bool>(type: "bit", nullable: false),
                     registration_timestamp = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -142,7 +144,7 @@ namespace Infrastructure.Database.Migrations
                     user_id = table.Column<long>(type: "bigint", nullable: false),
                     wrong_login_attempts_counter = table.Column<int>(type: "int", nullable: false),
                     last_login_timestamp = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    last_login_ip_address = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    last_login_ip_address = table.Column<string>(type: "varchar(39)", unicode: false, maxLength: 39, nullable: true)
                 },
                 constraints: table =>
                 {

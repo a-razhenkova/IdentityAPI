@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Database.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    [Migration("20260511072438_v1_0_0_0")]
+    [Migration("20260512091740_v1_0_0_0")]
     partial class v1_0_0_0
     {
         /// <inheritdoc />
@@ -217,15 +217,34 @@ namespace Infrastructure.Database.Migrations
 
                     b.Property<string>("Checksum")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)")
                         .HasColumnName("checksum")
                         .HasColumnOrder(4);
 
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("key")
+                        .HasColumnOrder(6);
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
                         .HasColumnName("name")
                         .HasColumnOrder(3);
+
+                    b.Property<string>("Secret")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("secret")
+                        .HasColumnOrder(7);
 
                     b.Property<DateTime>("SignTimestamp")
                         .HasColumnType("datetime2")
@@ -266,7 +285,9 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnOrder(4);
 
                     b.Property<string>("LastLoginIpAddress")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(39)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(39)")
                         .HasColumnName("last_login_ip_address")
                         .HasColumnOrder(5);
 
@@ -348,7 +369,9 @@ namespace Infrastructure.Database.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(320)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(320)")
                         .HasColumnName("email")
                         .HasColumnOrder(7);
 

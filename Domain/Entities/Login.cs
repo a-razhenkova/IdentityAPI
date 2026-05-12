@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using Shared;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain
@@ -19,6 +21,7 @@ namespace Domain
         public DateTime? LastLoginDate { get; set; }
 
         [Column("last_login_ip_address", Order = 5)]
+        [MaxLength(Constants.IpAddressMaxLength), Unicode(false)]
         public string LastLoginIpAddress { get; set; }
 
         #region Relationships

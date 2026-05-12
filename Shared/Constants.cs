@@ -21,6 +21,7 @@
 
         public const int UidLength = 36;
         public const int IpAddressMaxLength = 39;
+        public const int EmailMaxLength = 320;
         public const int OneTimePasswordLength = 6;
 
         public const string SerilogOutputTemplate = "> {Timestamp:dd.MM.yyyy HH:mm:ss.fff} - {Level:u3}|{MachineName}(v.{Version})|{SourceContext}{NewLine}[{Properties}]{NewLine}Message:{Message:lj}{NewLine}{Exception}";

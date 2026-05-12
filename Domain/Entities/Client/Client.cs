@@ -10,17 +10,17 @@ namespace Domain
     {
         [Required]
         [Column("name", Order = 2)]
-        [MaxLength(ClientConstants.Name), Unicode(false)]
+        [MaxLength(ClientConstants.NameMaxLength), Unicode(false)]
         public string Name { get; set; }
 
         [Required]
         [Column("key", Order = 3)]
-        [MaxLength(ClientConstants.Key), Unicode(false)]
+        [MaxLength(ClientConstants.KeyMaxLength), Unicode(false)]
         public string Key { get; set; }
 
         [Required]
         [Column("secret", Order = 4)]
-        [MaxLength(ClientConstants.Secret), Unicode(false)]
+        [MaxLength(ClientConstants.SecretMaxLength), Unicode(false)]
         public string Secret { get; set; }
 
         [Required]

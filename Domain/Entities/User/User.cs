@@ -29,7 +29,7 @@ namespace Domain
         public string OtpKey { get; set; }
 
         [Column("email", Order = 7)]
-        [EmailAddress]
+        [MaxLength(UserConstants.EmailMaxLength), Unicode(false)]
         public string Email { get; set; }
 
         [Required]

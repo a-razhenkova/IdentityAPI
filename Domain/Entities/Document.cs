@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain
@@ -12,15 +13,27 @@ namespace Domain
 
         [Required]
         [Column("name", Order = 3)]
+        [MaxLength(DocumentConstants.NameMaxLength)]
         public string Name { get; set; }
 
         [Required]
         [Column("checksum", Order = 4)]
+        [MaxLength(DocumentConstants.ChecksumMaxLength), Unicode(false)]
         public string Checksum { get; set; }
 
         [Required]
         [Column("type", Order = 5)]
         public DocumentTypes Type { get; set; }
+
+        [Required]
+        [Column("key", Order = 6)]
+        [MaxLength(DocumentConstants.KeyMaxLength), Unicode(false)]
+        public string Key { get; set; }
+
+        [Required]
+        [Column("secret", Order = 7)]
+        [MaxLength(DocumentConstants.SecretMaxLength), Unicode(false)]
+        public string Secret { get; set; }
 
         #region Relationships
 

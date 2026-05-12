@@ -7,12 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Database\Scripts\v1_0_0_0\init01_register_clients.sql" />
-    <EmbeddedResource Include="Database\Scripts\v1_0_0_0\init02_register_demo_user.sql" />
+    <PackageReference Include="dbup-core" Version="6.1.1" />
+    <PackageReference Include="dbup-sqlserver" Version="7.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.7">
+		<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Database\Scripts\v1_0_0_0\init01_register_clients.sql" />
+    <EmbeddedResource Include="Database\Scripts\v1_0_0_0\init02_register_demo_user.sql" />
+  </ItemGroup>
+	
 </Project>

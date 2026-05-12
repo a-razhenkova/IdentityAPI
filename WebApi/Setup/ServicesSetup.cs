@@ -22,7 +22,6 @@ namespace WebApi
             builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             // scoped services
-            builder.Services.AddScoped<IHealthChecker, HealthCheckService>();
             builder.Services.AddScoped<IPaginatedReport, PaginatedReportService>();
             builder.Services.AddScoped<IRabbitMq, RabbitMqService>();
 

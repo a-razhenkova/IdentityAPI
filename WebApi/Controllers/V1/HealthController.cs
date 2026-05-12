@@ -1,5 +1,4 @@
-﻿using Application;
-using Domain;
+﻿using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -10,10 +9,10 @@ namespace WebApi.V1
     [Route("api/v1/[controller]")]
     public class HealthController : JsonApiControllerBase
     {
-        private readonly IHealthChecker _healthChecker;
+        private readonly HealthCheckService _healthChecker;
         private readonly IHostEnvironment _environment;
 
-        public HealthController(IHealthChecker healthChecker, IHostEnvironment environment)
+        public HealthController(HealthCheckService healthChecker, IHostEnvironment environment)
         {
             _healthChecker = healthChecker;
             _environment = environment;

@@ -6,8 +6,5 @@ namespace Infrastructure
     {
         public static Assembly GetExecutingAssembly()
             => Assembly.GetExecutingAssembly();
-
-        public static string GetName()
-            => Assembly.GetExecutingAssembly()?.GetName().Name ?? "unknown";
     }
 }

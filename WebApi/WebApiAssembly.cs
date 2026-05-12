@@ -1,5 +1,4 @@
-﻿using Shared;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace WebApi
 {
@@ -9,6 +8,6 @@ namespace WebApi
             => Assembly.GetExecutingAssembly()?.GetName().Name ?? "unknown";
 
         public static string GetVersion()
-            => Assembly.GetExecutingAssembly()?.GetName().Version?.ToString() ?? Constants.DefaultAssemblyVersion;
+            => Assembly.GetExecutingAssembly()?.GetName().Version?.ToString() ?? "1.0.0.0";
     }
 }

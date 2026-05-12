@@ -17,8 +17,6 @@
 
     public static class Constants
     {
-        public const string DefaultAssemblyVersion = "1.0.0.0";
-
         public const int UidLength = 36;
         public const int Aes256KeySize = 32;
         public const int IpAddressMaxLength = 39;

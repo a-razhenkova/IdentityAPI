@@ -137,11 +137,11 @@ namespace Application
 
             DateTime signTimestamp = DateTime.UtcNow;
             string fileName = $"{client.Key}_{signTimestamp:yyyyMMddHHmmssfff}{fileExtension}";
-            string contractPath = Path.Combine(_appSettings.ClientSubscriptionContractDirectory, DateTime.UtcNow.Year.ToString(), fileName);
+            string contractPath = Path.Combine(_appSettings.ClientSubscriptionContract.Directory, DateTime.UtcNow.Year.ToString(), fileName);
 
             try
             {
-                AesEncryptedFile encryptedFile = await file.CreateAndAesEncryptAsync(contractPath, cancellationToken);
+                AesEncryptedFile encryptedFile = await file.CreateAndAesEncryptAsync(contractPath, _appSettings.ClientSubscriptionContract.Key, cancellationToken);
 
                 client.Subscriptions.Add(new ClientSubscription()
                 {
@@ -155,7 +155,6 @@ namespace Application
                             Name = fileName,
                             Checksum = encryptedFile.Checksum,
                             Type = DocumentTypes.SubscriptionContract,
-                            Key = encryptedFile.Key,
                             Secret = encryptedFile.Secret
                         }
                     }
@@ -184,8 +183,8 @@ namespace Application
             Document contract = await _unitOfWork.Clients.GetSubscriptionContractWithNoTrackingAsync(clientKey, contractId, cancellationToken)
                 ?? throw new NotFoundException("Contract not found.");
 
-            string contractPath = Path.Combine(_appSettings.ClientSubscriptionContractDirectory, contract.SignTimestamp.Year.ToString(), contract.Name);
-            byte[] content = await FileExtensions.ReadAndAesDecryptAllBytesAsync(contractPath, contract.Key, contract.Secret, cancellationToken);
+            string contractPath = Path.Combine(_appSettings.ClientSubscriptionContract.Directory, contract.SignTimestamp.Year.ToString(), contract.Name);
+            byte[] content = await FileExtensions.ReadAndAesDecryptAllBytesAsync(contractPath, _appSettings.ClientSubscriptionContract.Key, contract.Secret, cancellationToken);
 
             return new FileDto()
             {

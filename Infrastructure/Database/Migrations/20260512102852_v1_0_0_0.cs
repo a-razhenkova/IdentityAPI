@@ -40,7 +40,6 @@ namespace Infrastructure.Database.Migrations
                     name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     checksum = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     type = table.Column<int>(type: "int", nullable: false),
-                    key = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     secret = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false)
                 },
                 constraints: table =>

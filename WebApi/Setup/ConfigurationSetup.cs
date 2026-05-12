@@ -29,6 +29,7 @@ namespace WebApi
 
                     config.Database.Validate();
                     config.PaginatedReport.Validate();
+                    config.ClientSubscriptionContract.Validate();
 
                     return true;
                 })

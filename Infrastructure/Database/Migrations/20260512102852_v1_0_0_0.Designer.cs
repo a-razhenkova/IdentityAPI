@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Database.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    [Migration("20260512091740_v1_0_0_0")]
+    [Migration("20260512102852_v1_0_0_0")]
     partial class v1_0_0_0
     {
         /// <inheritdoc />
@@ -223,14 +223,6 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnName("checksum")
                         .HasColumnOrder(4);
 
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(64)")
-                        .HasColumnName("key")
-                        .HasColumnOrder(6);
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -244,7 +236,7 @@ namespace Infrastructure.Database.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(64)")
                         .HasColumnName("secret")
-                        .HasColumnOrder(7);
+                        .HasColumnOrder(6);
 
                     b.Property<DateTime>("SignTimestamp")
                         .HasColumnType("datetime2")

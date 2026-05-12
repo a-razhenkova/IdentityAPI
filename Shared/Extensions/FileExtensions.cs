@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Shared
 {
@@ -7,7 +8,7 @@ namespace Shared
     {
         public const string Pdf = ".pdf";
 
-        public static async Task<AesEncryptedFile> CreateAndAesEncryptAsync(this IFormFile file, string filePath, CancellationToken cancellationToken = default)
+        public static async Task<AesEncryptedFile> CreateAndAesEncryptAsync(this IFormFile file, string filePath, string key, CancellationToken cancellationToken = default)
         {
             AesEncryptedFile encryptedFile;
 
@@ -18,7 +19,7 @@ namespace Shared
                 using Stream content = File.Create(filePath);
 
                 using var aes = Aes.Create();
-                aes.Key = new RandomKey(Constants.Aes256KeySize).Create();
+                aes.Key = Encoding.UTF8.GetBytes(key);
                 aes.GenerateIV();
 
                 using var encryptor = aes.CreateEncryptor();
@@ -29,7 +30,7 @@ namespace Shared
                 encryptedFile = new AesEncryptedFile()
                 {
                     Checksum = content.ComputeMd5Checksum(),
-                    Key = Convert.ToBase64String(aes.Key),
+                    Key = key,
                     Secret = Convert.ToBase64String(aes.IV)
                 };
             }
@@ -49,7 +50,7 @@ namespace Shared
             using Stream content = File.OpenRead(filePath);
 
             using var aes = Aes.Create();
-            aes.Key = Convert.FromBase64String(key);
+            aes.Key = Encoding.UTF8.GetBytes(key);
             aes.IV = Convert.FromBase64String(secret);
 
             using var decryptor = aes.CreateDecryptor();

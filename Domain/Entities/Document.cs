@@ -26,12 +26,7 @@ namespace Domain
         public DocumentTypes Type { get; set; }
 
         [Required]
-        [Column("key", Order = 6)]
-        [MaxLength(DocumentConstants.KeyMaxLength), Unicode(false)]
-        public string Key { get; set; }
-
-        [Required]
-        [Column("secret", Order = 7)]
+        [Column("secret", Order = 6)]
         [MaxLength(DocumentConstants.SecretMaxLength), Unicode(false)]
         public string Secret { get; set; }
 

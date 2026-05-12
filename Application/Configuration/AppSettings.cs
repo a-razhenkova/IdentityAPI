@@ -1,5 +1,4 @@
-﻿using Shared;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Application
 {
@@ -11,10 +10,9 @@ namespace Application
 
         public DatabaseSettings Database { get; init; } = new();
 
-        [Required]
-        public string ClientSubscriptionContractDirectory { get; set; } = string.Empty;
-
         public PaginatedReportSettings PaginatedReport { get; init; } = new();
+
+        public ClientSubscriptionContractSettings ClientSubscriptionContract { get; init; } = new();
     }
 
     public record DatabaseSettings
@@ -31,5 +29,14 @@ namespace Application
 
         [Range(minimum: 1, maximum: 1000)]
         public int DefaultMaxAllowedItemsPerPage { get; init; } = 1000;
+    }
+
+    public record ClientSubscriptionContractSettings
+    {
+        [Required]
+        public string Key { get; init; } = string.Empty;
+
+        [Required]
+        public string Directory { get; init; } = string.Empty;
     }
 }

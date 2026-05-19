@@ -96,7 +96,7 @@
 | Strategy Pattern | Used for handling tokens. | [SecurityTokenHandler.cs](/Application/Security/Tokens/SecurityTokenHandler.cs) |
 | Data Mapping | Used `AutoMapper` for `request`/`response` mappings.<br/>Used manual mapping for `entity` mappings. | [Request/Response Mappings](/WebApi/Mappers)<br/>[Entity Mappings](/Application/Mappers) |
 | RabbitMQ | Used for asynchronous communication with [`Notify API`](https://github.com/a-razhenkova/NotifyAPI) for sending notifications to users. Added resilience using `Polly`. | [RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs)<br/>[RabbitMqExtensions](/Infrastructure/MessageBrokers/RabbitMqExtensions.cs)<br/>[RabbitMqEventAttribute.cs](/Application/RabbitMQ/Attributes/RabbitMqEventAttribute.cs) |
-| Rate Limiter | Used with fixed window counter, configurable by [`appsettings::Security::RateLimiter`](/WebApi/appsettings.json). | [AddRateLimiter()](/WebApi/Setup/WebAppBuilderExtensions.cs) |
+| Rate Limiter | Used with fixed window counter, configurable by [`appsettings::Security::RateLimiter`](/WebApi/appsettings.json). | [AddRateLimiter()](/WebApi/Setup/ControllersSetup.cs) |
 | Logger | Global exception logging is handled [here](/WebApi/Middlewares/ExceptionHandlingMiddleware.cs).<br/>Global HTTP request and response logging is handled [here](WebApi/Middlewares/HttpMessageLoggingMiddleware.cs). | [LoggerSetup.cs](/WebApi/Setup/LoggerSetup.cs) |
 
 ### Caching

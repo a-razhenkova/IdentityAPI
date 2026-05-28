@@ -23,7 +23,7 @@ namespace WebApi.V1
         [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(typeof(SimpleResponse<string>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateAndSendOtpAsync(CreateOtpRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateAndSendOtpAsync(TokenRequest request, CancellationToken cancellationToken)
         {
             string userPublicId = await _otp.CreateAndSendAsync(request.Username, request.Password, cancellationToken);
 

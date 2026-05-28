@@ -24,13 +24,13 @@ namespace WebApi.V2
         /// <summary>
         /// Creates access and refresh tokens for a users.
         /// </summary>
-        /// <param name="userCredentials">User authentication credentials.</param>
+        /// <param name="request">User authentication credentials.</param>
         [AllowAnonymous]
         [HttpPost, SensitiveData(IsResponseSensitive = true)]
         [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateAccessTokenAsync(V1.CreateOtpRequest userCredentials)
+        public async Task<IActionResult> CreateAccessTokenAsync(V1.TokenRequest request)
         {
-            TokenDto token = await _token.CreateAccessTokenAsync(userCredentials.Username, userCredentials.Password);
+            TokenDto token = await _token.CreateAccessTokenAsync(request.Username, request.Password);
 
             var response = _mapper.Map<TokenResponse>(token);
             return Ok(response);

@@ -24,13 +24,13 @@ namespace WebApi.V3
         /// <summary>
         /// Creates access and refresh tokens for a user by the provided OTP.
         /// </summary>
-        /// <param name="userCredentials">The user's OTP and related two-factor authentication information.</param>
+        /// <param name="request">The user's OTP and related two-factor authentication information.</param>
         [AllowAnonymous]
         [HttpPost, SensitiveData(IsResponseSensitive = true)]
         [ProducesResponseType(typeof(V1.TokenResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateAccessTokenAsync(V2.UserCredentialsResponse userCredentials)
+        public async Task<IActionResult> CreateAccessTokenAsync(V2.TokenRequest request)
         {
-            TokenDto token = await _token.CreateAccessTokenByOtpAsync(userCredentials.UserId, userCredentials.OneTimePassword);
+            TokenDto token = await _token.CreateAccessTokenByOtpAsync(request.UserId, request.OneTimePassword);
 
             var response = _mapper.Map<V1.TokenResponse>(token);
             return Ok(response);

@@ -39,7 +39,7 @@ namespace WebApi.V1
         /// Validates the provided access token.
         /// </summary>
         [AllowAnonymous]
-        [HttpPost("status"), SkipLog]  
+        [HttpPost("status"), SkipLog]
         [ProducesResponseType(typeof(TokenValidationResultResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> ValidateAccessTokenAsync()
         {

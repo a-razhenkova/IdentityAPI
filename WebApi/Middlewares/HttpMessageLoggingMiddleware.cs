@@ -114,12 +114,12 @@ namespace WebApi
                 {
                     try
                     {
-                        var credentials = JsonSerializer.Deserialize<V1.CreateOtpRequest>(requestBody) ?? throw new ArgumentException();
+                        var credentials = JsonSerializer.Deserialize<V1.TokenRequest>(requestBody) ?? throw new ArgumentException();
                         user = credentials.Username;
                     }
                     catch
                     {
-                        var credentials = JsonSerializer.Deserialize<V2.UserCredentialsResponse>(requestBody) ?? throw new ArgumentException();
+                        var credentials = JsonSerializer.Deserialize<V2.TokenRequest>(requestBody) ?? throw new ArgumentException();
                         user = credentials.Username;
                     }
                 }

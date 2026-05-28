@@ -7,7 +7,7 @@ namespace HealthTests
     public class HealthTests : IntegrationTestBase
     {
         [Fact(DisplayName = "HEAD /api/v1/health/heartbeat")]
-        public async Task HeartbeatAsync()
+        public async Task Heartbeat()
         {
             // Arrange
             var httpClient = CreateClient();
@@ -33,7 +33,7 @@ namespace HealthTests
         }
 
         [Fact(DisplayName = "GET /api/v1/health/checks")]
-        public async Task CheckHealthAsync()
+        public async Task CheckHealth()
         {
             // Arrange
             var httpClient = new HttpClientProxy(CreateClient());

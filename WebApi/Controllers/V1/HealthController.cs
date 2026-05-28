@@ -35,7 +35,7 @@ namespace WebApi.V1
         /// <returns>Deploy details.</returns>
         [HttpGet, SkipLog]
         [ProducesResponseType(typeof(DeployInfoResponse), StatusCodes.Status200OK)]
-        public IActionResult LoadDeployInfo()
+        public IActionResult GetDeployInfo()
         {
             var response = new DeployInfoResponse()
             {

@@ -30,7 +30,7 @@ namespace Infrastructure
             await pipeline.ExecuteAsync(async (cancellationToken) => await PublishEventAsync(evt, settings, cancellationToken), cancellationToken);
         }
 
-        public async Task PublishEventInBackground(object evt, CancellationToken cancellationToken = default)
+        public async Task PublishEventInBackgroundAsync(object evt, CancellationToken cancellationToken = default)
         {
             var settings = evt.GetRequiredCustomAttribute<RabbitMqEventAttribute>();
 

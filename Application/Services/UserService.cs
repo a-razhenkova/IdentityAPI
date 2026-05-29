@@ -77,7 +77,7 @@ namespace Application
                 string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
 
                 var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(user, emailToken);
-                await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because changes are already made
+                await _rebbitMq.PublishEventInBackgroundAsync(evt); // cancellation is unnecessary because changes are already made
             }
 
             return user.PublicId;
@@ -135,7 +135,7 @@ namespace Application
             if (!string.IsNullOrWhiteSpace(user.Email))
             {
                 var evt = RabbitMqEventFactory.CreateUserPasswordChangedEvent(user, _httpContextAccessor?.HttpContext?.GetUserIpAddress()); 
-                await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because changes are already made
+                await _rebbitMq.PublishEventInBackgroundAsync(evt); // cancellation is unnecessary because changes are already made
             }
         }
 
@@ -162,7 +162,7 @@ namespace Application
             string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
 
             var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(user, emailToken);
-            await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because changes are already made
+            await _rebbitMq.PublishEventInBackgroundAsync(evt); // cancellation is unnecessary because changes are already made
         }
 
         public async Task CreateAndSendEmailVerificationAsync(string userPublicId, CancellationToken cancellationToken = default)

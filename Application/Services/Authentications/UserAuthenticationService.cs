@@ -72,7 +72,7 @@ namespace Application
                 user.Login.LastLoginIpAddress = userIpAddress;
 
                 var evt = RabbitMqEventFactory.CreateLoginFromNewIpAddressEvent(user);
-                await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because login is already processed
+                await _rebbitMq.PublishEventInBackgroundAsync(evt); // cancellation is unnecessary because login is already processed
             }
         }
 
@@ -85,7 +85,7 @@ namespace Application
                 user.Block(UserStatusReasons.MaxWrongLoginAttemptsReached);
 
                 var evt = RabbitMqEventFactory.CreateLoginAttemptMadeEvent(user);
-                await _rebbitMq.PublishEventInBackground(evt); // cancellation is unnecessary because login is already processed
+                await _rebbitMq.PublishEventInBackgroundAsync(evt); // cancellation is unnecessary because login is already processed
             }
         }
     }

@@ -4,6 +4,6 @@
     {
         Task PublishEventAsync(object evt, CancellationToken cancellationToken = default);
 
-        Task PublishEventInBackground(object evt, CancellationToken cancellationToken = default);
+        Task PublishEventInBackgroundAsync(object evt, CancellationToken cancellationToken = default);
     }
 }

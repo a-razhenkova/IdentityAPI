@@ -14,10 +14,9 @@ builder.AddControllers();
 builder.AddAuthentication();
 builder.AddAuthorization();
 builder.AddRateLimiter();
+builder.AddSwagger();
 
 await builder.AddRabbitMqAsync();
-
-builder.AddSwagger();
 
 var app = builder.Build();
 app.UseHttpsRedirection();

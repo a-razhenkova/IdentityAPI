@@ -16,23 +16,23 @@ namespace IntegrationTests
     {
         private readonly TestFactory _factory;
         private Respawner _respawner = null!;
+        protected HttpClient _client = null!;
 
         protected IntegrationTestBase(TestFactory factory)
         {
             _factory = factory;
         }
 
-        public HttpClient CreateClient()
-            => TestFactoryClient.Create(_factory);
-
         public async Task InitializeAsync()
         {
+            _client = TestFactoryClient.Create(_factory);
             await InitIdentityContext();
         }
 
         public async Task DisposeAsync()
         {
-
+            _client.Dispose();
+            await ResetIdentityContextAsync();
         }
 
         public async Task ResetIdentityContextAsync()

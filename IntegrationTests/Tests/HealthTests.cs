@@ -11,24 +11,21 @@ namespace HealthTests
         [Fact(DisplayName = "HEAD /api/v1/health/heartbeat")]
         public async Task Heartbeat()
         {
-            // Arrange
-            var httpClient = CreateClient();
-
             // Act
-            var httpResponse = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, Endpoints.Heartbeat));
+            var response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Head, Endpoints.Heartbeat));
 
             // Assert
-            httpResponse.IsSuccessStatusCode.Should().BeTrue();
+            response.IsSuccessStatusCode.Should().BeTrue();
         }
 
         [Fact(DisplayName = "GET /api/v1/health")]
         public async Task GetDeployInfo()
         {
             // Arrange
-            var httpClient = new HttpClientProxy(CreateClient());
+            var client = new HttpClientProxy(_client);
         
             // Act
-            var response = await httpClient.GetAsync<V1.DeployInfoResponse>(Endpoints.DeployInfo);
+            var response = await client.GetAsync<V1.DeployInfoResponse>(Endpoints.DeployInfo);
 
             // Assert
             response.Should().NotBeNull();
@@ -38,13 +35,13 @@ namespace HealthTests
         public async Task CheckHealth()
         {
             // Arrange
-            var httpClient = new HttpClientProxy(CreateClient());
+            var client = new HttpClientProxy(_client);
 
             // Act
-            var httpResponse = await httpClient.GetAsync(Endpoints.HealthChecks);
+            var response = await client.GetAsync(Endpoints.HealthChecks);
 
             // Assert
-            httpResponse.IsSuccessStatusCode.Should().BeTrue();
+            response.IsSuccessStatusCode.Should().BeTrue();
         }
     }
 }

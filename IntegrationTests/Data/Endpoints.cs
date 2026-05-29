@@ -10,5 +10,7 @@
         public const string Token_V2 = "api/v2/token";
 
         public const string TokenStatus_V1 = "api/v1/token/status";
+
+        public const string Clients_V1 = "api/v1/clients";
     }
 }

@@ -3,6 +3,7 @@ using Domain;
 using FluentAssertions;
 using IntegrationTests;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Shared;
 using System.Net.Http.Headers;
 using V1 = WebApi.V1;
 
@@ -14,7 +15,7 @@ namespace TokenTests
         public async Task CreateAccessToken_WithValidCredentials()
         {
             // Act
-            var token = await TokenFactory.GetAccessTokenByUserCredentials(Constants.Username, Constants.UserPassword);
+            var token = await TokenFactory.GetAccessTokenByUserCredentials(TestData.Username, TestData.UserPassword);
 
             // Assert
             token.Should().NotBeNullOrWhiteSpace();
@@ -30,11 +31,11 @@ namespace TokenTests
             var request = new V1.TokenRequest()
             {
                 Username = new Faker().Random.String2(UserConstants.UsernameMinLength, UserConstants.UsernameMaxLength),
-                Password = Constants.UserPassword
+                Password = TestData.UserPassword
             };
 
             // Act
-            var httpResponse = await httpClient.PostAsync(request, "api/v2/token");
+            var httpResponse = await httpClient.PostAsync(request, Endpoints.Token_V2);
 
             // Assert
             httpResponse.IsSuccessStatusCode.Should().BeFalse();
@@ -49,12 +50,12 @@ namespace TokenTests
 
             var request = new V1.TokenRequest()
             {
-                Username = Constants.Username,
+                Username = TestData.Username,
                 Password = new Faker().Internet.Password()
             };
 
             // Act
-            var httpResponse = await httpClient.PostAsync(request, "api/v2/token");
+            var httpResponse = await httpClient.PostAsync(request, Endpoints.Token_V2);
 
             // Assert
             httpResponse.IsSuccessStatusCode.Should().BeFalse();
@@ -67,11 +68,11 @@ namespace TokenTests
             var factory = new WebApplicationFactory<Program>();
             var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
 
-            var token = await TokenFactory.GetAccessTokenByUserCredentials(Constants.Username, Constants.UserPassword);
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Shared.AuthorizationSchema.Bearer.ToString(), token);
+            var token = await TokenFactory.GetAccessTokenByUserCredentials(TestData.Username, TestData.UserPassword);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), token);
 
             // Act
-            var response = await httpClient.PostAsync<V1.TokenValidationResultResponse>("api/v1/token/status");
+            var response = await httpClient.PostAsync<V1.TokenValidationResultResponse>(Endpoints.TokenStatus_V1);
 
             // Assert
             response.Should().NotBeNull();
@@ -86,10 +87,10 @@ namespace TokenTests
             var factory = new WebApplicationFactory<Program>();
             var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
 
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Shared.AuthorizationSchema.Bearer.ToString(), "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTQ3YTRmYy0zZDkwLTRkZGItYTFlYy1hNjY0YzBhOGEyZjMiLCJ1c2VybmFtZSI6Iml2YW4uaXZhbm92IiwidXNlclJvbGUiOiJBZG1pbmlzdHJhdG9yIiwidXNlclN0YXR1cyI6IkFjdGl2ZSIsIm5iZiI6MTc3ODA5MDk1MywiZXhwIjoxNzc4MDkyMTUzLCJpYXQiOjE3NzgwOTA5NTMsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0MzAxIiwiYXVkIjoiQWxla3NhbmRyaW5hIFJhemhlbmtvdmEifQ.EKDIqIkGZkj5MKyr-6wsykPxs-s-Pl8zSAw7rDFrvG0");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), TestData.InvalidUserToken);
 
             // Act
-            var response = await httpClient.PostAsync<V1.TokenValidationResultResponse>("api/v1/token/status");
+            var response = await httpClient.PostAsync<V1.TokenValidationResultResponse>(Endpoints.TokenStatus_V1);
 
             // Assert
             response.Should().NotBeNull();

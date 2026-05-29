@@ -13,7 +13,7 @@ namespace HealthTests
             var httpClient = CreateClient();
 
             // Act
-            var httpResponse = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, "/api/v1/health/heartbeat"));
+            var httpResponse = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, Endpoints.Heartbeat));
 
             // Assert
             httpResponse.IsSuccessStatusCode.Should().BeTrue();
@@ -26,7 +26,7 @@ namespace HealthTests
             var httpClient = new HttpClientProxy(CreateClient());
         
             // Act
-            var response = await httpClient.GetAsync<V1.DeployInfoResponse>("api/v1/health");
+            var response = await httpClient.GetAsync<V1.DeployInfoResponse>(Endpoints.DeployInfo);
 
             // Assert
             response.Should().NotBeNull();
@@ -39,7 +39,7 @@ namespace HealthTests
             var httpClient = new HttpClientProxy(CreateClient());
 
             // Act
-            var httpResponse = await httpClient.GetAsync("api/v1/health/checks");
+            var httpResponse = await httpClient.GetAsync(Endpoints.HealthChecks);
 
             // Assert
             httpResponse.IsSuccessStatusCode.Should().BeTrue();

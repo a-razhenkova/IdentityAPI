@@ -24,7 +24,13 @@ namespace IntegrationTests
             {
                 case AuthType.ClientCredentials:
                     {
-                        string accessToken = await TokenFactory.GetAccessTokenByClientCredentials(Constants.ClientKey, Constants.ClientSecret, cancellationToken);
+                        string accessToken = await TokenFactory.GetAccessTokenByClientCredentials(TestData.ClientKey, TestData.ClientSecret, cancellationToken);
+                        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), accessToken);
+                    }
+                    break;
+                case AuthType.UserCredentials:
+                    {
+                        string accessToken = await TokenFactory.GetAccessTokenByUserCredentials(TestData.Username, TestData.UserPassword, cancellationToken);
                         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), accessToken);
                     }
                     break;

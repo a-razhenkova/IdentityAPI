@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using Shared;
+﻿using Shared;
 using System.Net.Http.Headers;
 using System.Text;
 using V1 = WebApi.V1;
@@ -10,8 +9,7 @@ namespace IntegrationTests
     {
         public async static Task<string> GetAccessTokenByClientCredentials(string key, string secret, CancellationToken cancellationToken = default)
         {
-            var factory = new WebApplicationFactory<Program>();
-            var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
+            var httpClient = new Infrastructure.HttpClientProxy(TestFactoryClient.Create());
 
             string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{key}:{secret}"));
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Basic.ToString(), credentials);
@@ -24,8 +22,7 @@ namespace IntegrationTests
 
         public async static Task<string> GetAccessTokenByUserCredentials(string username, string password, CancellationToken cancellationToken = default)
         {
-            var factory = new WebApplicationFactory<Program>();
-            var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
+            var httpClient = new Infrastructure.HttpClientProxy(TestFactoryClient.Create());
 
             var request = new V1.TokenRequest()
             {

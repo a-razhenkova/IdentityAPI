@@ -6,6 +6,8 @@ namespace HealthTests
 {
     public class HealthTests : IntegrationTestBase
     {
+        public HealthTests(TestFactory factory) : base(factory) { }
+
         [Fact(DisplayName = "HEAD /api/v1/health/heartbeat")]
         public async Task Heartbeat()
         {

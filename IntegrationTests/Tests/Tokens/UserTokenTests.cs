@@ -2,7 +2,6 @@
 using Domain;
 using FluentAssertions;
 using IntegrationTests;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Shared;
 using System.Net.Http.Headers;
 using V1 = WebApi.V1;
@@ -11,6 +10,8 @@ namespace TokenTests
 {
     public class UserTokenTests : IntegrationTestBase
     {
+        public UserTokenTests(TestFactory factory) : base(factory) { }
+
         [Fact(DisplayName = "POST /api/v2/token (with valid credentials)")]
         public async Task CreateAccessToken_WithValidCredentials()
         {
@@ -25,8 +26,7 @@ namespace TokenTests
         public async Task CreateAccessToken_WithInvalidKey()
         {
             // Arrange
-            var factory = new WebApplicationFactory<Program>();
-            var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
+            var httpClient = new Infrastructure.HttpClientProxy(CreateClient());
 
             var request = new V1.TokenRequest()
             {
@@ -45,8 +45,7 @@ namespace TokenTests
         public async Task CreateAccessToken_WithInvalidSecret()
         {
             // Arrange
-            var factory = new WebApplicationFactory<Program>();
-            var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
+            var httpClient = new Infrastructure.HttpClientProxy(CreateClient());
 
             var request = new V1.TokenRequest()
             {
@@ -65,8 +64,7 @@ namespace TokenTests
         public async Task Validate_ValidAccessToken()
         {
             // Arrange
-            var factory = new WebApplicationFactory<Program>();
-            var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
+            var httpClient = new Infrastructure.HttpClientProxy(CreateClient());
 
             var token = await TokenFactory.GetAccessTokenByUserCredentials(TestData.Username, TestData.UserPassword);
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), token);
@@ -84,8 +82,7 @@ namespace TokenTests
         public async Task Validate_InvalidAccessToken()
         {
             // Arrange
-            var factory = new WebApplicationFactory<Program>();
-            var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
+            var httpClient = new Infrastructure.HttpClientProxy(CreateClient());
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), TestData.InvalidUserToken);
 

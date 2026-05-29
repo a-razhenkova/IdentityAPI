@@ -1,7 +1,6 @@
 ﻿using Application;
 using FluentAssertions;
 using IntegrationTests;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Shared;
 using System.Net.Http.Headers;
 using System.Text;
@@ -11,6 +10,8 @@ namespace TokenTests
 {
     public class ClientTokenTests : IntegrationTestBase
     {
+        public ClientTokenTests(TestFactory factory) : base(factory) { }
+
         [Fact(DisplayName = "POST /api/v1/token (with valid credentials)")]
         public async Task CreateAccessToken_WithValidCredentials()
         {
@@ -25,8 +26,7 @@ namespace TokenTests
         public async Task CreateAccessToken_WithInvalidKey()
         {
             // Arrange
-            var factory = new WebApplicationFactory<Program>();
-            var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
+            var httpClient = new Infrastructure.HttpClientProxy(CreateClient());
 
             string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ClientKey.Create()}:{TestData.ClientSecret}"));
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Basic.ToString(), credentials);
@@ -42,8 +42,7 @@ namespace TokenTests
         public async Task CreateAccessToken_WithInvalidSecret()
         {
             // Arrange
-            var factory = new WebApplicationFactory<Program>();
-            var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
+            var httpClient = new Infrastructure.HttpClientProxy(CreateClient());
 
             string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{TestData.ClientKey}:{ClientSecret.Create()}"));
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Basic.ToString(), credentials);
@@ -59,8 +58,7 @@ namespace TokenTests
         public async Task Validate_ValidAccessToken()
         {
             // Arrange
-            var factory = new WebApplicationFactory<Program>();
-            var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
+            var httpClient = new Infrastructure.HttpClientProxy(CreateClient());
 
             var token = await TokenFactory.GetAccessTokenByClientCredentials(TestData.ClientKey, TestData.ClientSecret);
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), token);
@@ -78,8 +76,7 @@ namespace TokenTests
         public async Task Validate_InvalidAccessToken()
         {
             // Arrange
-            var factory = new WebApplicationFactory<Program>();
-            var httpClient = new Infrastructure.HttpClientProxy(factory.CreateClient());
+            var httpClient = new Infrastructure.HttpClientProxy(CreateClient());
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), TestData.InvalidClientToken);
 

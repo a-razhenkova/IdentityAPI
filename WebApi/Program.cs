@@ -20,12 +20,10 @@ await builder.AddRabbitMqAsync();
 builder.AddSwagger();
 
 var app = builder.Build();
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
-
-if (!app.Environment.IsDevelopment())
-    app.UseHttpsRedirection();
 
 app.MapControllers();
 app.UseSwagger();

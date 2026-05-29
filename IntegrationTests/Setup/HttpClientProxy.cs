@@ -13,7 +13,7 @@ namespace IntegrationTests
     {
         private readonly AuthType _authType;
 
-        public HttpClientProxy(HttpClient httpClient, AuthType authType = AuthType.ClientCredentials) : base(httpClient)
+        public HttpClientProxy(HttpClient httpClient, AuthType authType = AuthType.UserCredentials) : base(httpClient)
         {
             _authType = authType;
         }

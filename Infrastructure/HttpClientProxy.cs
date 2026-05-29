@@ -8,9 +8,10 @@ using System.Text.Json.Serialization;
 
 namespace Infrastructure
 {
-    public class HttpClientProxy
+    public class HttpClientProxy : IDisposable
     {
         protected HttpClient _httpClient;
+        protected bool _isDisposed = false;
 
         public HttpClientProxy(HttpClient httpClient)
         {
@@ -49,19 +50,19 @@ namespace Infrastructure
             HttpResponseMessage response = await PostAsync(urlEncodedContent, relativePath);
             return await Deserialize<TResponse>(response);
         }
-        
+
         public virtual async Task<HttpResponseMessage> PostAsync(FormUrlEncodedContent urlEncodedContent, string? relativePath = null, CancellationToken cancellationToken = default)
         {
             string absolutePath = string.IsNullOrWhiteSpace(relativePath)
                 ? $"{_httpClient.BaseAddress}"
                 : $"{_httpClient.BaseAddress}{relativePath}";
-        
+
             var stopwatch = Stopwatch.StartNew();
             HttpResponseMessage response = await _httpClient.PostAsync(absolutePath, urlEncodedContent, cancellationToken);
             stopwatch.Stop();
-        
+
             LogRequest(response, stopwatch.ElapsedMilliseconds);
-        
+
             return response;
         }
 
@@ -151,6 +152,21 @@ namespace Infrastructure
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper) }
             }) ?? throw new ArgumentException("Failed to read the response content.");
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && !_isDisposed)
+            {
+                _isDisposed = true;
+                _httpClient.Dispose();
+            }
         }
     }
 }

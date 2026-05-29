@@ -1,8 +1,10 @@
 ﻿using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Respawn;
 using System.Data.Common;
+using WebApi;
 
 namespace IntegrationTests
 {
@@ -13,7 +15,6 @@ namespace IntegrationTests
     public abstract class IntegrationTestBase : IAsyncLifetime
     {
         private readonly TestFactory _factory;
-        private DbConnection _dbConnection = null!;
         private Respawner _respawner = null!;
 
         protected IntegrationTestBase(TestFactory factory)
@@ -21,36 +22,45 @@ namespace IntegrationTests
             _factory = factory;
         }
 
+        public HttpClient CreateClient()
+            => TestFactoryClient.Create(_factory);
+
         public async Task InitializeAsync()
         {
-            await InitDatabase();
+            await InitIdentityContext();
         }
 
         public async Task DisposeAsync()
         {
-            await _dbConnection.DisposeAsync();
+
         }
 
-        public async Task ResetDatabaseAsync()
+        public async Task ResetIdentityContextAsync()
         {
-            await _respawner.ResetAsync(_dbConnection);
+            using IServiceScope scope = _factory.Services.CreateScope();
+            var identityContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+            using DbConnection dbConnection = identityContext.Database.GetDbConnection();
+            await dbConnection.OpenAsync();
+
+            await _respawner.ResetAsync(dbConnection);
+
+            identityContext.ApplyDbPendingScriptsAsync(logger);
         }
 
-        public HttpClient CreateClient()
-            => TestFactoryClient.Create(_factory);
-
-        private async Task InitDatabase()
+        private async Task InitIdentityContext()
         {
-            using var scope = _factory.Services.CreateAsyncScope();
-            var context = scope.ServiceProvider.GetRequiredService<IdentityContext>();
-            _dbConnection = context.Database.GetDbConnection();
+            using IServiceScope scope = _factory.Services.CreateScope();
+            var identityContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
 
-            await _dbConnection.OpenAsync();
+            using DbConnection dbConnection = identityContext.Database.GetDbConnection();
+            await dbConnection.OpenAsync();
 
-            _respawner = await Respawner.CreateAsync(_dbConnection, new RespawnerOptions
+            _respawner = await Respawner.CreateAsync(dbConnection, new RespawnerOptions
             {
                 SchemasToInclude = ["dbo"],
-                TablesToIgnore = ["applied_migration", "applied_script"]
+                TablesToIgnore = ["applied_migration"]
             });
         }
     }

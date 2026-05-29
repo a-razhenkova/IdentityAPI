@@ -9,7 +9,7 @@ namespace Domain
         public const int NameMaxLength = Constants.UidLength;
         public const int StatusNoteMaxLength = 256;
 
-        public const string NameRegex = @"^[a-zA-Z][\w .-]+[a-zA-Z]$";
+        public const string NameRegex = @"^[a-zA-Z][\w .,-]+[a-zA-Z]$";
         public const string StatusNoteRegex = Constants.FreeTextRegex;
     }
 

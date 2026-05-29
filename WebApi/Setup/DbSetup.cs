@@ -1,9 +1,11 @@
 ﻿using Application;
 using DbUp;
+using DbUp.Engine;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Serilog.Context;
 using Shared;
+using System.Text;
 
 namespace WebApi
 {
@@ -13,15 +15,15 @@ namespace WebApi
         {
             var dbOptions = app.Configuration.GetRequiredSection<DatabaseSettings>(nameof(AppSettings.Database));
 
-            IServiceScope scope = app.Services.CreateScope();
-            ILogger logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            IdentityContext identityDbContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
+            using IServiceScope scope = app.Services.CreateScope();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            var identityContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
 
             if (dbOptions.IsDbMigrationAllowed)
             {
                 using (LogContext.PushProperty(LoggerContextProperty.ActionType.ToString(), LoggerContext.DbMigration))
                 {
-                    await identityDbContext.ApplyDbPendingMigrationsAsync(logger);
+                    await identityContext.ApplyDbPendingMigrationsAsync(logger);
                 }
             }
 
@@ -29,7 +31,7 @@ namespace WebApi
             {
                 using (LogContext.PushProperty(LoggerContextProperty.ActionType.ToString(), LoggerContext.DbUp))
                 {
-                    identityDbContext.ApplyDbPendingScriptsAsync(logger, app.Configuration);
+                    identityContext.ApplyDbPendingScriptsAsync(logger);
                 }
             }
 
@@ -58,32 +60,47 @@ namespace WebApi
             catch (Exception exception)
             {
                 logger.LogError(exception, exception.Message);
+                throw;
             }
         }
 
-        private static void ApplyDbPendingScriptsAsync(this DbContext dbContext, ILogger logger, IConfiguration config)
+        public static void ApplyDbPendingScriptsAsync(this DbContext dbContext, ILogger logger)
         {
             try
             {
                 DatabaseAttribute dbConfig = dbContext.GetRequiredCustomAttribute<DatabaseAttribute>();
-                string connectionString = config.GetConnectionString(dbConfig.ConnectionStringName) ?? throw new NotImplementedException();
+                string connectionString = dbContext.Database.GetConnectionString() ?? throw new NotImplementedException();
 
                 var upgrader = DeployChanges.To
                     .SqlDatabase(connectionString)
                     .JournalToSqlTable(dbConfig.DefaultSchemaName, dbConfig.ScriptsHistoryTableName)
                     .WithScriptsEmbeddedInAssembly(InfrastructureAssembly.GetExecutingAssembly())
-                    .LogTo(logger)
                     .Build();
 
                 logger.LogInformation("Executing pending scripts...");
 
-                upgrader.PerformUpgrade();
+                DatabaseUpgradeResult result = upgrader.PerformUpgrade();
+
+                if (result.Error is not null)
+                    throw new InvalidOperationException($"Script '{result.ErrorScript.Name}' executed with error:\n'{result.Error.Message}'", result.Error);
+
+                if (result.Scripts.Any())
+                {
+                    var message = new StringBuilder();
+                    message.AppendLine("Executed scripts:");
+
+                    foreach (SqlScript script in result.Scripts)
+                        message.AppendLine(script.Name);
+
+                    logger.LogInformation(message.ToString().TrimEnd());
+                }
 
                 logger.LogInformation("Database is up to date.");
             }
             catch (Exception exception)
             {
                 logger.LogError(exception, exception.Message);
+                throw;
             }
         }
     }

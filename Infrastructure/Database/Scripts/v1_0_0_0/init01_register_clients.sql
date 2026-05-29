@@ -1,15 +1,18 @@
-DECLARE @clientId INT = 1
-
 BEGIN TRY
 	BEGIN TRANSACTION T1
+
+	DECLARE @clientKey VARCHAR(36) = 'dba1d25a-0062-49e7-b4f0-31224a69f9e4'
+	DECLARE @clientSecret VARCHAR(36) = '818fec5e-bff4-4396-85a7-9cc2eccd166f'
 
 	INSERT INTO [dbo].[client]
 	SELECT NULL AS [version],
 		   'Identity API' AS [name],
-		   'dba1d25a-0062-49e7-b4f0-31224a69f9e4' AS [key],
-		   '818fec5e-bff4-4396-85a7-9cc2eccd166f' AS [secret],
+		   @clientKey AS [key],
+		   @clientSecret AS [secret],
 		   0 AS [wrong_login_attempts_counter],
 		   1 AS [is_internal]
+
+	DECLARE @clientId INT = (SELECT id FROM [dbo].[client] WITH(NOLOCK) WHERE [KEY] = @clientKey)
 
 	INSERT INTO [dbo].[client_status]
 	SELECT NULL AS [version],
@@ -30,18 +33,21 @@ BEGIN CATCH
 	THROW;
 END CATCH
 
-SET @clientId = 2
-
 BEGIN TRY
 	BEGIN TRANSACTION T1
+
+	SET @clientKey = '806279f4-0b27-4398-9de7-9442cac986eb'
+	SET @clientSecret = '78f67e88-a792-4848-a5f1-11a57616dd99'
 
 	INSERT INTO [dbo].[client]
 	SELECT NULL AS [version],
 		   'Health UI' AS [name],
-		   '806279f4-0b27-4398-9de7-9442cac986eb' AS [key],
-		   '78f67e88-a792-4848-a5f1-11a57616dd99' AS [secret],
+		   @clientKey AS [key],
+		   @clientSecret AS [secret],
 		   0 AS [wrong_login_attempts_counter],
 		   1 AS [is_internal]
+
+	SET @clientId = (SELECT id FROM [dbo].[client] WITH(NOLOCK) WHERE [KEY] = @clientKey)
 
 	INSERT INTO [dbo].[client_status]
 	SELECT NULL AS [version],

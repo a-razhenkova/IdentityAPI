@@ -35,20 +35,6 @@ namespace IntegrationTests
             await ResetIdentityContextAsync();
         }
 
-        public async Task ResetIdentityContextAsync()
-        {
-            using IServiceScope scope = _factory.Services.CreateScope();
-            var identityContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-
-            using DbConnection dbConnection = identityContext.Database.GetDbConnection();
-            await dbConnection.OpenAsync();
-
-            await _respawner.ResetAsync(dbConnection);
-
-            identityContext.ApplyDbPendingScriptsAsync(logger);
-        }
-
         private async Task InitIdentityContext()
         {
             using IServiceScope scope = _factory.Services.CreateScope();
@@ -62,6 +48,20 @@ namespace IntegrationTests
                 SchemasToInclude = ["dbo"],
                 TablesToIgnore = ["applied_migration"]
             });
+        }
+
+        private async Task ResetIdentityContextAsync()
+        {
+            using IServiceScope scope = _factory.Services.CreateScope();
+            var identityContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+            using DbConnection dbConnection = identityContext.Database.GetDbConnection();
+            await dbConnection.OpenAsync();
+
+            await _respawner.ResetAsync(dbConnection);
+
+            identityContext.ApplyDbPendingScriptsAsync(logger);
         }
     }
 }

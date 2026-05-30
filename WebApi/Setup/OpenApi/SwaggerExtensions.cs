@@ -1,5 +1,4 @@
-﻿using Infrastructure;
-using Microsoft.OpenApi;
+﻿using Microsoft.OpenApi;
 using Shared;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -9,19 +8,19 @@ namespace WebApi
     {
         public static WebApplication UseSwagger(this WebApplication app)
         {
-            if (app.Environment.IsSwaggerAllowed())
-            {
-                app.UseSwagger(cfg =>
-                {
-                    cfg.RouteTemplate = "api/{documentName}/swagger.json";
-                });
+            if (!app.Environment.IsSwaggerAllowed())
+                return app;
 
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/api/v1/swagger.json", "v1");
-                    c.RoutePrefix = "api";
-                });
-            }
+            app.UseSwagger(cfg =>
+            {
+                cfg.RouteTemplate = "api/{documentName}/swagger.json";
+            });
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/api/v1/swagger.json", "v1");
+                c.RoutePrefix = "api";
+            });
 
             return app;
         }
@@ -45,9 +44,7 @@ namespace WebApi
         }
 
         private static bool IsSwaggerAllowed(this IWebHostEnvironment environment)
-        {
-            return environment.IsDevelopment() || environment.IsStaging();
-        }
+            => environment.IsDevelopment() || environment.IsStaging();
 
         private static void UseUniqueIds(this SwaggerGenOptions opt)
         {

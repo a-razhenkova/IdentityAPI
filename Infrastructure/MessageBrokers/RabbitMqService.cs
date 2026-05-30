@@ -55,4 +55,11 @@ namespace Infrastructure
             }
         }
     }
+
+    public class RabbitMqMockService : IRabbitMq
+    {
+        public async Task PublishEventAsync(object evt, CancellationToken cancellationToken = default) { }
+
+        public async Task PublishEventInBackgroundAsync(object evt, CancellationToken cancellationToken = default) { }
+    }
 }

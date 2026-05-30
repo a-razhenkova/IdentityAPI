@@ -23,7 +23,6 @@ namespace WebApi
 
             // scoped services
             builder.Services.AddScoped<IPaginatedReport, PaginatedReportService>();
-            builder.Services.AddScoped<IRabbitMq, RabbitMqService>();
 
             builder.Services.AddScoped<IBasicAuthenticator, BasicAuthenticationService>();
             builder.Services.AddScoped<IBearerAuthenticator, BearerAuthenticationService>();

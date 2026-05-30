@@ -71,9 +71,6 @@
 > [!IMPORTANT]
 > Initialization scripts are automatically executed using `DbUp` at runtime.
 
-> [!CAUTION]
-> The API requires running RabbitMQ broker.
-
 > [!TIP]
 > The application supports updating `appsettings.json` at runtime without requiring a restart.
 

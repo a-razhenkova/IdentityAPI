@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Shared;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Shared
+namespace Application
 {
     public static class FileExtensions
     {

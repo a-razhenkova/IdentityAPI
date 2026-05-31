@@ -2,7 +2,6 @@
 using Serilog.Context;
 using Shared;
 using System.Diagnostics;
-using System.Security.Claims;
 using System.Text.Json;
 
 namespace WebApi
@@ -96,19 +95,7 @@ namespace WebApi
 
                 if (!string.IsNullOrWhiteSpace(authorization))
                 {
-                    var authorizationObj = new Authorization(authorization);
-
-                    if (authorizationObj.Schema == AuthorizationSchema.Basic)
-                    {
-                        user = new BasicCredentials(authorizationObj).Key;
-                    }
-                    else if (authorizationObj.Schema == AuthorizationSchema.Bearer)
-                    {
-                        user = httpContext.User.FindFirstValue(TokenClaim.Username.GetDescription());
-
-                        if (string.IsNullOrWhiteSpace(user))
-                            user = httpContext.User.FindFirstValue(TokenClaim.ClientId.GetDescription());
-                    }
+                    user = httpContext.GetUser();
                 }
                 else if (!string.IsNullOrWhiteSpace(requestBody))
                 {
@@ -141,9 +128,7 @@ namespace WebApi
                 bodyMsg = await body.ReadToEndAsync();
 
                 if (!string.IsNullOrWhiteSpace(bodyMsg))
-                {
                     bodyMsg = bodyMsg.RemoveJsonFormatting();
-                }
             }
             catch (Exception exception)
             {

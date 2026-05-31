@@ -1,4 +1,7 @@
-﻿using Shared;
+﻿using Application;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Shared;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
@@ -10,23 +13,28 @@ namespace Infrastructure
 {
     public class HttpClientProxy : IDisposable
     {
-        protected HttpClient _httpClient;
+        protected readonly ILogger<HttpClientProxy>? _logger;
+        protected readonly IHttpContextAccessor? _httpContextAccessor;
         protected bool _isDisposed = false;
+
+        protected HttpClient _httpClient;
+        protected bool _isRetryWhenUnauthorizedAllowed = true;
 
         public HttpClientProxy(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public HttpClientProxy(IHttpClientFactory httpClientFactory, string? httpClientName = null)
+        public HttpClientProxy(ILogger<HttpClientProxy> logger, IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, string? httpClientName = null)
         {
+            _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
             _httpClient = CreateClient(httpClientFactory, httpClientName);
         }
 
         public HttpRequestHeaders DefaultRequestHeaders => _httpClient.DefaultRequestHeaders;
 
-        protected virtual async Task SetHttpClientAuthorizationAsync(CancellationToken cancellationToken = default) { }
-        protected virtual async Task LogRequest(HttpResponseMessage response, long requestDuration) { }
+        #region GET
 
         public virtual async Task<TResponse?> GetAsync<TResponse>(string? relativePath = null)
         {
@@ -36,14 +44,36 @@ namespace Infrastructure
 
         public virtual async Task<HttpResponseMessage> GetAsync(string? relativePath = null)
         {
+            var stopwatch = new Stopwatch();
             string absolutePath = string.IsNullOrWhiteSpace(relativePath)
                 ? $"{_httpClient.BaseAddress}"
                 : $"{_httpClient.BaseAddress}{relativePath}";
 
             await SetHttpClientRequestHeadersAsync();
 
-            return await _httpClient.GetAsync(absolutePath);
+            stopwatch.Start();
+            HttpResponseMessage response = await _httpClient.GetAsync(absolutePath);
+            stopwatch.Stop();
+
+            LogRequest(response, stopwatch.ElapsedMilliseconds);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized && _isRetryWhenUnauthorizedAllowed)
+            {
+                await SetHttpClientAuthorizationAsync();
+
+                stopwatch.Restart();
+                response = await _httpClient.GetAsync(absolutePath);
+                stopwatch.Stop();
+
+                LogRequest(response, stopwatch.ElapsedMilliseconds);
+            }
+
+            return response;
         }
+
+        #endregion
+
+        #region POST
 
         public virtual async Task<TResponse?> PostAsync<TResponse>(FormUrlEncodedContent urlEncodedContent, string? relativePath = null, CancellationToken cancellationToken = default)
         {
@@ -105,7 +135,7 @@ namespace Infrastructure
 
             LogRequest(response, stopwatch.ElapsedMilliseconds);
 
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized && _isRetryWhenUnauthorizedAllowed)
             {
                 await SetHttpClientAuthorizationAsync();
 
@@ -119,10 +149,61 @@ namespace Infrastructure
             return response;
         }
 
+        #endregion
+
+        #region HEAD
+
+        public virtual async Task<HttpResponseMessage> HeadAsync(string? relativePath = null)
+        {
+            string absolutePath = string.IsNullOrWhiteSpace(relativePath)
+                ? $"{_httpClient.BaseAddress}"
+                : $"{_httpClient.BaseAddress}{relativePath}";
+
+            var stopwatch = Stopwatch.StartNew();
+            HttpResponseMessage response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, absolutePath));
+            stopwatch.Stop();
+
+            LogRequest(response, stopwatch.ElapsedMilliseconds);
+
+            return response;
+        }
+
+        #endregion
+
         protected async Task SetHttpClientRequestHeadersAsync()
         {
             if (_httpClient.DefaultRequestHeaders.Authorization is null)
                 await SetHttpClientAuthorizationAsync();
+        }
+
+        protected virtual async Task SetHttpClientAuthorizationAsync(CancellationToken cancellationToken = default) { }
+
+        protected virtual async Task LogRequest(HttpResponseMessage response, long requestDuration)
+        {
+            if (_logger is null)
+                return;
+
+            HttpRequestMessage? request = response.RequestMessage;
+
+            var action = new HttpAction()
+            {
+                StatusCode = (int)response.StatusCode,
+                Method = request?.Method.ToString() ?? "GET",
+                Duration = requestDuration,
+                FromIp = _httpContextAccessor?.HttpContext?.GetIpAddresses(),
+                User = _httpContextAccessor?.HttpContext?.GetUser(),
+                RequestData = await request?.Content?.ReadAsStringAsync(),
+                ResponseData = await response.Content.ReadAsStringAsync(),
+            };
+
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("Request finished successful: {@HttpAction}", action);
+            }
+            else
+            {
+                _logger.LogError("Request finished with error: {@HttpAction}", action);
+            }
         }
 
         private static HttpClient CreateClient(IHttpClientFactory httpClientFactory, string? httpClientName)

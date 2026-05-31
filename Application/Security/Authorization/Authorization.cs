@@ -16,7 +16,7 @@ namespace Application
         public AuthorizationSchema Schema { get; init; }
         public string Value { get; init; }
 
-        private AuthorizationSchema GetSchema(string authorization)
+        private static AuthorizationSchema GetSchema(string authorization)
         {
             if (authorization.BeginsWith(AuthorizationSchema.Basic.ToString()))
             {

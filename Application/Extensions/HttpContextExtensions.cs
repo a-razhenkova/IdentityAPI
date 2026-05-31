@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Shared;
 using System.Diagnostics;
+using System.Security.Claims;
 
-namespace Shared
+namespace Application
 {
     public static class HttpContextExtensions
     {
@@ -71,6 +73,33 @@ namespace Shared
             }
 
             return ipAddress;
+        }
+
+        public static string? GetUser(this HttpContext httpContext)
+        {
+            string? user = null;
+
+            string? authorization = httpContext.GetAuthorization();
+
+            if (!string.IsNullOrWhiteSpace(authorization))
+                return null;
+
+            var authorizationObj = new Authorization(authorization);
+
+            if (authorizationObj.Schema == AuthorizationSchema.Basic)
+            {
+                user = new BasicCredentials(authorizationObj).Key;
+            }
+            else if (authorizationObj.Schema == AuthorizationSchema.Bearer)
+            {
+                ClaimsPrincipal sad = httpContext.User;
+                user = sad.FindFirstValue(TokenClaim.Username.GetDescription());
+
+                if (string.IsNullOrWhiteSpace(user))
+                    user = httpContext.User.FindFirstValue(TokenClaim.ClientId.GetDescription());
+            }
+
+            return user;
         }
     }
 }

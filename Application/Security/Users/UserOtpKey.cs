@@ -1,6 +1,4 @@
-﻿using Shared;
-
-namespace Application
+﻿namespace Application
 {
     public static class UserOtpKey
     {

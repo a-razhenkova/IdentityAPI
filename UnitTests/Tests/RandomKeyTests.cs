@@ -1,6 +1,6 @@
-﻿using Bogus;
+﻿using Application;
+using Bogus;
 using FluentAssertions;
-using Shared;
 
 namespace RandomKeyTests
 {

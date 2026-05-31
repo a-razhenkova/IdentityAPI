@@ -103,7 +103,7 @@
 | Custom Authorization | Set by [AuthorizeUserAttribute](/WebApi/Attributes/AuthorizeUserAttribute.cs). | [UserAuthorizationHandler.cs](/WebApi/Setup/Authorization/UserAuthorizationHandler.cs) |
 | Rate Limiter | Used with fixed window counter, configurable by [`appsettings::Security::RateLimiter`](/WebApi/appsettings.json). | [AddRateLimiter()](/WebApi/Setup/ControllersSetup.cs) |
 | User Password | Hashed with `Pbkdf2`. | [Pbkdf2Key.cs](/Application/Security/Pbkdf2Key.cs) |
-| Client Contracts | Encrypted using `AES` when saved and decrypted upon download.<br/>A checksum is calculated for each file using `MD5`. | [CreateAndAesEncryptAsync()](/Shared/Extensions/FileExtensions.cs)<br/>[ReadAndAesDecryptAllBytesAsync()](/Shared/Extensions/FileExtensions.cs)<br/>[ComputeMd5Checksum()](/Shared/Extensions/StreamExtensions.cs) |
+| Client Contracts | Encrypted using `AES` when saved and decrypted upon download.<br/>A checksum is calculated for each file using `MD5`. | [CreateAndAesEncryptAsync()](/Application/Extensions/FileExtensions.cs)<br/>[ReadAndAesDecryptAllBytesAsync()](/Application/Extensions/FileExtensions.cs)<br/>[ComputeMd5Checksum()](/Shared/Extensions/StreamExtensions.cs) |
 
 ### Caching
 | Functionality | Description | Reference |

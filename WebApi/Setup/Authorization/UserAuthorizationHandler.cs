@@ -7,17 +7,13 @@ namespace WebApi
 {
     public class UserAuthorizationHandler : IAuthorizationHandler
     {
-        public Task HandleAsync(AuthorizationHandlerContext context)
+        public async Task HandleAsync(AuthorizationHandlerContext context)
         {
             foreach (var requirement in context.PendingRequirements)
             {
                 if (requirement is RolesAuthorizationRequirement rolesAuthorizationRequirement)
-                {
                     ValidateUserRole(context, rolesAuthorizationRequirement);
-                }
             }
-
-            return Task.CompletedTask;
         }
 
         private static void ValidateUserRole(AuthorizationHandlerContext context, RolesAuthorizationRequirement requirement)

@@ -27,18 +27,18 @@ namespace WebApi
 
         public static WebApplicationBuilder AddSwagger(this WebApplicationBuilder builder)
         {
-            if (builder.Environment.IsSwaggerAllowed())
-            {
-                builder.Services.AddSwaggerGen(opt =>
-                {
-                    opt.UseUniqueIds();
-                    opt.AddAuthorization();
+            if (!builder.Environment.IsSwaggerAllowed())
+                return builder;
 
-                    opt.AddHeaders();
-                    opt.AddXmlComments();
-                    opt.AddSummaryAndContact();
-                });
-            }
+            builder.Services.AddSwaggerGen(opt =>
+            {
+                opt.UseUniqueIds();
+                opt.AddAuthorization();
+
+                opt.AddHeaders();
+                opt.AddXmlComments();
+                opt.AddSummaryAndContact();
+            });
 
             return builder;
         }

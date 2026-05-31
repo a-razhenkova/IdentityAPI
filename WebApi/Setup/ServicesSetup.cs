@@ -18,9 +18,6 @@ namespace WebApi
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddAutoMapper();
 
-            // transient services
-            builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-
             // scoped services
             builder.Services.AddScoped<IPaginatedReport, PaginatedReportService>();
 
@@ -95,6 +92,7 @@ namespace WebApi
         public static WebApplicationBuilder AddDatabase(this WebApplicationBuilder builder)
         {
             DatabaseAttribute identityConfig = typeof(IdentityContext).GetRequiredCustomAttribute<DatabaseAttribute>();
+
             builder.Services.AddDbContext<IdentityContext>(opt =>
             {
                 opt.UseSqlServer(builder.Configuration.GetRequiredConnectionString(identityConfig.ConnectionStringName), cfg =>
@@ -109,6 +107,8 @@ namespace WebApi
                 opt.EnableSensitiveDataLogging();
 #endif
             });
+
+            builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             return builder;
         }

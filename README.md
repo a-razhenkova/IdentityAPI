@@ -90,7 +90,7 @@
 | Functionality | Description | Reference |
 | --- | --- | --- |
 | Documentation | Implemented using `Swagger`. | [SwaggerExtensions.cs](/WebApi/Setup/OpenApi/SwaggerExtensions.cs) |
-| Supported Headers | `X-Request-ID`<br>`X-Correlation-ID` | [ExceptionHandlingMiddleware.cs](WebApi/Middlewares/ExceptionHandlingMiddleware.cs) |
+| Supported Headers | `X-Request-ID`<br>`X-Correlation-ID` | [HttpHeaderHandlingMiddleware.cs](/WebApi/Middlewares/HttpHeaderHandlingMiddleware.cs) |
 | Logger | Global exception logging is handled from [ExceptionHandlingMiddleware](/WebApi/Middlewares/ExceptionHandlingMiddleware.cs).<br/>Global HTTP request and response logging is handled from [HttpMessageLoggingMiddleware](WebApi/Middlewares/HttpMessageLoggingMiddleware.cs).<br>Logged data can be controlled with [SkipLogAttribute](/WebApi/Attributes/SkipLogAttribute.cs) and [SensitiveDataAttribute](/WebApi/Attributes/SensitiveDataAttribute.cs). | [LoggerSetup.cs](/WebApi/Setup/LoggerSetup.cs) |
 | Data Mapping | Used `AutoMapper` for `request`/`response` mappings.<br/>Used manual mapping for `entity` mappings. | [Request/Response Mappings](/WebApi/Mappers)<br/>[Entity Mappings](/Application/Mappers) |
 | Paginated Report | For retrieval of both customers and users. | [PaginatedReportService.cs](/Application/Services/PaginatedReportService.cs) |

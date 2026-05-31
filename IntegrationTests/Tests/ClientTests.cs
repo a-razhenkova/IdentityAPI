@@ -12,11 +12,12 @@ namespace ClientTests
         public async Task CreateClient()
         {
             // Arrange
-            var client = new HttpClientProxy(_client);
+            await SetAccessTokenByUserCredentialsAsync();
+
             var request = new CreateClientRequestFaker_V1().Generate();
 
             // Act
-            var response = await client.PostAsync<V1.CreateClientRequest, V1.SimpleResponse<string>>(request, Endpoints.Clients_V1);
+            var response = await _client.PostAsync<V1.CreateClientRequest, V1.SimpleResponse<string>>(request, Endpoints.Clients_V1);
 
             // Assert
             response.Should().NotBeNull();

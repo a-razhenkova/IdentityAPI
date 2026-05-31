@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Respawn;
 using System.Data.Common;
 using WebApi;
+using V1 = WebApi.V1;
 
 namespace IntegrationTests
 {
@@ -16,7 +17,7 @@ namespace IntegrationTests
     {
         private readonly TestFactory _factory;
         private Respawner _respawner = null!;
-        protected HttpClient _client = null!;
+        protected TestClient _client = null!;
 
         protected IntegrationTestBase(TestFactory factory)
         {
@@ -25,8 +26,8 @@ namespace IntegrationTests
 
         public async Task InitializeAsync()
         {
-            _client = TestFactoryClient.Create(_factory);
-            await InitIdentityContext();
+            _client = _factory.CreateClient();
+            await InitIdentityContextAsync();
         }
 
         public async Task DisposeAsync()
@@ -35,7 +36,31 @@ namespace IntegrationTests
             await ResetIdentityContextAsync();
         }
 
-        private async Task InitIdentityContext()
+        public async Task SetAccessTokenByClientCredentialsAsync()
+        {
+            _client.SetBasicAuthorization(TestData.ClientKey, TestData.ClientSecret);
+
+            var response = await _client.PostAsync<V1.TokenResponse>(Endpoints.Token_V1)
+                ?? throw new ArgumentNullException();
+
+            _client.SetBearerAuthorization(response.AccessToken);
+        }
+
+        public async Task SetAccessTokenByUserCredentialsAsync()
+        {
+            var request = new V1.TokenRequest()
+            {
+                Username = TestData.Username,
+                Password = TestData.UserPassword
+            };
+
+            var response = await _client.PostAsync<V1.TokenRequest, V1.TokenResponse>(request, Endpoints.Token_V2)
+                ?? throw new ArgumentNullException();
+
+            _client.SetBearerAuthorization(response.AccessToken);
+        }
+
+        private async Task InitIdentityContextAsync()
         {
             using IServiceScope scope = _factory.Services.CreateScope();
             var identityContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();

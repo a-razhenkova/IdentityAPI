@@ -9,6 +9,16 @@ namespace IntegrationTests
 {
     public class TestFactory : WebApplicationFactory<Program>
     {
+        public new TestClient CreateClient()
+        {
+            HttpClient client = CreateClient(new WebApplicationFactoryClientOptions()
+            {
+                BaseAddress = new Uri("https://localhost/api")
+            });
+
+            return new TestClient(client);
+        }
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureAppConfiguration((_, config) =>
@@ -23,6 +33,8 @@ namespace IntegrationTests
         }
 
         private static void RemoveRateLimiter(IServiceCollection services)
-            => services.AddRateLimiter(opt => opt.GlobalLimiter = null);
+        {
+            services.AddRateLimiter(opt => opt.GlobalLimiter = null);
+        }
     }
 }

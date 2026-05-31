@@ -12,7 +12,7 @@ namespace HealthTests
         public async Task Heartbeat()
         {
             // Act
-            var response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Head, Endpoints.Heartbeat));
+            var response = await _client.HeadAsync(Endpoints.Heartbeat);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -22,10 +22,10 @@ namespace HealthTests
         public async Task GetDeployInfo()
         {
             // Arrange
-            var client = new HttpClientProxy(_client);
-        
+            await SetAccessTokenByClientCredentialsAsync();
+
             // Act
-            var response = await client.GetAsync<V1.DeployInfoResponse>(Endpoints.DeployInfo);
+            var response = await _client.GetAsync<V1.DeployInfoResponse>(Endpoints.DeployInfo);
 
             // Assert
             response.Should().NotBeNull();
@@ -35,10 +35,10 @@ namespace HealthTests
         public async Task CheckHealth()
         {
             // Arrange
-            var client = new HttpClientProxy(_client);
+            await SetAccessTokenByClientCredentialsAsync();
 
             // Act
-            var response = await client.GetAsync(Endpoints.HealthChecks);
+            var response = await _client.GetAsync(Endpoints.HealthChecks);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();

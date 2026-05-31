@@ -1,10 +1,7 @@
 ﻿using Application;
 using FluentAssertions;
 using IntegrationTests;
-using Shared;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
 using V1 = WebApi.V1;
 
 namespace TokenTests
@@ -16,24 +13,26 @@ namespace TokenTests
         [Fact(DisplayName = "POST /api/v1/token (with valid credentials)")]
         public async Task CreateAccessToken_WithValidCredentials_ReturnToken()
         {
+            // Arrange
+            _client.SetBasicAuthorization(TestData.ClientKey, TestData.ClientSecret);
+
             // Act
-            var token = await TokenFactory.GetAccessTokenByClientCredentials(TestData.ClientKey, TestData.ClientSecret);
+            var response = await _client.PostAsync<V1.TokenResponse>(Endpoints.Token_V1);
 
             // Assert
-            token.Should().NotBeNullOrWhiteSpace();
+
+            response.Should().NotBeNull();
+            response.AccessToken.Should().NotBeNullOrWhiteSpace();
         }
 
         [Fact(DisplayName = "POST /api/v1/token (with invalid key)")]
         public async Task CreateAccessToken_WithInvalidKey_Return401()
         {
             // Arrange
-            var client = new Infrastructure.HttpClientProxy(_client);
-
-            string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ClientKey.Create()}:{TestData.ClientSecret}"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Basic.ToString(), credentials);
+            _client.SetBasicAuthorization(ClientKey.Create(), TestData.ClientSecret);
 
             // Act
-            var response = await client.PostAsync(Endpoints.Token_V1);
+            var response = await _client.PostAsync(Endpoints.Token_V1);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -43,13 +42,10 @@ namespace TokenTests
         public async Task CreateAccessToken_WithInvalidSecret_Return401()
         {
             // Arrange
-            var client = new Infrastructure.HttpClientProxy(_client);
-
-            string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{TestData.ClientKey}:{ClientSecret.Create()}"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Basic.ToString(), credentials);
+            _client.SetBasicAuthorization(TestData.ClientKey, ClientSecret.Create());
 
             // Act
-            var response = await client.PostAsync(Endpoints.Token_V1);
+            var response = await _client.PostAsync(Endpoints.Token_V1);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -59,25 +55,24 @@ namespace TokenTests
         public async Task CreateAccessToken_MaxWrongLoginAttemptsReached_Return403()
         {
             // Arrange
-            var client = new Infrastructure.HttpClientProxy(_client);
+            HttpResponseMessage response;
 
-            string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{TestData.ClientKey}:{ClientSecret.Create()}"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Basic.ToString(), credentials);
+            _client.SetBasicAuthorization(TestData.ClientKey, ClientSecret.Create());
 
-            var response = await client.PostAsync(Endpoints.Token_V1); // called one more time internally
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            for (int index = 0; index < 3; index++)
+            {
+                response = await _client.PostAsync(Endpoints.Token_V1);
+                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            }
 
             // Act
-            response = await client.PostAsync(Endpoints.Token_V1); // third and fourth call
-
-            // Assert
+            response = await _client.PostAsync(Endpoints.Token_V1);
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
-            // setting the correct credentials
-            credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{TestData.ClientKey}:{TestData.ClientSecret}"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Basic.ToString(), credentials);
+            // Assert
+            _client.SetBasicAuthorization(TestData.ClientKey, TestData.ClientSecret);
 
-            response = await client.PostAsync(Endpoints.Token_V1);
+            response = await _client.PostAsync(Endpoints.Token_V1);
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
@@ -85,13 +80,10 @@ namespace TokenTests
         public async Task Validate_ValidAccessToken_ReturnIsValidTrue()
         {
             // Arrange
-            var client = new Infrastructure.HttpClientProxy(_client);
-
-            var token = await TokenFactory.GetAccessTokenByClientCredentials(TestData.ClientKey, TestData.ClientSecret);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), token);
+            await SetAccessTokenByClientCredentialsAsync();
 
             // Act
-            var response = await client.PostAsync<V1.TokenValidationResultResponse>(Endpoints.TokenStatus_V1);
+            var response = await _client.PostAsync<V1.TokenValidationResultResponse>(Endpoints.TokenStatus_V1);
 
             // Assert
             response.Should().NotBeNull();
@@ -103,12 +95,10 @@ namespace TokenTests
         public async Task Validate_InvalidAccessToken_ReturnIsValidFalse()
         {
             // Arrange
-            var client = new Infrastructure.HttpClientProxy(_client);
-
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), TestData.InvalidClientToken);
+            _client.SetBearerAuthorization(TestData.InvalidClientToken);
 
             // Act
-            var response = await client.PostAsync<V1.TokenValidationResultResponse>(Endpoints.TokenStatus_V1);
+            var response = await _client.PostAsync<V1.TokenValidationResultResponse>(Endpoints.TokenStatus_V1);
 
             // Assert
             response.Should().NotBeNull();

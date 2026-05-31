@@ -2,9 +2,7 @@
 using Domain;
 using FluentAssertions;
 using IntegrationTests;
-using Shared;
 using System.Net;
-using System.Net.Http.Headers;
 using V1 = WebApi.V1;
 
 namespace TokenTests
@@ -16,19 +14,25 @@ namespace TokenTests
         [Fact(DisplayName = "POST /api/v2/token (with valid credentials)")]
         public async Task CreateAccessToken_WithValidCredentials_ReturnToken()
         {
+            // Arrange
+            var request = new V1.TokenRequest()
+            {
+                Username = TestData.Username,
+                Password = TestData.UserPassword
+            };
+
             // Act
-            var token = await TokenFactory.GetAccessTokenByUserCredentials(TestData.Username, TestData.UserPassword);
+            var response = await _client.PostAsync<V1.TokenRequest, V1.TokenResponse>(request, Endpoints.Token_V2);
 
             // Assert
-            token.Should().NotBeNullOrWhiteSpace();
+            response.Should().NotBeNull();
+            response.AccessToken.Should().NotBeNullOrWhiteSpace();
         }
 
         [Fact(DisplayName = "POST /api/v2/token (with invalid username)")]
         public async Task CreateAccessToken_WithInvalidKey_Return401()
         {
             // Arrange
-            var client = new Infrastructure.HttpClientProxy(_client);
-
             var request = new V1.TokenRequest()
             {
                 Username = new Faker().Random.String2(UserConstants.UsernameMinLength, UserConstants.UsernameMaxLength),
@@ -36,7 +40,7 @@ namespace TokenTests
             };
 
             // Act
-            var response = await client.PostAsync(request, Endpoints.Token_V2);
+            var response = await _client.PostAsync(request, Endpoints.Token_V2);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -46,8 +50,6 @@ namespace TokenTests
         public async Task CreateAccessToken_WithInvalidSecret_Return401()
         {
             // Arrange
-            var client = new Infrastructure.HttpClientProxy(_client);
-
             var request = new V1.TokenRequest()
             {
                 Username = TestData.Username,
@@ -55,7 +57,7 @@ namespace TokenTests
             };
 
             // Act
-            var response = await client.PostAsync(request, Endpoints.Token_V2);
+            var response = await _client.PostAsync(request, Endpoints.Token_V2);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -66,7 +68,6 @@ namespace TokenTests
         {
             // Arrange
             HttpResponseMessage response;
-            var client = new Infrastructure.HttpClientProxy(_client);
 
             var request = new V1.TokenRequest()
             {
@@ -74,19 +75,20 @@ namespace TokenTests
                 Password = new Faker().Internet.Password()
             };
 
-            response = await client.PostAsync(request, Endpoints.Token_V2); // called one more time internally
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-
             // Act
-            response = await client.PostAsync(request, Endpoints.Token_V2); // third call and fourth call
+            for (int index = 0; index < 3; index++)
+            {
+                response = await _client.PostAsync(request, Endpoints.Token_V2);
+                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            }
 
-            // Assert
+            response = await _client.PostAsync(request, Endpoints.Token_V2);
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
-            // setting the correct credentials
+            // Assert
             request.Password = TestData.UserPassword;
 
-            response = await client.PostAsync(request, Endpoints.Token_V2);
+            response = await _client.PostAsync(request, Endpoints.Token_V2);
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
@@ -94,13 +96,10 @@ namespace TokenTests
         public async Task Validate_ValidAccessToken_ReturnIsValidTrue()
         {
             // Arrange
-            var client = new Infrastructure.HttpClientProxy(_client);
-
-            var token = await TokenFactory.GetAccessTokenByUserCredentials(TestData.Username, TestData.UserPassword);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), token);
+            await SetAccessTokenByUserCredentialsAsync();
 
             // Act
-            var response = await client.PostAsync<V1.TokenValidationResultResponse>(Endpoints.TokenStatus_V1);
+            var response = await _client.PostAsync<V1.TokenValidationResultResponse>(Endpoints.TokenStatus_V1);
 
             // Assert
             response.Should().NotBeNull();
@@ -112,12 +111,10 @@ namespace TokenTests
         public async Task Validate_InvalidAccessToken_ReturnIsValidFalse()
         {
             // Arrange
-            var client = new Infrastructure.HttpClientProxy(_client);
-
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthorizationSchema.Bearer.ToString(), TestData.InvalidUserToken);
+            _client.SetBearerAuthorization(TestData.InvalidUserToken);
 
             // Act
-            var response = await client.PostAsync<V1.TokenValidationResultResponse>(Endpoints.TokenStatus_V1);
+            var response = await _client.PostAsync<V1.TokenValidationResultResponse>(Endpoints.TokenStatus_V1);
 
             // Assert
             response.Should().NotBeNull();

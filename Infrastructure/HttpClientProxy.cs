@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Shared;
 using System.Diagnostics;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -31,8 +30,6 @@ namespace Infrastructure
             _httpContextAccessor = httpContextAccessor;
             _httpClient = CreateClient(httpClientFactory, httpClientName);
         }
-
-        public HttpRequestHeaders DefaultRequestHeaders => _httpClient.DefaultRequestHeaders;
 
         #region GET
 

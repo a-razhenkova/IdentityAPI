@@ -66,6 +66,9 @@
 > Tests: `xUnit`, `FluentAssertions`, `Bogus`, `Respawn`
 
 > [!IMPORTANT]
+> The `appsettings.json` is validated during API startup.
+
+> [!IMPORTANT]
 > Database creation and schema management are handled through `Entity Framework Core` migrations at runtime.
 
 > [!IMPORTANT]
@@ -83,29 +86,35 @@
 > [!NOTE]
 > The application follows **Clean Architecture**.
 
-> [!NOTE]
-> The data access is managed with **Repository** and **Unit of Work** patterns.
-
 ### API
 | Functionality | Description | Reference |
 | --- | --- | --- |
-| AES | Used to encrypt client subscription contracts when saving them and decrypt them when downloading. | [CreateAndAesEncryptAsync()](/Shared/Extensions/FileExtensions.cs), [ReadAndAesDecryptAllBytesAsync()](/Shared/Extensions/FileExtensions.cs) |
-| Strategy Pattern | Used for handling tokens. | [SecurityTokenHandler.cs](/Application/Security/Tokens/SecurityTokenHandler.cs) |
+| Documentation | Implemented using `Swagger`. | [SwaggerExtensions.cs](/WebApi/Setup/OpenApi/SwaggerExtensions.cs) |
+| Supported Headers | `X-Request-ID`<br>`X-Correlation-ID` | [ExceptionHandlingMiddleware.cs](WebApi/Middlewares/ExceptionHandlingMiddleware.cs) |
+| Logger | Global exception logging is handled from [ExceptionHandlingMiddleware](/WebApi/Middlewares/ExceptionHandlingMiddleware.cs).<br/>Global HTTP request and response logging is handled from [HttpMessageLoggingMiddleware](WebApi/Middlewares/HttpMessageLoggingMiddleware.cs).<br>Logged data can be controlled with [SkipLogAttribute](/WebApi/Attributes/SkipLogAttribute.cs) and [SensitiveDataAttribute](/WebApi/Attributes/SensitiveDataAttribute.cs). | [LoggerSetup.cs](/WebApi/Setup/LoggerSetup.cs) |
 | Data Mapping | Used `AutoMapper` for `request`/`response` mappings.<br/>Used manual mapping for `entity` mappings. | [Request/Response Mappings](/WebApi/Mappers)<br/>[Entity Mappings](/Application/Mappers) |
-| RabbitMQ | Used for asynchronous communication with [`Notify API`](https://github.com/a-razhenkova/NotifyAPI) for sending notifications to users. Added resilience using `Polly`. | [RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs)<br/>[RabbitMqExtensions](/Infrastructure/MessageBrokers/RabbitMqExtensions.cs)<br/>[RabbitMqEventAttribute.cs](/Application/RabbitMQ/Attributes/RabbitMqEventAttribute.cs) |
+| Paginated Report | For retrieval of both customers and users. | [PaginatedReportService.cs](/Application/Services/PaginatedReportService.cs) |
+| RabbitMQ | Used for asynchronous communication with [`Notify API`](https://github.com/a-razhenkova/NotifyAPI) for sending notifications to users. Added resilience using `Polly`. | [RabbitMqSetup.cs](/WebApi/Setup/RabbitMqSetup.cs)<br/>[RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs)<br/>[RabbitMqExtensions](/Infrastructure/MessageBrokers/RabbitMqExtensions.cs)<br/>[RabbitMqEventAttribute.cs](/Application/RabbitMQ/Attributes/RabbitMqEventAttribute.cs) |
+
+### Security
+| Functionality | Description | Reference |
+| --- | --- | --- |
+| Tokens | Implemented using the **Strategy Pattern**. | [SecurityTokenHandler.cs](/Application/Security/Tokens/SecurityTokenHandler.cs) |
+| Custom Authorization | Set by [AuthorizeUserAttribute](/WebApi/Attributes/AuthorizeUserAttribute.cs). | [UserAuthorizationHandler.cs](/WebApi/Setup/Authorization/UserAuthorizationHandler.cs) |
 | Rate Limiter | Used with fixed window counter, configurable by [`appsettings::Security::RateLimiter`](/WebApi/appsettings.json). | [AddRateLimiter()](/WebApi/Setup/ControllersSetup.cs) |
-| Logger | Global exception logging is handled [here](/WebApi/Middlewares/ExceptionHandlingMiddleware.cs).<br/>Global HTTP request and response logging is handled [here](WebApi/Middlewares/HttpMessageLoggingMiddleware.cs). | [LoggerSetup.cs](/WebApi/Setup/LoggerSetup.cs) |
+| User Password | Hashed with `Pbkdf2`. | [Pbkdf2Key.cs](/Application/Security/Pbkdf2Key.cs) |
+| Client Contracts | Encrypted using `AES` when saved and decrypted upon download.<br/>A checksum is calculated for each file using `MD5`. | [CreateAndAesEncryptAsync()](/Shared/Extensions/FileExtensions.cs)<br/>[ReadAndAesDecryptAllBytesAsync()](/Shared/Extensions/FileExtensions.cs)<br/>[ComputeMd5Checksum()](/Shared/Extensions/StreamExtensions.cs) |
 
 ### Caching
 | Functionality | Description | Reference |
 | --- | --- | --- |
-| Redis | Distributed caching. | [RedisService.cs](/Infrastructure/Cache/RedisService.cs), [RedisKeyBuilder.cs](/Application/Redis/RedisKeyBuilder.cs) |
+| Redis | Distributed caching. | [RedisService.cs](/Infrastructure/Cache/RedisService.cs)<br/>[RedisKeyBuilder.cs](/Application/Redis/RedisKeyBuilder.cs) |
 
 ### Database
 | Functionality | Description | Reference |
 | --- | --- | --- |
-| Repository Pattern | The full list of repositories can be viewed [here](/Infrastructure/Database/Repositories). | [Repository.cs](/Infrastructure/Database/Repository.cs) |
 | Unit Of Work Pattern | Manages all access to the database. | [UnitOfWork.cs](/Infrastructure/Database/UnitOfWork.cs) |
+| Repository Pattern | The full list of repositories can be viewed [here](/Infrastructure/Database/Repositories). | [Repository.cs](/Infrastructure/Database/Repository.cs) |
 | Migrations | Automatically executes pending [migrations](/Infrastructure/Database/Migrations) at startup. This functionality is configurable by [`appsettings::Database::IsDbMigrationAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/DbSetup.cs) |
 | DbUp | Automatically executes pending [scripts](/Infrastructure/Database/Scripts) at startup. This functionality is configurable by [`appsettings::Database::IsDbUpAllowed`](/WebApi/appsettings.json). | [ApplyDbPendingMigrationsAsync()](/WebApi/Setup/DbSetup.cs) |
 

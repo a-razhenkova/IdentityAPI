@@ -32,10 +32,10 @@ namespace Application
             if (!string.IsNullOrWhiteSpace(query.Name))
                 clientQuery = clientQuery.Where(c => EF.Functions.Like(c.Name, $"%{query.Name}%"));
 
-            if (query.Status is not null)
+            if (query.Status != null)
                 clientQuery = clientQuery.Where(c => c.Status.Value == query.Status);
 
-            if (query.CanNotify is not null)
+            if (query.CanNotify != null)
                 clientQuery = clientQuery.Where(c => c.Right.CanNotify == query.CanNotify);
 
             clientQuery = clientQuery

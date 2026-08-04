@@ -7,7 +7,7 @@ namespace Application
     {
         public BasicCredentials(Authorization authorization)
         {
-            if (authorization.Schema is not AuthorizationSchema.Basic)
+            if (authorization.Schema != AuthorizationSchema.Basic)
                 throw new BadRequestException("Invalid token format.");
 
             DecodeCredentials(authorization.Value);

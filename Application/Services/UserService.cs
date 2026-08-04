@@ -35,10 +35,10 @@ namespace Application
             if (!string.IsNullOrWhiteSpace(query.Username))
                 userQuery = userQuery.Where(u => EF.Functions.Like(u.Username, $"%{query.Username}%"));
 
-            if (query.Role is not null)
+            if (query.Role != null)
                 userQuery = userQuery.Where(u => u.Role == query.Role);
 
-            if (query.Status is not null)
+            if (query.Status != null)
                 userQuery = userQuery.Where(u => u.Status.Value == query.Status);
 
             userQuery = userQuery
@@ -59,12 +59,12 @@ namespace Application
         public async Task<string> CreateAsync(CreateUserCommand command, CancellationToken cancellationToken = default)
         {
             string? passwordValidationError = _appSettings.Security.ValidatePassword(command.Password);
-            if (passwordValidationError is not null)
+            if (passwordValidationError != null)
                 throw new BadRequestException(passwordValidationError);
 
             User? user = await _unitOfWork.Users.GetByUsernameAsync(command.Username, cancellationToken);
 
-            if (user is not null)
+            if (user != null)
                 throw new ConflictException($"User with username '{command.Username}' already registered.");
 
             user = new User().Map(command);
@@ -117,7 +117,7 @@ namespace Application
         public async Task UpdatePasswordAsync(string userPublicId, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
         {
             string? passwordValidationError = _appSettings.Security.ValidatePassword(newPassword);
-            if (passwordValidationError is not null)
+            if (passwordValidationError != null)
                 throw new BadRequestException(passwordValidationError);
 
             User user = await _unitOfWork.Users
@@ -142,7 +142,7 @@ namespace Application
         public async Task UpdateEmailAsync(string userPublicId, string email, string password, CancellationToken cancellationToken = default)
         {
             string? passwordValidationError = _appSettings.Security.ValidatePassword(password);
-            if (passwordValidationError is not null)
+            if (passwordValidationError != null)
                 throw new BadRequestException(passwordValidationError);
 
             User user = await _unitOfWork.Users

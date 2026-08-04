@@ -24,38 +24,38 @@ namespace WebApi
             {
                 await _next.Invoke(httpContext);
             }
-            catch (BadRequestException exception)
+            catch (BadRequestException ex)
             {
-                await HandleException(exception.StatusCode, "Bad Request", httpContext, exception);
+                await HandleException(ex.StatusCode, "Bad Request", httpContext, ex);
             }
-            catch (ForbiddenException exception)
+            catch (ForbiddenException ex)
             {
-                await HandleException(exception.StatusCode, "Forbidden", httpContext, exception);
+                await HandleException(ex.StatusCode, "Forbidden", httpContext, ex);
             }
-            catch (UnauthorizedException exception)
+            catch (UnauthorizedException ex)
             {
-                await HandleException(exception.StatusCode, "Unauthorized", httpContext, exception);
+                await HandleException(ex.StatusCode, "Unauthorized", httpContext, ex);
             }
-            catch (NotFoundException exception)
+            catch (NotFoundException ex)
             {
-                await HandleException(exception.StatusCode, "Not Found", httpContext, exception);
+                await HandleException(ex.StatusCode, "Not Found", httpContext, ex);
             }
-            catch (ConflictException exception)
+            catch (ConflictException ex)
             {
-                await HandleException(exception.StatusCode, "Conflict", httpContext, exception);
+                await HandleException(ex.StatusCode, "Conflict", httpContext, ex);
             }
-            catch (HttpException exception)
+            catch (HttpException ex)
             {
-                httpContext.Response.StatusCode = exception.StatusCode;
+                httpContext.Response.StatusCode = ex.StatusCode;
             }
             catch (DbUpdateConcurrencyException)
             {
                 await HandleException(StatusCodes.Status409Conflict, "Conflict", httpContext);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                LogException(exception);
-                await HandleException(StatusCodes.Status500InternalServerError, "Internal Server Error", httpContext, exception);
+                LogException(ex);
+                await HandleException(StatusCodes.Status500InternalServerError, "Internal Server Error", httpContext, ex);
             }
         }
 

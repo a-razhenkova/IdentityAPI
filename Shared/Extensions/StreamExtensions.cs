@@ -17,7 +17,7 @@ namespace Shared
 
         public static string ComputeMd5Checksum(this Stream stream)
         {
-            if (stream is null || stream.Length == 0)
+            if (stream == null || stream.Length == 0)
                 throw new ArgumentException("No content.");
 
             using MD5 md5 = MD5.Create();

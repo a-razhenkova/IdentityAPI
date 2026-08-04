@@ -11,11 +11,11 @@ namespace Shared
 
             FieldInfo? fieldInfo = value.GetType().GetField(value.ToString());
 
-            if (fieldInfo is not null)
+            if (fieldInfo != null)
             {
                 DescriptionAttribute[] attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
-                if (attributes is not null && attributes.Length > 0)
+                if (attributes != null && attributes.Length > 0)
                     description = attributes[0].Description;
             }
 

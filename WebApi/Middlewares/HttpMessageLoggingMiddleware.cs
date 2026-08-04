@@ -20,7 +20,7 @@ namespace WebApi
 
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            if (httpContext.GetEndpoint()?.Metadata?.GetMetadata<SkipLogAttribute>() is not null)
+            if (httpContext.GetEndpoint()?.Metadata?.GetMetadata<SkipLogAttribute>() != null)
             {
                 await _next(httpContext);
             }
@@ -61,8 +61,8 @@ namespace WebApi
             SensitiveDataAttribute? sensitiveData = httpContext.GetEndpoint()?.Metadata?.GetMetadata<SensitiveDataAttribute>();
 
             bool isSuccessStatusCode = httpContext.Response.StatusCode >= StatusCodes.Status200OK && httpContext.Response.StatusCode < StatusCodes.Status300MultipleChoices;
-            bool isRequestSensitive = sensitiveData is not null && sensitiveData.IsRequestSensitive;
-            bool isResponseSensitive = isSuccessStatusCode && sensitiveData is not null && sensitiveData.IsResponseSensitive;
+            bool isRequestSensitive = sensitiveData != null && sensitiveData.IsRequestSensitive;
+            bool isResponseSensitive = isSuccessStatusCode && sensitiveData != null && sensitiveData.IsResponseSensitive;
 
             var action = new HttpAction()
             {
@@ -130,9 +130,9 @@ namespace WebApi
                 if (!string.IsNullOrWhiteSpace(bodyMsg))
                     bodyMsg = bodyMsg.RemoveJsonFormatting();
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                _logger.LogError(exception, exception.Message);
+                _logger.LogError(ex, ex.Message);
             }
 
             return bodyMsg;

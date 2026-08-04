@@ -14,7 +14,7 @@ namespace WebApi.V1
                 .ForMember(dest => dest.IsValid, opt => opt.MapFrom(src => src.IsValid))
                 .ForMember(dest => dest.Exception, opt =>
                 {
-                    opt.PreCondition(src => src.Exception is not null);
+                    opt.PreCondition(src => src.Exception != null);
                     opt.MapFrom(src => src.Exception.Message);
                 });
         }

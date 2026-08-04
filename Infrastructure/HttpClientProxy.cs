@@ -52,7 +52,7 @@ namespace Infrastructure
             HttpResponseMessage response = await _httpClient.GetAsync(absolutePath);
             stopwatch.Stop();
 
-            LogRequest(response, stopwatch.ElapsedMilliseconds);
+            _ = LogRequest(response, stopwatch.ElapsedMilliseconds);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized && _isRetryWhenUnauthorizedAllowed)
             {
@@ -62,7 +62,7 @@ namespace Infrastructure
                 response = await _httpClient.GetAsync(absolutePath);
                 stopwatch.Stop();
 
-                LogRequest(response, stopwatch.ElapsedMilliseconds);
+                _ = LogRequest(response, stopwatch.ElapsedMilliseconds);
             }
 
             return response;
@@ -88,7 +88,7 @@ namespace Infrastructure
             HttpResponseMessage response = await _httpClient.PostAsync(absolutePath, urlEncodedContent, cancellationToken);
             stopwatch.Stop();
 
-            LogRequest(response, stopwatch.ElapsedMilliseconds);
+            _ = LogRequest(response, stopwatch.ElapsedMilliseconds);
 
             return response;
         }
@@ -108,7 +108,7 @@ namespace Infrastructure
         public virtual async Task<HttpResponseMessage> PostAsync<TRequest>(TRequest requestModel, string? relativePath = null, CancellationToken cancellationToken = default)
         {
             HttpContent? requestContent = null;
-            if (requestModel is not null)
+            if (requestModel != null)
             {
                 requestModel.Validate();
                 requestContent = JsonContent.Create(requestModel);
@@ -130,7 +130,7 @@ namespace Infrastructure
             HttpResponseMessage response = await _httpClient.PostAsync(absolutePath, requestContent, cancellationToken);
             stopwatch.Stop();
 
-            LogRequest(response, stopwatch.ElapsedMilliseconds);
+            _ = LogRequest(response, stopwatch.ElapsedMilliseconds);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized && _isRetryWhenUnauthorizedAllowed)
             {
@@ -140,7 +140,7 @@ namespace Infrastructure
                 response = await _httpClient.PostAsync(absolutePath, requestContent);
                 stopwatch.Stop();
 
-                LogRequest(response, stopwatch.ElapsedMilliseconds);
+                _ = LogRequest(response, stopwatch.ElapsedMilliseconds);
             }
 
             return response;
@@ -160,7 +160,7 @@ namespace Infrastructure
             HttpResponseMessage response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, absolutePath));
             stopwatch.Stop();
 
-            LogRequest(response, stopwatch.ElapsedMilliseconds);
+            _ = LogRequest(response, stopwatch.ElapsedMilliseconds);
 
             return response;
         }
@@ -169,7 +169,7 @@ namespace Infrastructure
 
         protected async Task SetHttpClientRequestHeadersAsync()
         {
-            if (_httpClient.DefaultRequestHeaders.Authorization is null)
+            if (_httpClient.DefaultRequestHeaders.Authorization == null)
                 await SetHttpClientAuthorizationAsync();
         }
 
@@ -177,7 +177,7 @@ namespace Infrastructure
 
         protected virtual async Task LogRequest(HttpResponseMessage response, long requestDuration)
         {
-            if (_logger is null)
+            if (_logger == null)
                 return;
 
             HttpRequestMessage? request = response.RequestMessage;
@@ -189,7 +189,7 @@ namespace Infrastructure
                 Duration = requestDuration,
                 FromIp = _httpContextAccessor?.HttpContext?.GetIpAddresses(),
                 User = _httpContextAccessor?.HttpContext?.GetUser(),
-                RequestData = await request?.Content?.ReadAsStringAsync(),
+                RequestData = request?.Content != null ? await request.Content.ReadAsStringAsync() : null,
                 ResponseData = await response.Content.ReadAsStringAsync(),
             };
 

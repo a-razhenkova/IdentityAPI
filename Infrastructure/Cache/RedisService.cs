@@ -30,12 +30,12 @@ namespace Infrastructure
 
             TValue? value = await LoadAsync<TValue>(key, canThrowException: false, cancellationToken);
 
-            if (value is null)
+            if (value == null)
             {
                 (value, DistributedCacheEntryOptions entryOptions) = await loadCallback(cancellationToken);
 
                 // if entryOptions is null => the value should not be cached
-                if (value is not null && entryOptions is not null)
+                if (value != null && entryOptions != null)
                 {
                     await AddOrUpdateAsync(key, value, entryOptions, canThrowException: false, cancellationToken);
                 }
@@ -47,7 +47,7 @@ namespace Infrastructure
         public async Task AddOrUpdateAsync<TValue>(RedisKey keyType, TValue value, DistributedCacheEntryOptions entryOptions, object[] keyIds, CancellationToken cancellationToken = default)
             where TValue : class
         {
-            if (value is null)
+            if (value == null)
                 throw new InvalidOperationException();
 
             string key = new RedisKeyBuilder(keyType, keyIds).BuildKey();
@@ -58,7 +58,7 @@ namespace Infrastructure
         public async Task UpdateAsync<TValue>(RedisKey keyType, TValue value, object[] keyIds, CancellationToken cancellationToken = default)
            where TValue : class
         {
-            if (value is null)
+            if (value == null)
                 throw new InvalidOperationException();
 
             string key = new RedisKeyBuilder(keyType, keyIds).BuildKey();
@@ -86,9 +86,9 @@ namespace Infrastructure
                     value = JsonSerializer.Deserialize<TValue>(valueAsString);
                 }
             }
-            catch (Exception еxception)
+            catch (Exception ex)
             {
-                _logger.LogCritical(еxception, еxception.Message);
+                _logger.LogCritical(ex, ex.Message);
 
                 if (canThrowException)
                     throw;
@@ -102,16 +102,16 @@ namespace Infrastructure
         {
             try
             {
-                if (value is null)
+                if (value == null)
                     throw new InvalidOperationException();
 
                 string valueAsString = JsonSerializer.Serialize(value);
 
                 await _distributedCache.SetStringAsync(key, valueAsString, entryOptions, cancellationToken);
             }
-            catch (Exception еxception)
+            catch (Exception ex)
             {
-                _logger.LogCritical(еxception, еxception.Message);
+                _logger.LogCritical(ex, ex.Message);
 
                 if (canThrowException)
                     throw;

@@ -57,9 +57,9 @@ namespace WebApi
 
                 logger.LogInformation("Database is up to date.");
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                logger.LogError(exception, exception.Message);
+                logger.LogError(ex, ex.Message);
                 throw;
             }
         }
@@ -81,7 +81,7 @@ namespace WebApi
 
                 DatabaseUpgradeResult result = upgrader.PerformUpgrade();
 
-                if (result.Error is not null)
+                if (result.Error != null)
                     throw new InvalidOperationException($"Script '{result.ErrorScript.Name}' executed with error:\n'{result.Error.Message}'", result.Error);
 
                 if (result.Scripts.Any())
@@ -97,9 +97,9 @@ namespace WebApi
 
                 logger.LogInformation("Database is up to date.");
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                logger.LogError(exception, exception.Message);
+                logger.LogError(ex, ex.Message);
                 throw;
             }
         }

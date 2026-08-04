@@ -55,7 +55,7 @@ namespace Application
 
             string? claimValue = null;
 
-            if (jwt is not null)
+            if (jwt != null)
                 claimValue = GetClaim(jwt, claim);
 
             return claimValue;

@@ -24,9 +24,9 @@ namespace WebApi
 
                 return HealthCheckResult.Healthy();
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                return new HealthCheckResult(context.Registration.FailureStatus, description: exception.Message);
+                return new HealthCheckResult(context.Registration.FailureStatus, description: ex.Message);
             }
         }
     }

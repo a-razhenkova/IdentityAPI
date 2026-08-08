@@ -10,24 +10,42 @@ namespace Infrastructure.IdentityDb
         public UserRepository(IdentityContext context) : base(context) { }
 
         public async Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
-            => await WhereIdEquals(id, autoTrack: true).SingleOrDefaultAsync(cancellationToken);
+        {
+            return await WhereIdEquals(id, autoTrack: true)
+                .SingleOrDefaultAsync(cancellationToken);
+        }
 
         public async Task<User?> GetByIdWithNoTrackingAsync(string id, CancellationToken cancellationToken = default)
-            => await WhereIdEquals(id, autoTrack: false).SingleOrDefaultAsync(cancellationToken);
+        {
+            return await WhereIdEquals(id, autoTrack: false)
+                .SingleOrDefaultAsync(cancellationToken);
+        }
 
         public async Task<User?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default)
-            => await WhereUsernameEquals(username, autoTrack: true).SingleOrDefaultAsync(cancellationToken);
+        {
+            return await WhereUsernameEquals(username, autoTrack: true)
+                .SingleOrDefaultAsync(cancellationToken);
+        }
 
         public async Task<User?> GetByUsernameWithNoTrackingAsync(string username, CancellationToken cancellationToken = default)
-            => await WhereUsernameEquals(username, autoTrack: false).SingleOrDefaultAsync(cancellationToken);
+        {
+            return await WhereUsernameEquals(username, autoTrack: false)
+                .SingleOrDefaultAsync(cancellationToken);
+        }
 
         public IQueryable<User> WhereIdEquals(string id, bool autoTrack = true)
-            => Where(u => u.PublicId.Equals(id), autoTrack: autoTrack);
+        {
+            return Where(u => u.PublicId.Equals(id), autoTrack: autoTrack);
+        }
 
         public IQueryable<User> WhereUsernameEquals(string username, bool autoTrack = true)
-            => Where(u => u.Username.Equals(username), autoTrack: autoTrack);
+        {
+            return Where(u => u.Username.Equals(username), autoTrack: autoTrack);
+        }
 
         public override IQueryable<User> Where(Expression<Func<User, bool>> expression, bool autoTrack = true)
-            => base.Where(expression, autoTrack).Include(u => u.Status);
+        {
+            return base.Where(expression, autoTrack).Include(u => u.Status);
+        }
     }
 }

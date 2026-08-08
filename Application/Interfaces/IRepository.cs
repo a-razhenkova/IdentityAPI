@@ -4,13 +4,13 @@ namespace Application
 {
     public interface IRepository<TEntity>
     {
-        IQueryable<TEntity> Init();
+        IQueryable<TEntity> Get();
 
-        Task BasicAddAsync(TEntity entity, CancellationToken cancellationToken = default);
+        Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-        void BasicRemove(TEntity entity);
+        void Remove(TEntity entity);
 
-        Task<bool> CheckIfExistAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);
+        Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);
 
         IQueryable<TEntity> Where(Expression<Func<TEntity, bool>> expression, bool autoTrack = true);
     }

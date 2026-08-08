@@ -15,22 +15,29 @@ namespace Infrastructure
             Users = new UserRepository(_context);
         }
 
-        public IClientRepository Clients { get; private set; }
-
-        public IUserRepository Users { get; private set; }
+        #region Repositories
+        public IClientRepository Clients { get; init; }
+        public IUserRepository Users { get; init; }
+        #endregion
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
-            => await SaveChangesAsync(hasChanges: true, cancellationToken);
+        {
+            await SaveChangesAsync(hasChanges: true, cancellationToken);
+        }
 
         public async Task SaveChangesAsync(bool hasChanges, CancellationToken cancellationToken = default)
         {
-            if (hasChanges)
-                await _context.SaveChangesAsync(cancellationToken);
+            if (!hasChanges)
+                return;
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
+        #region IDispose
         public void Dispose()
         {
             _context.Dispose();
         }
+        #endregion
     }
 }

@@ -30,7 +30,7 @@ namespace Application
 
         public async Task<PaginatedReportDto<UserDto>> SearchAsync(SearchUserQuery query, CancellationToken cancellationToken = default)
         {
-            IQueryable<User> userQuery = _unitOfWork.Users.Init().AsNoTracking();
+            IQueryable<User> userQuery = _unitOfWork.Users.Get().AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(query.Username))
                 userQuery = userQuery.Where(u => EF.Functions.Like(u.Username, $"%{query.Username}%"));
@@ -69,7 +69,7 @@ namespace Application
 
             user = new User().Map(command);
 
-            await _unitOfWork.Users.BasicAddAsync(user, cancellationToken);
+            await _unitOfWork.Users.AddAsync(user, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(user.Email))
@@ -92,7 +92,7 @@ namespace Application
 
             if (!user.Username.Equals(command.Username))
             {
-                bool isUsernameTaken = await _unitOfWork.Users.CheckIfExistAsync(expression: u => u.Username == command.Username);
+                bool isUsernameTaken = await _unitOfWork.Users.AnyAsync(expression: u => u.Username == command.Username);
 
                 if (isUsernameTaken)
                     throw new ConflictException($"User with username '{command.Username}' already registered.");
@@ -110,7 +110,7 @@ namespace Application
             User? user = await _unitOfWork.Users.GetByIdAsync(userPublicId, cancellationToken)
                 ?? throw new NotFoundException("User not found.");
 
-            _unitOfWork.Users.BasicRemove(user);
+            _unitOfWork.Users.Remove(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 

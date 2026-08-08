@@ -24,7 +24,7 @@ namespace Application
 
         public async Task<PaginatedReportDto<ClientDto>> SearchAsync(SearchClientQuery query, CancellationToken cancellationToken = default)
         {
-            IQueryable<Client> clientQuery = _unitOfWork.Clients.Init().AsNoTracking();
+            IQueryable<Client> clientQuery = _unitOfWork.Clients.Get().AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(query.Key))
                 clientQuery = clientQuery.Where(c => c.Key == query.Key);
@@ -63,7 +63,7 @@ namespace Application
         {
             Client client = new Client().Map(command);
 
-            await _unitOfWork.Clients.BasicAddAsync(client, cancellationToken);
+            await _unitOfWork.Clients.AddAsync(client, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return client.Key;
@@ -95,7 +95,7 @@ namespace Application
             }
             else
             {
-                _unitOfWork.Clients.BasicRemove(client);
+                _unitOfWork.Clients.Remove(client);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
         }

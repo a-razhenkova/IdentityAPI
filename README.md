@@ -84,7 +84,7 @@
 ![Architecture Diagram](/assets/architecture-diagram.png)
 
 > [!NOTE]
-> The application follows **Clean Architecture**.
+> The application follows **Feature-Based Clean Architecture**.
 
 ### API
 | Functionality | Description | Reference |
@@ -92,23 +92,23 @@
 | Documentation | Implemented using `Swagger`. | [SwaggerExtensions.cs](/WebApi/Setup/OpenApi/SwaggerExtensions.cs) |
 | Supported Headers | `X-Request-ID`<br>`X-Correlation-ID` | [HttpHeaderHandlingMiddleware.cs](/WebApi/Middlewares/HttpHeaderHandlingMiddleware.cs) |
 | Logger | Global exception logging is handled from [ExceptionHandlingMiddleware](/WebApi/Middlewares/ExceptionHandlingMiddleware.cs).<br/>Global HTTP request and response logging is handled from [HttpMessageLoggingMiddleware](WebApi/Middlewares/HttpMessageLoggingMiddleware.cs).<br>Logged data can be controlled with [SkipLogAttribute](/WebApi/Attributes/SkipLogAttribute.cs) and [SensitiveDataAttribute](/WebApi/Attributes/SensitiveDataAttribute.cs). | [LoggerSetup.cs](/WebApi/Setup/LoggerSetup.cs) |
-| Data Mapping | Used `AutoMapper` for request/response mappings.<br/>Used manual mapping for entity mappings. | [Request/Response Mappings](/WebApi/Mappers)<br/>[Entity Mappings](/Application/Mappers) |
-| Paginated Report | For retrieval of both customers and users. | [PaginatedReportService.cs](/Application/Services/PaginatedReportService.cs) |
-| RabbitMQ | Used for asynchronous communication with [`Notify API`](https://github.com/a-razhenkova/NotifyAPI) for sending notifications to users. Added resilience using `Polly`. | [RabbitMqSetup.cs](/WebApi/Setup/RabbitMqSetup.cs)<br/>[RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs)<br/>[RabbitMqExtensions](/Infrastructure/MessageBrokers/RabbitMqExtensions.cs)<br/>[RabbitMqEventAttribute.cs](/Application/RabbitMQ/Attributes/RabbitMqEventAttribute.cs) |
+| Data Mapping | Used `AutoMapper` for request/response mappings.<br/>Used manual mapping for entity mappings. | [AddAutoMapper()](/WebApi/Setup/ServicesSetup.cs)<br/>Entity Mappings: [Clients](/Application/Features/Clients/Mappers) [Users](/Application/Features/Users/Mappers) |
+| Paginated Report | For retrieval of both customers and users. | [PaginatedReportService.cs](/Application/Common/Services/PaginatedReportService.cs) |
+| RabbitMQ | Used for asynchronous communication with [`Notify API`](https://github.com/a-razhenkova/NotifyAPI) for sending notifications to users. Added resilience using `Polly`. | [RabbitMqSetup.cs](/WebApi/Setup/RabbitMqSetup.cs)<br/>[RabbitMqService.cs](/Infrastructure/MessageBrokers/RabbitMqService.cs)<br/>[RabbitMqExtensions](/Infrastructure/MessageBrokers/RabbitMqExtensions.cs)<br/>[RabbitMqEventAttribute.cs](/Application/Common/Helpers/RabbitMQ/Attributes/RabbitMqEventAttribute.cs) |
 
 ### Security
 | Functionality | Description | Reference |
 | --- | --- | --- |
-| Tokens | Implemented using the **Strategy Pattern**. | [SecurityTokenHandler.cs](/Application/Security/Tokens/SecurityTokenHandler.cs) |
+| Tokens | Implemented using the **Strategy Pattern**. | [SecurityTokenHandler.cs](/Application/Common/Helpers/Tokens/SecurityTokenHandler.cs) |
 | Custom Authorization | Set by [AuthorizeUserAttribute](/WebApi/Attributes/AuthorizeUserAttribute.cs). | [UserAuthorizationHandler.cs](/WebApi/Setup/Authorization/UserAuthorizationHandler.cs) |
 | Rate Limiter | Used with fixed window counter, configurable by [`appsettings::Security::RateLimiter`](/WebApi/appsettings.json). | [AddRateLimiter()](/WebApi/Setup/ControllersSetup.cs) |
-| User Password | Hashed with `Pbkdf2`. | [Pbkdf2Key.cs](/Application/Security/Pbkdf2Key.cs) |
-| Client Contracts | Encrypted using `AES` when saved and decrypted upon download.<br/>A checksum is calculated for each file using `MD5`. | [CreateAndAesEncryptAsync()](/Application/Extensions/FileExtensions.cs)<br/>[ReadAndAesDecryptAllBytesAsync()](/Application/Extensions/FileExtensions.cs)<br/>[ComputeMd5Checksum()](/Shared/Extensions/StreamExtensions.cs) |
+| User Password | Hashed with `Pbkdf2`. | [Pbkdf2Key.cs](/Application/Common/Helpers/Pbkdf2Key.cs) |
+| Client Contracts | Encrypted using `AES` when saved and decrypted upon download.<br/>A checksum is calculated for each file using `MD5`. | [CreateAndAesEncryptAsync()](/Application/Common/Extensions/FileExtensions.cs)<br/>[ReadAndAesDecryptAllBytesAsync()](/Application/Common/Extensions/FileExtensions.cs)<br/>[ComputeMd5Checksum()](/Shared/Extensions/StreamExtensions.cs) |
 
 ### Caching
 | Functionality | Description | Reference |
 | --- | --- | --- |
-| Redis | Distributed caching. | [RedisService.cs](/Infrastructure/Cache/RedisService.cs)<br/>[RedisKeyBuilder.cs](/Application/Redis/RedisKeyBuilder.cs) |
+| Redis | Distributed caching. | [RedisService.cs](/Infrastructure/Cache/RedisService.cs)<br/>[RedisKeyBuilder.cs](/Application/Common/Helpers/Redis/RedisKeyBuilder.cs) |
 
 ### Database
 | Functionality | Description | Reference |

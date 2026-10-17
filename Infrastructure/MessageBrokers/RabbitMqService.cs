@@ -26,17 +26,8 @@ namespace Infrastructure
         {
             var settings = evt.GetRequiredCustomAttribute<RabbitMqEventAttribute>();
 
-            ResiliencePipeline pipeline = _pipelineProvider.GetPipeline(ResiliencePipelineType.RabbitMQ_PublishFastEvent);
+            ResiliencePipeline pipeline = _pipelineProvider.GetPipeline(ResiliencePipelineType.RabbitMQ_PublishEvent);
             await pipeline.ExecuteAsync(async (cancellationToken) => await PublishEventAsync(evt, settings, cancellationToken), cancellationToken);
-        }
-
-        public async Task PublishEventInBackgroundAsync(object evt, CancellationToken cancellationToken = default)
-        {
-            var settings = evt.GetRequiredCustomAttribute<RabbitMqEventAttribute>();
-
-            ResiliencePipeline pipeline = _pipelineProvider.GetPipeline(ResiliencePipelineType.RabbitMQ_PublishEventInBackground);
-
-            _ = pipeline.ExecuteAsync(async (cancellationToken) => await PublishEventAsync(evt, settings, cancellationToken), cancellationToken);
         }
 
         private async Task PublishEventAsync(object evt, RabbitMqEventAttribute settings, CancellationToken cancellationToken = default)
@@ -57,7 +48,5 @@ namespace Infrastructure
     public class RabbitMqMockService : IRabbitMq
     {
         public async Task PublishEventAsync(object evt, CancellationToken cancellationToken = default) { }
-
-        public async Task PublishEventInBackgroundAsync(object evt, CancellationToken cancellationToken = default) { }
     }
 }

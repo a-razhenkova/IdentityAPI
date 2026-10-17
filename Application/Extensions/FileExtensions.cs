@@ -66,7 +66,7 @@ namespace Application
         public static void EnsureFileDirectoryExists(string filePath, bool canCreateDirectoryIfNotFound = true)
         {
             if (string.IsNullOrWhiteSpace(filePath))
-                throw new ArgumentException("Invalid path.");
+                throw new ArgumentException(AppMessages.InvalidFilePath);
 
             string fileDirectory = Path.GetDirectoryName(filePath)
                 ?? throw new InvalidOperationException();
@@ -77,7 +77,7 @@ namespace Application
         public static void EnsureDirectoryExists(string directoryPath, bool canCreateDirectoryIfNotFound = true)
         {
             if (string.IsNullOrWhiteSpace(directoryPath))
-                throw new ArgumentException("Invalid path.");
+                throw new ArgumentException(AppMessages.InvalidFilePath);
 
             if (!Directory.Exists(directoryPath))
             {
@@ -87,7 +87,7 @@ namespace Application
                 }
                 else
                 {
-                    throw new DirectoryNotFoundException($"Directory '{directoryPath}' not found.");
+                    throw new DirectoryNotFoundException(AppMessages.DirectoryPathNotFound(directoryPath));
                 }
             }
         }

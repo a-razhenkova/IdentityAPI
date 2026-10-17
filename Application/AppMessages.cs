@@ -15,6 +15,10 @@ namespace Application
         public const string InvalidVerificationCode = "Invalid verification code.";
         public const string ExpiredCode = "The code has expired.";
 
+        public const string InvalidFilePath = "Invalid file path.";
+        public const string InvalidFileType = "Invalid file type.";
+        public static string DirectoryPathNotFound(string path) => $"Directory '{path}' not found.";
+
         public static string ClientStatusIs(ClientStatuses status) => $"The client status is '{status}'.";
         public const string ClientNotFound = "The client was not found.";
         public const string ClientContractNotFound = "The client contract was not found.";

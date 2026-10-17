@@ -44,7 +44,7 @@ namespace Application
                 .Include(u => u.Status)
                 .Include(u => u.Password)
                 .Include(u => u.Login)
-                .SingleOrDefaultAsync(cancellationToken) ?? throw new UnauthorizedException("Invalid credentials.");
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new UnauthorizedException(AppMessages.InvalidCredentials);
 
             if (!user.IsActivate())
                 throw new ForbiddenException(AppMessages.UserStatusIs(user.Status.Value));
@@ -75,7 +75,7 @@ namespace Application
                 user.Login.LastLoginIpAddress = userIpAddress;
 
                 var evt = RabbitMqEventFactory.CreateLoginFromNewIpAddressEvent(user);
-                await _rebbitMq.PublishEventInBackgroundAsync(evt); // cancellation is unnecessary because login is already processed
+                _ = _rebbitMq.PublishEventAsync(evt); // cancellation is unnecessary because login is already processed
             }
         }
 
@@ -88,7 +88,7 @@ namespace Application
                 user.Block(UserStatusReasons.MaxWrongLoginAttemptsReached);
 
                 var evt = RabbitMqEventFactory.CreateLoginAttemptMadeEvent(user);
-                await _rebbitMq.PublishEventInBackgroundAsync(evt); // cancellation is unnecessary because login is already processed
+                _ = _rebbitMq.PublishEventAsync(evt); // cancellation is unnecessary because login is already processed
             }
         }
     }

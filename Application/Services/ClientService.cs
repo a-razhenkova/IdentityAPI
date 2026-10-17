@@ -141,13 +141,13 @@ namespace Application
             string fileExtension = Path.GetExtension(file.FileName);
 
             if (string.IsNullOrWhiteSpace(fileExtension) || !fileExtension.Equals(FileExtensions.Pdf))
-                throw new BadRequestException("Invalid file type.");
+                throw new BadRequestException(AppMessages.InvalidFileType);
 
             Client client = await _unitOfWork.Clients
                 .Where(c => c.Key == clientKey)
                 .Include(c => c.Status)
                 .Include(c => c.Subscriptions)
-                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Client not found.");
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException(AppMessages.ClientNotFound);
 
             DateTime signTimestamp = DateTime.UtcNow;
             string fileName = $"{client.Key}_{signTimestamp:yyyyMMddHHmmssfff}{fileExtension}";

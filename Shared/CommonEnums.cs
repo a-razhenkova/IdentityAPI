@@ -66,7 +66,6 @@ namespace Shared
     public enum ResiliencePipelineType
     {
         DbContext,
-        RabbitMQ_PublishFastEvent,
-        RabbitMQ_PublishEventInBackground
+        RabbitMQ_PublishEvent
     }
 }

@@ -68,24 +68,13 @@ namespace WebApi
                 });
             });
 
-            builder.Services.AddResiliencePipeline(ResiliencePipelineType.RabbitMQ_PublishFastEvent, cfg =>
+            builder.Services.AddResiliencePipeline(ResiliencePipelineType.RabbitMQ_PublishEvent, cfg =>
             {
                 cfg.AddRetry(new RetryStrategyOptions
                 {
                     BackoffType = DelayBackoffType.Constant,
                     UseJitter = false,
                     MaxRetryAttempts = 3,
-                    Delay = TimeSpan.FromSeconds(2),
-                });
-            });
-
-            builder.Services.AddResiliencePipeline(ResiliencePipelineType.RabbitMQ_PublishEventInBackground, cfg =>
-            {
-                cfg.AddRetry(new RetryStrategyOptions
-                {
-                    BackoffType = DelayBackoffType.Exponential,
-                    UseJitter = true,
-                    MaxRetryAttempts = 10,
                     Delay = TimeSpan.FromSeconds(30),
                 });
             });

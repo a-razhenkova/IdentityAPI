@@ -86,7 +86,7 @@ namespace Application
                 string emailToken = new EmailVerificationToken(_appSettings.Security).Create(user);
 
                 var evt = RabbitMqEventFactory.CreateEmailVerificationEvent(user, emailToken);
-                await _rebbitMq.PublishEventInBackgroundAsync(evt); // cancellation is unnecessary because changes are already made
+                _ = _rebbitMq.PublishEventAsync(evt); // cancellation is unnecessary because changes are already made
             }
 
             return user.Reference;
@@ -119,7 +119,7 @@ namespace Application
         {
             User? user = await _unitOfWork.Users
                 .Where(u => u.Reference == userReference)
-                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("User not found.");
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException(AppMessages.UserNotFound);
 
             _unitOfWork.Users.Remove(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -146,7 +146,7 @@ namespace Application
             if (!string.IsNullOrWhiteSpace(user.Email))
             {
                 var evt = RabbitMqEventFactory.CreateUserPasswordChangedEvent(user, _httpContextAccessor?.HttpContext?.GetUserIpAddress()); 
-                await _rebbitMq.PublishEventInBackgroundAsync(evt); // cancellation is unnecessary because changes are already made
+                _ = _rebbitMq.PublishEventAsync(evt); // cancellation is unnecessary because changes are already made
             }
         }
 

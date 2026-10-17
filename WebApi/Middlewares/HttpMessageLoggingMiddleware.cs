@@ -64,7 +64,7 @@ namespace WebApi
             bool isRequestSensitive = sensitiveData != null && sensitiveData.IsRequestSensitive;
             bool isResponseSensitive = isSuccessStatusCode && sensitiveData != null && sensitiveData.IsResponseSensitive;
 
-            var action = new HttpAction()
+            var action = new HttpActionDto()
             {
                 StatusCode = httpContext.Response.StatusCode,
                 Method = httpContext.Request.Method,

@@ -182,7 +182,7 @@ namespace Infrastructure
 
             HttpRequestMessage? request = response.RequestMessage;
 
-            var action = new HttpAction()
+            var action = new HttpActionDto()
             {
                 StatusCode = (int)response.StatusCode,
                 Method = request?.Method.ToString() ?? "GET",

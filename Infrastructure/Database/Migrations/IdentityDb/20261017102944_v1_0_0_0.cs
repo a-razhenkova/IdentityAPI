@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Infrastructure.Database.Migrations
+namespace Infrastructure.Database.Migrations.IdentityDb
 {
     /// <inheritdoc />
     public partial class v1_0_0_0 : Migration
@@ -54,7 +54,7 @@ namespace Infrastructure.Database.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
-                    public_id = table.Column<string>(type: "varchar(36)", unicode: false, maxLength: 36, nullable: false),
+                    reference = table.Column<string>(type: "varchar(36)", unicode: false, maxLength: 36, nullable: false),
                     username = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     role = table.Column<int>(type: "int", nullable: false),
                     otp_key = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
@@ -270,9 +270,9 @@ namespace Infrastructure.Database.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_user_public_id",
+                name: "IX_user_reference",
                 table: "user",
-                column: "public_id",
+                column: "reference",
                 unique: true);
 
             migrationBuilder.CreateIndex(

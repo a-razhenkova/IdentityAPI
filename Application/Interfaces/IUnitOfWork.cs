@@ -4,6 +4,7 @@
     {
         IClientRepository Clients { get; init; }
         IUserRepository Users { get; init; }
+        IDocumentRepository Documents { get; init; }
 
         Task SaveChangesAsync(CancellationToken cancellationToken = default);
         Task SaveChangesAsync(bool hasChanges, CancellationToken cancellationToken = default);

@@ -12,8 +12,11 @@ namespace Application
             _appSettings = appSettings.Value;
         }
 
-        public async Task<PaginatedReportDto<TDataDto>> Prepare<TData, TDataDto>(IQueryable<TData> dataQuery, PaginatedQuery query,
-            Func<IEnumerable<TData>, IEnumerable<TDataDto>> mapperCallback, CancellationToken cancellationToken = default)
+        public async Task<PaginatedReportDto<TDataDto>> Prepare<TData, TDataDto>(
+            IQueryable<TData> dataQuery,
+            PaginatedQuery query,
+            Func<IEnumerable<TData>, IEnumerable<TDataDto>> mapperCallback,
+            CancellationToken cancellationToken = default)
         {
             int itemsPerPage = query.ItemsPerPage <= 0 || query.ItemsPerPage > _appSettings.PaginatedReport.DefaultMaxAllowedItemsPerPage
                 ? _appSettings.PaginatedReport.DefaultItemsPerPage

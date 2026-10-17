@@ -7,7 +7,7 @@ namespace Application
         public static UserDto MapToDto(this User user)
            => new UserDto()
            {
-               Id = user.PublicId,
+               Id = user.Reference,
                Username = user.Username,
                Role = user.Role,
                Email = user.Email,
@@ -34,7 +34,7 @@ namespace Application
 
         public static User Map(this User user, CreateUserCommand command)
         {
-            user.PublicId = Guid.NewGuid().ToString();
+            user.Reference = Guid.NewGuid().ToString();
             user.Username = command.Username;
             user.Role = command.Role;
             user.OtpKey = UserOtpKey.Create();

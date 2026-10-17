@@ -33,7 +33,7 @@ namespace TokenTests
 
             refreshToken.GetClaim(jwt, TokenClaim.Issuer).Should().Be(securitySettings.TokenIssuer);
             refreshToken.GetClaim(jwt, TokenClaim.Audience).Should().Be(securitySettings.TokenAudience);
-            refreshToken.GetClaim(jwt, TokenClaim.UserPublicId).Should().Be(user.PublicId);
+            refreshToken.GetClaim(jwt, TokenClaim.UserReference).Should().Be(user.Reference);
         }
 
         [Fact]

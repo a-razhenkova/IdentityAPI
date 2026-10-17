@@ -5,11 +5,6 @@ using Shared;
 
 namespace Application
 {
-    public interface IEmail
-    {
-        Task VerifyToken(string token, CancellationToken cancellationToken = default);
-    }
-
     public class EmailService : IEmail
     {
         private readonly AppSettings _appSettings;
@@ -29,18 +24,20 @@ namespace Application
             TokenValidationResult validationResult = await emailToken.ValidateAsync();
 
             if (!validationResult.IsValid)
-                throw new UnprocessableContentException("Invalid verification code.");
+                throw new UnprocessableContentException(AppMessages.InvalidVerificationCode);
 
-            string userPublicId = emailToken.GetClaim(TokenClaim.UserPublicId)
-                ?? throw new UnauthorizedException("Invalid token.");
+            string userPublicId = emailToken.GetClaim(TokenClaim.UserReference)
+                ?? throw new UnauthorizedException(AppMessages.InvalidToken);
 
             await UpdateUserStatus(userPublicId, cancellationToken);
         }
 
         private async Task UpdateUserStatus(string userPublicId, CancellationToken cancellationToken = default)
         {
-            User user = await _unitOfWork.Users.GetByIdAsync(userPublicId, cancellationToken)
-                ?? throw new NotFoundException("User not found.");
+            User user = await _unitOfWork.Users
+                .Where(u => u.Reference.Equals(userPublicId))
+                .Include(u => u.Status)
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException(AppMessages.UserNotFound);
 
             if (user.IsVerified)
                 return;

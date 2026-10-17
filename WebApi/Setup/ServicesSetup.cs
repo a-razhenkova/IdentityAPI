@@ -57,6 +57,17 @@ namespace WebApi
 
         public static WebApplicationBuilder AddResiliencePipelines(this WebApplicationBuilder builder)
         {
+            builder.Services.AddResiliencePipeline(ResiliencePipelineType.DbContext, cfg =>
+            {
+                cfg.AddRetry(new RetryStrategyOptions
+                {
+                    BackoffType = DelayBackoffType.Constant,
+                    UseJitter = false,
+                    MaxRetryAttempts = 3,
+                    Delay = TimeSpan.FromSeconds(30),
+                });
+            });
+
             builder.Services.AddResiliencePipeline(ResiliencePipelineType.RabbitMQ_PublishFastEvent, cfg =>
             {
                 cfg.AddRetry(new RetryStrategyOptions

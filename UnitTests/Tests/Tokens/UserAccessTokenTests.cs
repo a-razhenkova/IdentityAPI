@@ -33,7 +33,7 @@ namespace TokenTests
 
             accessToken.GetClaim(jwt, TokenClaim.Issuer).Should().Be(securitySettings.TokenIssuer);
             accessToken.GetClaim(jwt, TokenClaim.Audience).Should().Be(securitySettings.TokenAudience);
-            accessToken.GetClaim(jwt, TokenClaim.UserPublicId).Should().Be(user.PublicId);
+            accessToken.GetClaim(jwt, TokenClaim.UserReference).Should().Be(user.Reference);
             accessToken.GetClaim(jwt, TokenClaim.Username).Should().Be(user.Username);
             accessToken.GetClaim(jwt, TokenClaim.UserRole).Should().Be(userRole.ToString());
             accessToken.GetClaim(jwt, TokenClaim.UserStatus).Should().Be(userStatus.ToString());

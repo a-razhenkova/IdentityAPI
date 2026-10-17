@@ -4,9 +4,15 @@
     {
         extension(Client client)
         {
-            public bool IsActivate() => client.Status.Value == ClientStatuses.Active;
-            public bool IsBlock() => client.Status.Value == ClientStatuses.Blocked;
-            public bool IsDisable() => client.Status.Value == ClientStatuses.Disabled;
+            public bool IsActivated() => client.Status.Value == ClientStatuses.Active;
+            public bool IsBlocked() => client.Status.Value == ClientStatuses.Blocked;
+            public bool IsDisabled() => client.Status.Value == ClientStatuses.Disabled;
+
+            public bool IsBlockedWithReason(ClientStatusReasons reason)
+            {
+                return client.IsBlocked()
+                    && client.Status.Reason == reason;
+            }
 
             public void Activate()
             {

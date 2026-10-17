@@ -54,7 +54,7 @@ namespace Shared
 
         // user
         [Description("userId")]
-        UserPublicId,
+        UserReference,
         [Description("username")]
         Username,
         [Description("userRole")]
@@ -65,6 +65,7 @@ namespace Shared
 
     public enum ResiliencePipelineType
     {
+        DbContext,
         RabbitMQ_PublishFastEvent,
         RabbitMQ_PublishEventInBackground
     }

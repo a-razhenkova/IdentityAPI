@@ -13,7 +13,7 @@ namespace Application
         }
 
         public override List<Claim> CreateClaims() => [
-                new Claim(TokenClaim.UserPublicId.GetDescription(), _user.PublicId),
+                new Claim(TokenClaim.UserReference.GetDescription(), _user.Reference),
                 new Claim(TokenClaim.Username.GetDescription(), _user.Username),
                 new Claim(TokenClaim.UserRole.GetDescription(), _user.Role.ToString()),
                 new Claim(TokenClaim.UserStatus.GetDescription(), _user.Status.Value.ToString())

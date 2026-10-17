@@ -1,5 +1,7 @@
 ﻿using Application;
 using Infrastructure.IdentityDb;
+using Polly.Registry;
+using Shared;
 
 namespace Infrastructure
 {
@@ -7,17 +9,19 @@ namespace Infrastructure
     {
         private readonly IdentityContext _context;
 
-        public UnitOfWork(IdentityContext context)
+        public UnitOfWork(IdentityContext context, ResiliencePipelineProvider<ResiliencePipelineType> pipelineProvider)
         {
             _context = context;
 
-            Clients = new ClientRepository(_context);
-            Users = new UserRepository(_context);
+            Clients = new ClientRepository(_context, pipelineProvider);
+            Users = new UserRepository(_context, pipelineProvider);
+            Documents = new DocumentRepository(_context, pipelineProvider);
         }
 
         #region Repositories
         public IClientRepository Clients { get; init; }
         public IUserRepository Users { get; init; }
+        public IDocumentRepository Documents { get; init; }
         #endregion
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)

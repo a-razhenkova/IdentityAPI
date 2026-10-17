@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Infrastructure.Database.Migrations
+namespace Infrastructure.Database.Migrations.IdentityDb
 {
     [DbContext(typeof(IdentityContext))]
     partial class IdentityContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace Infrastructure.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -377,12 +377,12 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnName("otp_key")
                         .HasColumnOrder(6);
 
-                    b.Property<string>("PublicId")
+                    b.Property<string>("Reference")
                         .IsRequired()
                         .HasMaxLength(36)
                         .IsUnicode(false)
                         .HasColumnType("varchar(36)")
-                        .HasColumnName("public_id")
+                        .HasColumnName("reference")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("RegistrationTimestamp")
@@ -413,7 +413,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PublicId")
+                    b.HasIndex("Reference")
                         .IsUnique();
 
                     b.HasIndex("Username")

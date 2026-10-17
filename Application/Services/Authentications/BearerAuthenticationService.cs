@@ -9,8 +9,9 @@ namespace Application
         private readonly AppSettings _appSettings;
         private readonly IUserAuthenticator _userAuthenticator;
 
-        public BearerAuthenticationService(IOptionsSnapshot<AppSettings> appSettings,
-                                          IUserAuthenticator userAuthenticator)
+        public BearerAuthenticationService(
+            IOptionsSnapshot<AppSettings> appSettings,
+            IUserAuthenticator userAuthenticator)
         {
             _appSettings = appSettings.Value;
             _userAuthenticator = userAuthenticator;
@@ -24,13 +25,12 @@ namespace Application
         public async Task<User> AuthenticateByRefreshTokenAsync(Authorization authorization, CancellationToken cancellationToken = default)
         {
             if (authorization.Schema != AuthorizationSchema.Bearer)
-                throw new BadRequestException("Invalid token format.");
+                throw new BadRequestException(AppMessages.InvalidTokenFormat);
 
-            string userPublicId = new RefreshToken(authorization.Value, _appSettings.Security)
-                .GetClaim(TokenClaim.UserPublicId)
-                ?? throw new UnauthorizedException("Invalid token.");
+            string userReference = new RefreshToken(authorization.Value, _appSettings.Security)
+                .GetClaim(TokenClaim.UserReference) ?? throw new UnauthorizedException(AppMessages.InvalidToken);
 
-            return await _userAuthenticator.AuthenticateAsync(userPublicId, cancellationToken);
+            return await _userAuthenticator.AuthenticateAsync(userReference, cancellationToken);
         }
     }
 }

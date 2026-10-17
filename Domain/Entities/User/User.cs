@@ -5,14 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Domain
 {
     [Table("user")]
-    [Index(nameof(PublicId), IsUnique = true)]
+    [Index(nameof(Reference), IsUnique = true)]
     [Index(nameof(Username), IsUnique = true)]
     public partial class User : EntityBase
     {
         [Required]
-        [Column("public_id", Order = 2)]
-        [MaxLength(UserConstants.PublicIdMaxLength), Unicode(false)]
-        public string PublicId { get; set; }
+        [Column("reference", Order = 2)]
+        [MaxLength(UserConstants.ReferenceMaxLength), Unicode(false)]
+        public string Reference { get; set; }
 
         [Required]
         [Column("username", Order = 3)]

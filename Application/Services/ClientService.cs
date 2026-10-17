@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Shared;
 using System.Data;
@@ -13,9 +14,10 @@ namespace Application
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPaginatedReport _paginatedReport;
 
-        public ClientService(IOptionsSnapshot<AppSettings> appSettings,
-                            IUnitOfWork unitOfWork,
-                            IPaginatedReport paginatedReport)
+        public ClientService(
+            IOptionsSnapshot<AppSettings> appSettings,
+            IUnitOfWork unitOfWork,
+            IPaginatedReport paginatedReport)
         {
             _appSettings = appSettings.Value;
             _unitOfWork = unitOfWork;
@@ -24,7 +26,7 @@ namespace Application
 
         public async Task<PaginatedReportDto<ClientDto>> SearchAsync(SearchClientQuery query, CancellationToken cancellationToken = default)
         {
-            IQueryable<Client> clientQuery = _unitOfWork.Clients.Get().AsNoTracking();
+            IQueryable<Client> clientQuery = _unitOfWork.Clients.AsNoTracking().ToQuery();
 
             if (!string.IsNullOrWhiteSpace(query.Key))
                 clientQuery = clientQuery.Where(c => c.Key == query.Key);
@@ -53,8 +55,12 @@ namespace Application
 
         public async Task<ClientDto> GetAsync(string key, CancellationToken cancellationToken = default)
         {
-            Client client = await _unitOfWork.Clients.GetByKeyAsync(key, cancellationToken)
-                ?? throw new NotFoundException("Client not found.");
+            Client client = await _unitOfWork.Clients
+                .Where(c => c.Key == key)
+                .Include(c => c.Status)
+                .Include(c => c.Right)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException(AppMessages.ClientNotFound);
 
             return client.MapToDto();
         }
@@ -71,8 +77,11 @@ namespace Application
 
         public async Task UpdateAsync(string key, UpdateClientCommand command, CancellationToken cancellationToken = default)
         {
-            Client client = await _unitOfWork.Clients.GetByKeyAsync(key, cancellationToken)
-                ?? throw new NotFoundException("Client not found");
+            Client client = await _unitOfWork.Clients
+                .Where(c => c.Key == key)
+                .Include(c => c.Status)
+                .Include(c => c.Right)
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException(AppMessages.ClientNotFound);
 
             Client clientSnapshot = client.DeepCopy();
             client.Map(command);
@@ -84,11 +93,12 @@ namespace Application
         public async Task DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             Client client = await _unitOfWork.Clients
-                .WhereKeyEquals(key)
+                .Where(c => c.Key == key)
+                .Include(c => c.Status)
                 .Include(c => c.Subscriptions)
-                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Client not found.");
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException(AppMessages.ClientNotFound);
 
-            if (client.Subscriptions.Any())
+            if (client.Subscriptions.Count > 0)
             {
                 client.Disable();
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -102,16 +112,19 @@ namespace Application
 
         public async Task<string> GetSecretAsync(string key, CancellationToken cancellationToken = default)
         {
-            Client client = await _unitOfWork.Clients.GetByKeyWithNoTrackingAsync(key, cancellationToken)
-                ?? throw new NotFoundException("Client not found.");
+            Client client = await _unitOfWork.Clients
+                .Where(c => c.Key == key)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException(AppMessages.ClientNotFound);
 
             return client.Secret;
         }
 
         public async Task<string> UpdateSecretAsync(string key, CancellationToken cancellationToken = default)
         {
-            Client client = await _unitOfWork.Clients.GetByKeyAsync(key)
-                ?? throw new NotFoundException("Client not found.");
+            Client client = await _unitOfWork.Clients
+                .Where(c => c.Key == key)
+                .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException(AppMessages.ClientNotFound);
 
             client.Secret = ClientSecret.Create();
 
@@ -123,7 +136,7 @@ namespace Application
         public async Task CreateSubscription(string clientKey, DateTime expirationDate, IFormFile file, CancellationToken cancellationToken = default)
         {
             if (expirationDate <= DateTime.UtcNow.Date)
-                throw new BadRequestException("Invalid expiration date.");
+                throw new BadRequestException(AppMessages.InvalidExpirationDate);
 
             string fileExtension = Path.GetExtension(file.FileName);
 
@@ -131,7 +144,8 @@ namespace Application
                 throw new BadRequestException("Invalid file type.");
 
             Client client = await _unitOfWork.Clients
-                .WhereKeyEquals(clientKey)
+                .Where(c => c.Key == clientKey)
+                .Include(c => c.Status)
                 .Include(c => c.Subscriptions)
                 .SingleOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Client not found.");
 
@@ -160,12 +174,8 @@ namespace Application
                     }
                 });
 
-                if (!client.IsActivate()
-                    && client.Status.Value == ClientStatuses.Blocked
-                    && client.Status.Reason == ClientStatusReasons.ExpiredSubscription)
-                {
+                if (!client.IsActivated() && client.IsBlockedWithReason(ClientStatusReasons.ExpiredSubscription))
                     client.Activate();
-                }
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
@@ -180,8 +190,9 @@ namespace Application
 
         public async Task<FileDto> GetSubscriptionContractAsync(string clientKey, long contractId, CancellationToken cancellationToken = default)
         {
-            Document contract = await _unitOfWork.Clients.GetSubscriptionContractWithNoTrackingAsync(clientKey, contractId, cancellationToken)
-                ?? throw new NotFoundException("Contract not found.");
+            Document contract = await _unitOfWork.Documents
+                .GetClientSubscriptionContractAsync(clientKey, contractId, cancellationToken)
+                ?? throw new NotFoundException(AppMessages.ClientContractNotFound);
 
             string contractPath = Path.Combine(_appSettings.ClientSubscriptionContract.Directory, contract.SignTimestamp.Year.ToString(), contract.Name);
             byte[] content = await FileExtensions.ReadAndAesDecryptAllBytesAsync(contractPath, _appSettings.ClientSubscriptionContract.Key, contract.Secret, cancellationToken);

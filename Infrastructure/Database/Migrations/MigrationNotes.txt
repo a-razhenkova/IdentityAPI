@@ -1,1 +1,1 @@
-Add-Migration v1_0_0_0 -Context IdentityContext -OutputDir Database\Migrations -ErrorAction Continue
+Add-Migration v1_0_0_0 -Context IdentityContext -OutputDir Database\Migrations\IdentityDb -ErrorAction Continue

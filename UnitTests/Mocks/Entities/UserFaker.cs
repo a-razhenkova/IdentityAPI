@@ -9,7 +9,7 @@ namespace UnitTests.Mocks
         public UserFaker()
         {
             RuleFor(s => s.Id, f => f.Random.Long());
-            RuleFor(s => s.PublicId, f => f.Random.Uuid().ToString());
+            RuleFor(s => s.Reference, f => f.Random.Uuid().ToString());
             RuleFor(s => s.Username, f => f.Random.String2(UserConstants.UsernameMinLength, UserConstants.UsernameMaxLength));
             RuleFor(s => s.Role, f => f.PickRandom<UserRoles>());
             RuleFor(s => s.OtpKey, UserOtpKey.Create());

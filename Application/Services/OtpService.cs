@@ -12,10 +12,11 @@ namespace Application
         private readonly IRedis _redis;
         private readonly IRabbitMq _rabbitMq;
 
-        public OtpService(IOptionsSnapshot<AppSettings> appSettings,
-                         IUserAuthenticator userAuthenticator,
-                         IRedis redis,
-                         IRabbitMq rabbitMq)
+        public OtpService(
+            IOptionsSnapshot<AppSettings> appSettings,
+            IUserAuthenticator userAuthenticator,
+            IRedis redis,
+            IRabbitMq rabbitMq)
         {
             _appSettings = appSettings.Value;
             _userAuthenticator = userAuthenticator;
@@ -28,13 +29,13 @@ namespace Application
             User user = await _userAuthenticator.AuthenticateAsync(username, password, cancellationToken);
 
             if (!user.IsVerified)
-                throw new ForbiddenException($"User cannot receive OTP.");
+                throw new ForbiddenException(AppMessages.UserCannotReceiveOtp);
 
             string otp = await CreateAndSaveOtp(user, cancellationToken);
 
             await PublishUserOtp(user, otp, cancellationToken);
 
-            return user.PublicId;
+            return user.Reference;
         }
 
         public async Task<string> CreateAndSaveOtp(User user, CancellationToken cancellationToken = default)
@@ -44,13 +45,23 @@ namespace Application
 
             var otpModel = new Redis.OtpModel()
             {
-                UserPublicId = user.PublicId,
+                UserPublicId = user.Reference,
                 Otp = otp,
                 WrongAuthAttemptsCounter = 0
             };
 
-            var cacheEntryOptions = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_appSettings.Security.MultiFactorAuth.LifetimeInSeconds));
-            await _redis.AddOrUpdateAsync(RedisKey.OneTimePassword, otpModel, cacheEntryOptions, keyIds: [user.PublicId], cancellationToken);
+            await _redis.AddOrUpdateAsync
+            (
+                keyType: RedisKey.OneTimePassword,
+                value: otpModel,
+                entryOptions: new DistributedCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(_appSettings.Security.MultiFactorAuth.LifetimeInSeconds)),
+                keyIds:
+                [
+                    user.Reference
+                ],
+                cancellationToken: cancellationToken
+            );
 
             return otp;
         }

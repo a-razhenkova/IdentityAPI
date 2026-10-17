@@ -20,7 +20,7 @@ namespace Application
         public async Task<Client> AuthenticateAsync(BasicCredentials credentials, CancellationToken cancellationToken = default)
         {
             if (!ClientKey.IsValid(credentials.Key) || !ClientSecret.IsValid(credentials.Secret))
-                throw new UnauthorizedException("Invalid credentials.");
+                throw new UnauthorizedException(AppMessages.InvalidCredentials);
 
             return await AuthenticateAsync(credentials.Key, credentials.Secret, cancellationToken);
         }

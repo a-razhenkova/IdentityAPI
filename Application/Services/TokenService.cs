@@ -14,11 +14,12 @@ namespace Application
         private readonly IBearerAuthenticator _bearerAuthenticator;
         private readonly IOtpAuthenticator _otpAuthenticator;
 
-        public TokenService(IHttpContextAccessor httpContextAccessor,
-                           IOptionsSnapshot<AppSettings> appSettings,
-                           IBasicAuthenticator basicAuthenticator,
-                           IBearerAuthenticator bearerAuthenticator,
-                           IOtpAuthenticator otpAuthenticator)
+        public TokenService(
+            IHttpContextAccessor httpContextAccessor,
+            IOptionsSnapshot<AppSettings> appSettings,
+            IBasicAuthenticator basicAuthenticator,
+            IBearerAuthenticator bearerAuthenticator,
+            IOtpAuthenticator otpAuthenticator)
         {
             _httpContextAccessor = httpContextAccessor;
             _appSettings = appSettings.Value;
@@ -41,6 +42,12 @@ namespace Application
             }
         }
 
+        public async Task<TokenDto> CreateAccessTokenAsync(string username, string password, CancellationToken cancellationToken = default)
+        {
+            User user = await _bearerAuthenticator.AuthenticateAsync(username, password, cancellationToken);
+            return CreateAccessToken(user);
+        }
+
         public TokenDto CreateAccessToken(Client client)
         {
             var accessToken = new AccessToken(_appSettings.Security).Create(client);
@@ -49,12 +56,6 @@ namespace Application
             {
                 AccessToken = accessToken
             };
-        }
-
-        public async Task<TokenDto> CreateAccessTokenAsync(string username, string password, CancellationToken cancellationToken = default)
-        {
-            User user = await _bearerAuthenticator.AuthenticateAsync(username, password, cancellationToken);
-            return CreateAccessToken(user);
         }
 
         public TokenDto CreateAccessToken(User user)

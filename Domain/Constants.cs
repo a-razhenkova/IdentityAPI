@@ -15,7 +15,7 @@ namespace Domain
 
     public static class UserConstants
     {
-        public const int PublicIdMaxLength = Constants.UidLength;
+        public const int ReferenceMaxLength = Constants.UidLength;
         public const int UsernameMinLength = 6;
         public const int UsernameMaxLength = 64;
         public const int OtpKeyMaxLength = 64;
